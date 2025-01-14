@@ -1,0 +1,34 @@
+.navContainer {
+    width: 250px;
+    height: 100vh;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .navList {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .navList li {
+    margin-bottom: 15px;
+  }
+  
+  .navList a {
+    text-decoration: none;
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .navList a.active {
+    font-weight: bold;
+    color: #007bff;
+  }
+  

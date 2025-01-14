@@ -1,0 +1,29 @@
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Adjust for Income */
+    gap: 10px;
+    margin: 20px 0;
+     
+  }
+  
+  .expenseSection .gridContainer {
+    grid-template-columns: repeat(4, 1fr); /* Adjust for Expenses */
+  }
+  
+  .gridHeader {
+    font-weight: bold;
+    background-color: #f4f4f4;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+  }
+  
+  .gridItem {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .gridItem:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  

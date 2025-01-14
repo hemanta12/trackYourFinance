@@ -1,6 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const pool = require('./db'); // Replace with your actual DB config
+const pool = require('./db'); 
 
 passport.use(
   new GoogleStrategy(

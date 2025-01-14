@@ -1,7 +1,8 @@
 import React, {useState} from "react";
 import axios from 'axios';
-import Input from '../components/Input'; // Reusable Input component
-import Button from '../components/Button'; // Reusable Button component
+import Input from '../components/Input'; 
+import Button from '../components/Button';
+import { Link } from 'react-router-dom'; 
 import styles from '../styles/LoginPage.module.css';
 
 
@@ -15,11 +16,15 @@ function LoginPage() {
         try{
             const response = await axios.post('http://localhost:8080/api/auth/login', { email, password });
             localStorage.setItem('token', response.data.token);
+            localStorage.setItem('userName', response.data.name); 
             window.location.href = '/dashboard';
         }catch(error){
             console.log("Login failed", error);
             setError('Invalid email or password');
         }
+    };
+    const handleGoogleLogin = () => {
+        window.location.href = 'http://localhost:8080/api/auth/google';
     };
 
     return (
@@ -47,6 +52,12 @@ function LoginPage() {
                 {error && <p className={styles.error}>{error}</p>}
 
             </form>
+            <div className={styles.googleButtonContainer}>
+                <button className={styles.googleButton} onClick={handleGoogleLogin}>Sign in with Google</button>
+            </div>
+            <p className={styles.switchAuth}>
+                Don't have an account? <Link to="/signup">Sign up here</Link>
+            </p>
         </div>
     )
 

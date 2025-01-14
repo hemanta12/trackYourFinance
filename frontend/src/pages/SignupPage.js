@@ -1,7 +1,8 @@
 import React, {useState} from 'react'
 import axios from 'axios';
-import Input from '../components/Input'; // Reusable Input component
-import Button from '../components/Button'; // Reusable Button component
+import Input from '../components/Input'; 
+import Button from '../components/Button';
+import { Link } from 'react-router-dom'; 
 import styles from '../styles/SignupPage.module.css';
 
 function SignupPage() {
@@ -13,22 +14,23 @@ function SignupPage() {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true); // Disable button during submission
-    setError(''); // Clear any previous error
+    setIsSubmitting(true); 
+    setError(''); 
     try {
         await axios.post('http://localhost:8080/api/auth/register', {email, password, name});
         alert("Sign up succesful. Now, please Login");
         window.location.href = '/';
     }catch(error){
         console.log("Sign Up Failed", error);
-        setError('Signup failed. Please try again.'); // Set error message
+        setError('Signup failed. Please try again.'); 
     }finally {
-      setIsSubmitting(false); // Re-enable button
+      setIsSubmitting(false); 
     }
   };
 
-
-
+  const handleGoogleSignup = () => {
+    window.location.href = 'http://localhost:8080/api/auth/google'; 
+  };
 
   return (
     <div className={styles.container}>
@@ -60,6 +62,13 @@ function SignupPage() {
               </Button>
               {error && <p className={styles.error}>{error}</p>}
             </form>
+           
+            <div className={styles.googleButtonContainer}>
+                <button className={styles.googleButton} onClick={handleGoogleSignup}>Sign up with Google</button>
+            </div>
+            <p className={styles.switchAuth}>
+                Already have an account? <Link to="/">Log in here</Link>
+            </p>
     </div>
   );
 }

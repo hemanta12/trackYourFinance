@@ -47,6 +47,26 @@
     font-size: 0.9rem;
     margin-top: 10px;
   }
+  .googleButtonContainer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.googleButton {
+    padding: 10px 15px;
+    font-size: 1rem;
+    background-color: #db4437;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.googleButton:hover {
+    background-color: #c23321;
+}
+
   
   
   @media (max-width: 768px) {
