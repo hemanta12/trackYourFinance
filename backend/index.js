@@ -27,11 +27,13 @@ app.use(passport.session());
 const authRoutes = require('./routes/authRoutes');
 const incomeRoutes = require('./routes/incomeRoutes');
 const expenseRoutes = require('./routes/expenseRoutes');
+const listRoutes = require('./routes/listRoutes');
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/incomes', incomeRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api/lists', listRoutes);
 
 
 const PORT = process.env.PORT || 5000 ;

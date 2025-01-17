@@ -1,29 +1,61 @@
 .gridContainer {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Adjust for Income */
-    gap: 10px;
-    margin: 20px 0;
-     
-  }
-  
-  .expenseSection .gridContainer {
-    grid-template-columns: repeat(4, 1fr); /* Adjust for Expenses */
-  }
-  
-  .gridHeader {
-    font-weight: bold;
-    background-color: #f4f4f4;
-    padding: 10px;
-    text-align: left;
-    border-bottom: 2px solid #ddd;
-  }
-  
-  .gridItem {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .gridItem:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.gridHeader {
+  font-weight: bold;
+  background-color: #f4f4f4;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+
+.gridItem {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.editField {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.editButton,
+.deleteButton,
+.saveButton,
+.cancelButton {
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9em;
+  border-radius: 4px;
+}
+
+.editButton {
+  background-color: #4caf50;
+  color: white;
+}
+
+.deleteButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.saveButton {
+  background-color: #2196f3;
+  color: white;
+}
+
+.cancelButton {
+  background-color: #ff9800;
+  color: white;
+}

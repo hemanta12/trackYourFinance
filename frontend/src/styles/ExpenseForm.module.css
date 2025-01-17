@@ -1,57 +1,115 @@
-/* Container for the form */
+
+.container {
+  max-width: 550px;
+  margin: 40px auto;
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.header {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
 .form {
-    max-width: 400px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   }
   
-  /* Styling for input fields */
-  .input {
-    margin-bottom: 15px;
-    padding: 10px;
+.input {
+  
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
     font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 100%;
-    transition: border-color 0.3s ease;
-  }
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.inputGroup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
   
   .input:focus {
     border-color: #007bff;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
     outline: none;
   }
+
+.smallInput {
+    width: calc(50% - 15px);
+    padding: 10px;
+    font-size: 0.9rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+.icon {
+  font-size: 1.2rem;
+  color: #007bff;
+}
   
   /* Styling for the submit button */
-  .button {
-    padding: 10px 15px;
-    font-size: 1rem;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.addButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
   }
   
-  .button:hover {
-    background-color: #218838;
+  .addButton:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
   }
   
   .button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
   }
+
+  .submitButton {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.submitButton:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+.submitButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
   
   /* Styling for error messages */
   .error {
     color: red;
     font-size: 0.9rem;
-    margin-top: 10px;
+    margin-top: -10px;
     text-align: center;
   }
+  
+
   

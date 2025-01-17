@@ -15,3 +15,14 @@ export const addIncome = async (incomeData) => api.post('/incomes', incomeData);
 
 export const getExpenses = async () => api.get('/expenses');
 export const addExpense = async (data) => api.post('/expenses', data);
+
+export const getCategories = async () => api.get('/lists/categories');
+export const addCategory = async (category) => api.post('/lists/categories', { category });
+
+export const getPaymentTypes = async () => api.get('/lists/payment-types');
+export const addPaymentType = async (paymentType) => api.post('/lists/payment-types', { paymentType });
+
+export const getSources = async () => api.get('/lists/sources');
+export const addSource = async (source) => api.post('/lists/sources', { source });
+
+
