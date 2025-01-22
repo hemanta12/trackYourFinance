@@ -20,7 +20,9 @@ exports.createIncome = async (req, res) => {
 
 exports.getIncomes = async (req, res) => {
   try {
-    const userId = req.user.id; 
+    const userId = req.user?.id; 
+    console.log('User ID:', userId);
+    if (!userId) return res.status(400).json({ message: 'User ID is missing' });
     const [incomes] = await pool.query('SELECT * FROM income WHERE user_id = ?', [userId]);
     const formattedIncomes = incomes.map((income) => ({
       ...income,

@@ -82,7 +82,7 @@ const IncomeForm = () => {
                 type="text"
                 placeholder="OR Enter new source"
                 value={newSource}
-                onChange={(e) => setNewSource(e.target.value)} // Updates the newSource state
+                onChange={(e) => setNewSource(e.target.value)}
                 className={styles.smallInput}
               />
             <button type="button" onClick={handleAddSource} className={styles.addButton}>

@@ -1,5 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getCategories, addCategory, getPaymentTypes, addPaymentType, getSources, addSource } from '../services/api'; // Import the functions
+import { 
+  getCategories, 
+  addCategory, 
+  getPaymentTypes, 
+  addPaymentType, 
+  getSources, 
+  addSource , getMonths
+} from '../services/api';
 
 export const fetchCategories = createAsyncThunk('lists/fetchCategories', async () => {
   const response = await getCategories();
@@ -31,18 +38,29 @@ export const addSourceThunk = createAsyncThunk('lists/addSource', async (source)
   return source;
 });
 
+// Thunk to fetch months
+export const fetchMonths = createAsyncThunk('lists/fetchMonths', async () => {
+  const response = await getMonths();
+  return response;
+});
+
+
 const listSlice = createSlice({
   name: 'lists',
   initialState: {
     categories: [],
     paymentTypes: [],
     sources: [],
+    months: [], // Add months to the state
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.categories = action.payload;
+      })
+      .addCase(fetchMonths.fulfilled, (state, action) => {
+        state.months = ['All', ...(action.payload || [])]; 
       })
       .addCase(addCategoryThunk.fulfilled, (state, action) => {
         state.categories.push(action.payload);
@@ -58,6 +76,7 @@ const listSlice = createSlice({
       })
       .addCase(addSourceThunk.fulfilled, (state, action) => {
         state.sources.push(action.payload);
+        
       });
   },
 });

@@ -27,6 +27,9 @@ export const deleteExpense = createAsyncThunk('expenses/deleteExpense', async (i
   return id;
 });
 
+export const getAnalyticsData = async () => api.get('/analytics');
+
+
 const expensesSlice = createSlice({
   name: 'expenses',
   initialState: { data: [], status: 'idle' },

@@ -26,6 +26,7 @@ function App() {
                            
                             {/* Public Routes */}
                             <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />} />
+                            {/* <Route path="/" element={<LoginPage />} />  */}
                             <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" /> : <SignupPage />} />
 
                             {/* Private Routes */}

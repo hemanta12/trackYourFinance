@@ -33,7 +33,9 @@ const listRoutes = require('./routes/listRoutes');
 app.use('/api/auth', authRoutes);
 app.use('/api/incomes', incomeRoutes);
 app.use('/api/expenses', expenseRoutes);
+app.use('/api', require('./routes/analyticsRoute'));
 app.use('/api/lists', listRoutes);
+
 
 
 const PORT = process.env.PORT || 5000 ;

@@ -1,12 +1,25 @@
 const express = require('express');
 const router = express.Router();
-const { getCategories, addCategory, getPaymentTypes, addPaymentType, getSources, addSource } = require('../controllers/listController');
+const verifyToken = require('../middlewares/jwtMiddleware'); // Add middleware
 
-router.get('/categories', getCategories);
-router.post('/categories', addCategory);
-router.get('/payment-types', getPaymentTypes);
-router.post('/payment-types', addPaymentType);
-router.get('/sources', getSources);
-router.post('/sources', addSource);
+// Import required controllers
+// const listController = require('../controllers/listController');
+const analyticsController = require('../controllers/analyticsController'); // Import this
+const { 
+    getCategories, 
+    addCategory, 
+    getPaymentTypes, 
+    addPaymentType, 
+    getSources, 
+    addSource 
+} = require('../controllers/listController');
+
+router.get('/categories',verifyToken, getCategories);
+router.post('/categories', verifyToken,addCategory);
+router.get('/payment-types',verifyToken, getPaymentTypes);
+router.post('/payment-types', verifyToken,addPaymentType);
+router.get('/sources', verifyToken,getSources);
+router.post('/sources', verifyToken,addSource);
+router.get('/months', verifyToken, analyticsController.getMonths);
 
 module.exports = router;

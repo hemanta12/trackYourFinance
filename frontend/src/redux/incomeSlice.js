@@ -28,6 +28,9 @@ export const deleteIncome = createAsyncThunk('income/deleteIncome', async (id) =
   return id;
 });
 
+export const getAnalyticsData = async () => api.get('/analytics');
+
+
 const incomeSlice = createSlice({
   name: 'income',
   initialState: { data: [], status: 'idle' },

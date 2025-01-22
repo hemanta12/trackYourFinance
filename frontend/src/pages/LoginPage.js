@@ -1,4 +1,5 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
+import { useLocation } from "react-router-dom";
 import axios from 'axios';
 import Input from '../components/Input'; 
 import Button from '../components/Button';
@@ -10,6 +11,17 @@ function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [sessionExpired, setSessionExpired] = useState(false); // State for session expiration message
+
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if the query parameter contains `session=expired`
+    const params = new URLSearchParams(location.search);
+    if (params.get("session") === "expired") {
+      setSessionExpired(true);
+    }
+  }, [location.search]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -30,6 +42,9 @@ function LoginPage() {
     return (
         <div className={styles.container}>
              <h1 className={styles.title}>Login</h1>
+             {sessionExpired && (
+                <p className={styles.error}>Your session has expired. Please log in again.</p>
+            )}
 
             <form className={styles.form}  onSubmit={handleLogin}>
                 <Input

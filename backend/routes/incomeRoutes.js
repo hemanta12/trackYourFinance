@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/', verifyToken, incomeController.createIncome);
 router.get('/', verifyToken, incomeController.getIncomes);
 
-router.put('/:id', incomeController.updateIncome);
-router.delete('/:id', incomeController.deleteIncome);
+router.put('/:id', verifyToken, incomeController.updateIncome);
+router.delete('/:id', verifyToken,incomeController.deleteIncome);
 
 module.exports = router;
