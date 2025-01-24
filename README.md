@@ -1,9 +1,5 @@
 # Finance Tracker Web App
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](#)
-[![Issues](https://img.shields.io/github/issues/your-username/finance-tracker.svg)](../../issues)
-
 A full-stack application to help you track and manage your personal finances. 
 Easily log incomes and expenses, visualize spending habits, and plan budgets—all from a clean, intuitive interface.
 
