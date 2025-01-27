@@ -1,18 +1,25 @@
 const pool = require('../config/db');
 
+/**
+ * Add new expense
+ * @param {Object} req.body - Expense data
+ * @param {Object} req.user - Authenticated user
+ */
 exports.createExpense = async (req, res) => {
   try {
-    console.log('Request Body:', req.body); // Log the request body
-    console.log('User ID:', req.user.id); // Log the user ID
+    const { amount, category_id, payment_type_id, date, notes } = req.body;
+    const userId = req.user.id;
 
-    const {  amount, category,paymentType, date } = req.body;
-    const userId = req.user.id; 
+    const [result] = await pool.query(
+      'INSERT INTO expenses (user_id, amount, category_id, payment_type_id, date, notes) VALUES (?, ?, ?, ?, ?, ?)',
+      [userId, amount, category_id, payment_type_id, date, notes]
+    );
 
-    const [result] = await pool.query('INSERT INTO expenses (user_id, amount, category, payment_type, date) VALUES (?, ?, ?, ?, ?)', [
-      userId, amount, category, paymentType, date || new Date(),
-    ]);
-    const [newExpense] = await pool.query('SELECT * FROM expenses WHERE id = ?', [result.insertId]);
-
+    // Fetch the complete expense record after insertion
+    const [newExpense] = await pool.query(
+      'SELECT * FROM expenses WHERE id = ?',
+      [result.insertId]
+    );
 
     res.status(201).json(newExpense[0]);
   } catch (err) {
@@ -32,21 +39,35 @@ exports.getExpenses = async (req, res) => {
 };
 
 exports.updateExpense = async (req, res) => {
-  const { id } = req.params;
-  const { amount, category, payment_type, date } = req.body;
+  try {
+    const { id } = req.params;
+    const { amount, category_id, payment_type_id, date, notes } = req.body;
+    const userId = req.user.id;
 
-  if (!id || !amount || !category || !payment_type || !date) {
-    return res.status(400).json({ message: 'All fields are required' });
-  }
-  try{
-    await pool.query(
-      'UPDATE expenses SET amount = ?, category = ?, payment_type = ?, date=? WHERE id = ?', 
-      [amount, category, payment_type,date, id]);
-      const [updatedExpense] = await pool.query('SELECT * FROM expenses WHERE id = ?', [id]);
-      res.status(200).json(updatedExpense[0]);
-  }catch (error) {
+    if (!amount || !category_id || !payment_type_id || !date) {
+      return res.status(400).json({ message: 'Required fields missing' });
+    }
+
+    const [result] = await pool.query(
+      `UPDATE expenses 
+       SET amount = ?, category_id = ?, payment_type_id = ?, date = ?, notes = ? 
+       WHERE id = ? AND user_id = ?`,
+      [amount, category_id, payment_type_id, date, notes, id, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Expense not found or unauthorized' });
+    }
+
+    const [updatedExpense] = await pool.query(
+      'SELECT * FROM expenses WHERE id = ?',
+      [id]
+    );
+
+    res.json(updatedExpense[0]);
+  } catch (error) {
     console.error('Error updating expense:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 

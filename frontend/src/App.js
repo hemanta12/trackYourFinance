@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 import PrivateRoute from './components/PrivateRoute';
 import Navigation from './components/Navigation'; 
+import Settings from './components/settings/SettingsLayout';
 
 const LoginPage = React.lazy(() => import('./pages/LoginPage'));
 const SignupPage = React.lazy(() => import('./pages/SignupPage'));
@@ -30,6 +31,7 @@ function App() {
                             <Route path="/signup" element={isAuthenticated ? <Navigate to="/dashboard" /> : <SignupPage />} />
 
                             {/* Private Routes */}
+                            <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
                             <Route path= "/dashboard" element = {<PrivateRoute><Dashboard /></PrivateRoute>} />
                             <Route path="/expenses" element={<PrivateRoute><Expenses /></PrivateRoute>} />
                             <Route path="/income" element={<PrivateRoute><Income /></PrivateRoute>} />

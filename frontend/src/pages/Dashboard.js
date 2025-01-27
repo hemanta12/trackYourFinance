@@ -57,19 +57,25 @@ function Dashboard() {
   //Fetch chart data from API
   const fetchChartData = async (type, filters, setData) => {
     setLoading(true);
-    setData([]); // Clear old data
-
-    console.log('Filters sent to backend:', {
-      type,
-      ...filters,
-    });
+    setNoData(false);
     
     try {
-      const response = await getAnalyticsData({ type, ...filters });
-      setData(response.data.length > 0 ? response.data : []);
-      setNoData(response.data.length === 0);
+      const response = await getAnalyticsData({ 
+        type, 
+        ...filters 
+      });
+      
+      if (response.data && Array.isArray(response.data)) {
+        setData(response.data.length > 0 ? response.data : []);
+        setNoData(response.data.length === 0);
+      } else {
+        setData([]);
+        setNoData(true);
+      }
     } catch (error) {
       console.error(`Error fetching ${type} data:`, error);
+      setData([]);
+      setNoData(true);
     } finally {
       setLoading(false);
     }
@@ -147,9 +153,9 @@ function Dashboard() {
             onChange={(e) => setSelectedExpenseCategory(e.target.value)}
           >
             <option value="All">All Categories</option>
-            {categories.map((category, idx) => (
-              <option key={idx} value={category}>
-                {category}
+            {categories.map(cat=> (
+              <option key={cat.id} value={cat.id}>
+                {cat.category}
               </option>
             ))}
           </select>
@@ -197,11 +203,11 @@ function Dashboard() {
             }}
           >
             <option value="All">All Sources</option>
-            {sources.map((source, idx) => (
-              <option key={idx} value={source}>
-                {source}
-              </option>
-            ))}
+            {sources.map((source) => (
+            <option key={`source-${source.id}`} value={source.id}>
+              {source.source}
+            </option>
+          ))}
           </select>
           <select
             value={selectedIncomeMonth}

@@ -12,16 +12,18 @@ import {
 import styles from '../styles/AnalyticsChart.module.css';
 
 
+/**
+ * Chart component for financial analytics visualization
+ * @param {Array} data - Chart data
+ * @param {string} title - Chart title
+ * @param {string} chartType - Type of chart to render
+ * @param {string} activeChart - Current active chart (expenses/income)
+ */
 const AnalyticsChart = ({ data, title, chartType, activeChart }) => {
-  // Ensure data validation
   if (!Array.isArray(data) || data.length === 0) {
     return <p className={styles.noData}>No data available for the selected filters.</p>;
   }
 
-  // Debugging
-  console.log('Data passed to chart:', data);
-
-  // Validate data structure based on active chart
   const validateData = () => {
     if (activeChart === 'expenses') {
       return data.every((item) => 'category' in item && 'total' in item);
@@ -34,7 +36,6 @@ const AnalyticsChart = ({ data, title, chartType, activeChart }) => {
 
   const isValid = validateData();
   if (!isValid) {
-    console.error('Invalid data structure for chart:', { activeChart, data });
     return <p className={styles.noData}>Invalid data structure for the selected chart.</p>;
   }
 

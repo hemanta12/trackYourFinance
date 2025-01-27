@@ -1,6 +1,12 @@
+/**
+ * Analytics Controller
+ * Handles data aggregation and analysis for financial data
+ */
 const pool = require('../config/db');
 
-// Utility function to execute queries
+/**
+ * Executes SQL queries safely with error handling
+ */
 const executeQuery = async (query, params, res) => {
     try {
       const [result] = await pool.query(query, params);
@@ -21,23 +27,23 @@ exports.getAnalytics = async (req, res) => {
         if (!userId) {
             return res.status(400).json({ message: 'User ID is required' });
         }
-
-        console.log('Filters received:', { type, category, source, timePeriod });
-
         try{
             if (type === 'expenses') {
                 // Build and execute expenses query
                 const expensesQuery = `
-                  SELECT DATE_FORMAT(date, '%Y-%m') as date, category, SUM(amount) as total
-                  FROM expenses
-                  WHERE user_id = ?
-                  ${category ? 'AND category = ?' : ''}
+                  SELECT DATE_FORMAT(e.date, '%Y-%m') as date, 
+                         c.category as category, 
+                         SUM(e.amount) as total
+                  FROM expenses e
+                  JOIN categories c ON e.category_id = c.id
+                  WHERE e.user_id = ?
+                  ${category ? 'AND e.category_id = ?' : ''}
                   ${timePeriod 
                     ? timePeriod === 'This Year'
-                    ? 'AND YEAR(date) = ?' 
-                    : 'AND DATE_FORMAT(date, "%Y-%m") = ?' 
+                      ? 'AND YEAR(e.date) = ?' 
+                      : 'AND DATE_FORMAT(e.date, "%Y-%m") = ?' 
                     : ''}
-                  GROUP BY date, category
+                  GROUP BY date, c.category
                   ORDER BY date ASC
                 `;
             
@@ -58,18 +64,15 @@ exports.getAnalytics = async (req, res) => {
               if (type === 'income') {
                 // Fetch income data
                 const incomeQuery = `
-                  SELECT DATE_FORMAT(date, '%Y-%m') as date, source, SUM(amount) as total
-                  FROM income
-                  WHERE user_id = ?
-                  ${source ? 'AND source = ?' : ''}
-                  ${
-                    timePeriod 
-                    ? timePeriod === 'This Year'
-                    ? 'AND YEAR(date) = ?'
-                    : 'AND DATE_FORMAT(date, "%Y-%m") = ?' 
-                    : ''
-                  }
-                  GROUP BY date, source
+                  SELECT DATE_FORMAT(i.date, '%Y-%m') as date, 
+                         s.source as source, 
+                         SUM(i.amount) as total
+                  FROM income i
+                  JOIN sources s ON i.source_id = s.id
+                  WHERE i.user_id = ?
+                  ${source ? 'AND i.source_id = ?' : ''}
+                  ${timePeriod ? 'AND DATE_FORMAT(i.date, "%Y-%m") = ?' : ''}
+                  GROUP BY date, s.source
                   ORDER BY date ASC
                 `;
               
@@ -101,7 +104,6 @@ exports.getMonths = async (req, res) => {
   const userId = req.user?.id;
 
   if (!userId) {
-    console.error('User ID is missing');
     return res.status(400).json({ message: 'User ID is required' });
   }
 

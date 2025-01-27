@@ -2,6 +2,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 
+/**
+ * Register new user
+ * @param {Object} req.body - User registration data
+ */
 exports.register = async (req, res) => {
   try {
     const { email, name, password } = req.body;
@@ -16,13 +20,16 @@ exports.register = async (req, res) => {
       [email, name, hashedPassword]
     );
 
-    // Return the userId from the result
     res.status(201).json({ message: 'User registered', userId: result.insertId });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+/**
+ * Authenticate user login
+ * @param {Object} req.body - Login credentials
+ */
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
