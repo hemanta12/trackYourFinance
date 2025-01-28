@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const verifyToken = require('../middlewares/jwtMiddleware');
 const analyticsController = require('../controllers/analyticsController');
 const { 
@@ -16,6 +15,8 @@ const {
     updateSource,
     deleteSource 
 } = require('../controllers/listController');
+
+const router = express.Router();
 
 // Categories routes
 router.get('/categories', verifyToken, getCategories);
@@ -36,5 +37,9 @@ router.put('/sources/:id', verifyToken, updateSource);
 router.delete('/sources/:id', verifyToken, deleteSource);
 
 router.get('/months', verifyToken, analyticsController.getMonths);
+
+
+
+
 
 module.exports = router;

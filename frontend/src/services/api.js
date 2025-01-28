@@ -66,6 +66,11 @@ export const getMonths = async () => {
   return response.data;
 };
 
+export const getBudgets = () => api.get('/budgets');
+export const createBudget = (data) => api.post('/budgets', data);
+// Check if budget has been reset for the current month
+export const checkBudgetReset = (budgetId) => api.post(`/budgets/reset/${budgetId}`);
+
 
 
 

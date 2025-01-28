@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateIncome, deleteIncome, fetchIncome } from '../redux/incomeSlice';
 import styles from '../styles/IncomeList.module.css';
@@ -77,65 +77,95 @@ const IncomeList = ({ income = [] }) => {
 
   return (
     <div className={styles.incomeSection}>
-      <h3>Income List:</h3>
-      <div className={styles.gridContainer}>
-        <div className={styles.gridHeader}>Date</div>
-        <div className={styles.gridHeader}>Source</div>
-        <div className={styles.gridHeader}>Amount</div>
-        <div className={styles.gridHeader}>Notes</div>
-        <div className={styles.gridHeader}>Actions</div>
-        
-        {income.map((item) => (
-          <React.Fragment key={`income-${item.id}`}>
-            {editingId === item.id ? (
-              <div className={styles.gridRow}>
-                <input
-                  type="date"
-                  value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  className={styles.gridItem}
-                />
-                <select
-                  value={formData.source_id}
-                  onChange={(e) => setFormData({ ...formData, source_id: e.target.value })}
-                  className={styles.gridItem}
-                >
-                  {sources.map(src => (
-                    <option key={`edit-source-${src.id}`} value={src.id}>
-                      {src.source}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className={styles.gridItem}
-                />
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className={styles.gridItem}
-                />
-                <div className={styles.actionButtons}>
-                  <button onClick={saveEdit} className={styles.saveButton}>Save</button>
-                  <button onClick={() => setEditingId(null)} className={styles.cancelButton}>Cancel</button>
-                </div>
-              </div>
-            ) : (
-              <div className={styles.gridRow}>
-                <div className={styles.gridItem}>{formatDate(item.date)}</div>
-                <div className={styles.gridItem}>{getSourceName(item.source_id)}</div>
-                <div className={styles.gridItem}>${item.amount}</div>
-                <div className={styles.gridItem}>{item.notes || '-'}</div>
-                <div className={styles.actionButtons}>
-                  <button onClick={() => handleEdit(item.id, item)} className={styles.editButton}>Edit</button>
-                  <button onClick={() => handleDelete(item.id)} className={styles.deleteButton}>Delete</button>
-                </div>
-              </div>
-            )}
-          </React.Fragment>
-        ))}
+      <h2 className={styles.title}>Income List</h2>
+
+      <div className={styles.tableWrapper}>
+        <table className={styles.incomeTable}>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Source</th>
+              <th>Amount</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {income.map((item) => {
+              const isEditing = editingId === item.id;
+
+              return (
+                <tr key={`income-${item.id}`} className={isEditing ? styles.editingRow : ''}>
+                  <td>
+                    {isEditing ? (
+                      <input
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                        className={styles.editField}
+                      />
+                    ) : (
+                      formatDate(item.date)
+                    )}
+                  </td>
+                  <td>
+                    {isEditing ? (
+                      <select
+                        value={formData.source_id}
+                        onChange={(e) => setFormData({ ...formData, source_id: e.target.value })}
+                        className={styles.editField}
+                      >
+                        {sources.map(source => (
+                          <option key={`source-${source.id}`} value={source.id}>
+                            {source.source}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      getSourceName(item.source_id)
+                    )}
+                  </td>
+                  <td>
+                    {isEditing ? (
+                      <input
+                        type="number"
+                        value={formData.amount}
+                        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                        className={styles.editField}
+                      />
+                    ) : (
+                      `$${item.amount}`
+                    )}
+                  </td>
+                  <td>
+                    {isEditing ? (
+                      <textarea
+                        value={formData.notes}
+                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        className={styles.editField}
+                      />
+                    ) : (
+                      item.notes || '-'
+                    )}
+                  </td>
+                  <td className={styles.actionCell}>
+                    {isEditing ? (
+                      <>
+                        <button onClick={saveEdit} className={styles.saveButton}>Save</button>
+                        <button onClick={() => setEditingId(null)} className={styles.cancelButton}>Cancel</button>
+                      </>
+                    ) : (
+                      <>
+                        <button onClick={() => handleEdit(item.id, item)} className={styles.editButton}>Edit</button>
+                        <button onClick={() => handleDelete(item.id)} className={styles.deleteButton}>Delete</button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );

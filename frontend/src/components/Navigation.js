@@ -27,6 +27,11 @@ const Navigation = () => {
             Settings
           </NavLink>
         </li>
+        <li>
+          <NavLink to="/budgets" className={({ isActive }) => isActive ? styles.active : ''}>
+            Budgets
+          </NavLink>
+        </li>
       </ul>
     </div>
   );

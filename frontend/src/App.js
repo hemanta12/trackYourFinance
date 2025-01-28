@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import PrivateRoute from './components/PrivateRoute';
 import Navigation from './components/Navigation'; 
 import Settings from './components/settings/SettingsLayout';
+import BudgetPage from './pages/BudgetPage';
 
 const LoginPage = React.lazy(() => import('./pages/LoginPage'));
 const SignupPage = React.lazy(() => import('./pages/SignupPage'));
@@ -35,6 +36,7 @@ function App() {
                             <Route path= "/dashboard" element = {<PrivateRoute><Dashboard /></PrivateRoute>} />
                             <Route path="/expenses" element={<PrivateRoute><Expenses /></PrivateRoute>} />
                             <Route path="/income" element={<PrivateRoute><Income /></PrivateRoute>} />
+                            <Route path="/budgets" element={<PrivateRoute><BudgetPage /></PrivateRoute>} />
                             <Route path="*" element={<Navigate to="/" />} /> {/* Redirect unknown routes */}
                         </Routes>
                     </Suspense>
