@@ -1,12 +1,19 @@
+/* Base Layout */
 .container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: #f4f4f9;
+  background-color: #f8fafc;
   min-height: 100vh;
 }
 
+.main {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Navbar */
 .navbar {
   width: 100%;
   display: flex;
@@ -43,248 +50,200 @@
   color: white;
 }
 
-.main {
-  width: 100%;
-  max-width: 1200px;
-  margin-top: 20px;
+/* Dashboard Grid Layout */
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  margin-top: 2rem;
 }
 
+/* Welcome Message */
 .welcome {
   text-align: center;
   font-size: 1.5rem;
   margin-bottom: 20px;
 }
 
-.forms {
+/* KPI Section */
+.kpiContainer {
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+  width: 90%;
+}
+
+.kpiCard {
   display: flex;
-  gap: 20px;
-  margin-bottom: 30px;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
 }
 
-.dataSection {
-  display: flex;
-  gap: 50px;
-  justify-content: space-between;
+.kpiCard h3 {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 500;
 }
 
-.incomeSection, .expenseSection {
-  flex: 1;
+.kpiCard p {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
 }
 
-h3 {
+.kpiIcon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.income {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+}
+
+.expenses {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: white;
+}
+
+.savings {
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+  color: white;
+}
+
+/* Chart Section */
+.chartSection {
+  grid-column: span 12;
+  margin-bottom: 24px; 
+  width: 90%;
+}
+
+/* Analytics Cards */
+.analyticsCard {
+  grid-column: span 6;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  width: 80%;
+}
+
+.largestExpense {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.expenseHighlight {
   font-size: 1.2rem;
-  color: #555;
-  margin-bottom: 10px;
+  font-weight: bold;
+  color: #e53e3e;
 }
 
-.list {
-  list-style: none;
+
+/* Card Headers */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.cardIcon {
+  width: 24px;
+  height: 24px;
+  color: #64748b;
+}
+
+/* Lists Styling */
+.listContainer {
+  margin-top: 1rem;
+}
+
+.listContainer ul {
+  margin: 0;
   padding: 0;
 }
 
-.listItem {
-  padding: 10px 0;
-  border-bottom: 1px solid #ddd;
-}
-
-.listItem:last-child {
-  border-bottom: none;
-}
-
-.gridContainer {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 columns for income */
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.expenseSection .gridContainer {
-  grid-template-columns: repeat(4, 1fr); /* 4 columns for expenses */
-}
-
-.gridHeader {
-  font-weight: bold;
-  background-color: #f4f4f4;
-  padding: 10px;
-  text-align: left;
-  border-bottom: 2px solid #ddd;
-}
-
-.gridItem {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.gridItem:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.metricsGrid {
+.listContainer li {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.chartSection {
-  margin-bottom: 40px;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.chartSection h3 {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #007bff;
-  margin-bottom: 20px;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-.filters {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-.filters select {
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  font-size: 1rem;
-  transition: border-color 0.3s, background-color 0.3s;
-  cursor: pointer;
-}
-
-.filters select:focus {
-  border-color: #007bff;
-  outline: none;
-  background-color: #f0f8ff; 
-}
-
-.filters select:hover {
-  border-color: #0056b3; 
-}
-
-/* Optional: Add a visually distinct class for the selected filter */
-.selectedFilter {
-  background-color: #e7f3ff;
-  font-weight: bold;
-  color: #007bff;
-}
-
-.exportButtons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.exportButtons button {
-  padding: 10px 20px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.exportButtons button:hover {
-  background-color: #218838;
-}
-
-
-.card {
-  background-color: #f9f9f9;
-  padding: 20px;
+  align-items: center;
+  padding: 16px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  margin-bottom: 8px;
+  background-color: #f8fafc;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
+.listContainer li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-.card p {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #007bff;
-}
-.card .income_amount{
-  color: #0bb833;
-}
-
-.card .expense_amount{
-  color: #e31616;
-}
-.card .net_amount{
-  color: #007bff;
-}
-
-.loader {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #007bff;
-}
-
-.noData {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #e31616;
-}
-
-
-/* TABS */
-
-.tabs {
+/* Budget Warnings */
+.warningInfo {
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  gap: 10px;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.tabButton {
-  padding: 10px 20px;
-  border: 1px solid #ddd;
-  background-color: #f4f4f9;
-  color: #333333;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.category {
+  font-weight: 500;
+  color: #1e293b;
 }
 
-.tabButton:hover {
-  background-color: #007bff;
-  color: #ffffff;
+.amount {
+  font-weight: 600;
+  color: #e53e3e;
+  font-size: 1.1rem;
 }
 
-.activeTab {
-  background-color: #007bff;
-  color: #ffffff;
-  font-weight: bold;
+.status {
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
+.warning {
+  background-color: #fef3c7;
+  color: #d97706;
+}
 
+.danger {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
 
-/* End OF Tabs */
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .analyticsCard {
+    grid-column: span 12;
+  }
+}
 
-
-  
 @media (max-width: 768px) {
-    .container {
-      padding: 10px;
-    }
-  
-    .title {
-      font-size: 1.2rem;
-    }
-  
-    .content {
-      font-size: 0.9rem;
-    }
+  .main {
+    padding: 1rem;
   }
   
+  .kpiContainer {
+    grid-template-columns: 1fr;
+  }
+}

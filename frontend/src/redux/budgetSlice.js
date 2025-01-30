@@ -19,6 +19,7 @@ export const checkBudgetResetThunk = createAsyncThunk(
   }
 );
 
+
 const budgetSlice = createSlice({
   name: 'budgets',
   initialState: {

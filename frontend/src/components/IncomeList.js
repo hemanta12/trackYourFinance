@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateIncome, deleteIncome, fetchIncome } from '../redux/incomeSlice';
+import { fetchSources } from '../redux/listSlice';
 import styles from '../styles/IncomeList.module.css';
 
 const IncomeList = ({ income = [] }) => {
@@ -13,6 +14,12 @@ const IncomeList = ({ income = [] }) => {
   });
   const dispatch = useDispatch();
   const sources = useSelector(state => state.lists.sources);
+
+  useEffect(() => {
+    dispatch(fetchSources());
+    dispatch(fetchIncome()); 
+  }, [dispatch]);
+  
 
   const getSourceName = (sourceId) => {
     // Convert sourceId to number for strict comparison

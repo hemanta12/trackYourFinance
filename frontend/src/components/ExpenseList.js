@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateExpense, deleteExpense, fetchExpenses } from '../redux/expensesSlice'; 
+import { fetchCategories, fetchPaymentTypes } from '../redux/listSlice'; 
 import styles from '../styles/ExpenseList.module.css';
 
 const ExpenseList = ({ expenses = [] }) => {
@@ -16,6 +17,11 @@ const ExpenseList = ({ expenses = [] }) => {
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.lists.categories);
   const paymentTypes = useSelector((state) => state.lists.paymentTypes);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+    dispatch(fetchPaymentTypes());
+  }, [dispatch]);
 
   const handleEdit = (id, currentData) => {
     setEditingId(id);

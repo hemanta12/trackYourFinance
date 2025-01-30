@@ -1,9 +1,11 @@
 import React from 'react';
 import IncomeForm from '../components/IncomeForm';
 import IncomeList from '../components/IncomeList';
-import { useSelector } from 'react-redux';
+import { useSelector} from 'react-redux';
+
 
 const Income = () => {
+ 
   const income = useSelector((state) => state.income.data);
   const loading = useSelector((state) => state.income.loading); 
 

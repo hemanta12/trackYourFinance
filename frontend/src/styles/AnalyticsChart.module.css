@@ -1,54 +1,127 @@
+/* Main Chart Container */
 .chartContainer {
-  margin: 20px auto;
-  text-align: center;
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+  grid-column: span 12;
 }
 
-h3 {
-  font-size: 1.2rem;
-  color: #333;
-  margin-bottom: 10px;
+/* Chart Header */
+.chartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f1f5f9;
 }
 
-/* Tooltip */
+.chartHeader h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* Filters Section */
+.filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Dropdown Styling */
+.filters select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background-color: white;
+  color: #1e293b;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filters select:hover {
+  border-color: #94a3b8;
+}
+
+.filters select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+}
+
+/* Chart Section */
+.chartSection {
+  grid-column: span 12;
+  margin-top: 24px;
+}
+
+/* Tooltip Customization */
 :global(.recharts-tooltip-wrapper) {
-  background-color: transparent !important;
-  border: none !important;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 12px;
 }
 
-:global(.recharts-default-tooltip) {
-  background-color: #f4f4f4;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
-  font-size: 12px;
-  color: #333;
-  text-align: left;
+/* Legend Customization */
+:global(.recharts-legend-item) {
+  padding: 4px 8px;
 }
 
-/* Grid Lines */
-:global(.recharts-cartesian-grid line) {
-  stroke: #e0e0e0;
-  stroke-dasharray: 2 2;
+/* Loading State - Prevent Card from Collapsing */
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #64748b;
+  border-radius: 8px;
 }
 
-/* Bars */
-:global(.recharts-bar-rectangle) {
-  fill: #007bff;
+/* No Data Message */
+.noDataMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  color: #64748b;
+  font-size: 1.1rem;
 }
 
-:global(.recharts-bar-rectangle:hover) {
-  fill: #0056b3;
-  opacity: 0.9;
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chartContainer {
+    padding: 16px;
+  }
 
-/* Axis Labels */
-:global(.recharts-xAxis .recharts-cartesian-axis-tick-value),
-:global(.recharts-yAxis .recharts-cartesian-axis-tick-value) {
-  font-size: 12px;
-  fill: #666;
+  .chartHeader {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .filters {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .chartSection {
+    margin-top: 16px;
+  }
 }

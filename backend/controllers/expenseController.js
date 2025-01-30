@@ -29,9 +29,12 @@ exports.createExpense = async (req, res) => {
 
 exports.getExpenses = async (req, res) => {
   try {
+    console.time("Expense Query Execution Time");
     const userId = req.user.id;
-    const [expenses] = await pool.query('SELECT * FROM expenses WHERE user_id = ?', [userId]);
-    
+    const [expenses] = await pool.query(
+      'SELECT * FROM expenses WHERE user_id = ?', [userId]
+    );
+    console.timeEnd("Expense Query Execution Time"); // ✅ Logs query time
     res.status(200).json(expenses);
   } catch (err) {
     res.status(500).json({ error: err.message });

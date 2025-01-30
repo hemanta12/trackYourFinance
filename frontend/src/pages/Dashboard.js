@@ -1,134 +1,97 @@
-//React and Redux
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
-//Redux actions
-import { fetchIncome } from '../redux/incomeSlice';
-import { fetchExpenses } from '../redux/expensesSlice';
-import { fetchCategories, fetchMonths, fetchSources } from '../redux/listSlice';
-
-//Services and Components
-import { getAnalyticsData } from '../services/api';
-import AnalyticsChart from '../components/AnalyticsChart';
-import { exportCSV, exportPDF } from '../utils/exportUtils';
-
-//Styles
+import { 
+  fetchKPIData, 
+  fetchBudgetWarnings, 
+  fetchTopExpenses,
+  fetchIncomeVsExpense , 
+  fetchExpenseBreakdown,
+  fetchTopCategories
+} from '../redux/analyticsSlice';
+import { 
+  FaMoneyBillWave, 
+  FaReceipt, 
+  FaPiggyBank, 
+  FaExclamationTriangle 
+} from 'react-icons/fa';
+import IncomeExpenseChart from '../components/IncomeExpenseChart';
+import ExpensePieChart from '../components/ExpensePieChart';
 import styles from '../styles/Dashboard.module.css';
 
 function Dashboard() {
-  //User state
-  const [userName, setUserName] = useState(''); 
+  const [userName, setUserName] = useState('');
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [viewType, setViewType] = useState('monthly');
 
-  //Loading states
-  const [loading, setLoading] = useState(false); // Loading state
-  const [noData, setNoData] = useState(false); // No data state
-
-  //Data states
-  const [expenseData, setExpenseData] = useState([]);
-  const [incomeData, setIncomeData] = useState([]);
-
-  //Filter states
-  const [selectedExpenseCategory, setSelectedExpenseCategory] = useState('All');
-  const [selectedExpenseMonth, setSelectedExpenseMonth] = useState('All');
-  const [selectedIncomeSource, setSelectedIncomeSource] = useState('All');
-  const [selectedIncomeMonth, setSelectedIncomeMonth] = useState('All');
-
-  //Redux selectors and dispatch
-  const categories = useSelector((state) => state.lists.categories);
-  const sources = useSelector((state) => state.lists.sources);
-  const months = useSelector((state) => state.lists.months);
   const dispatch = useDispatch();
-  
+  const incomeVsExpense = useSelector((state) => state.analytics.incomeVsExpense);
+  const topExpenses = useSelector((state) => state.analytics.topExpenses);
+  const budgetWarnings = useSelector((state) => state.analytics.budgetWarnings);
+  const kpiData = useSelector((state) => state.analytics.kpiData);
+  const loading = useSelector((state) => state.analytics.loading);
+  const error = useSelector((state) => state.analytics.error);
+  const topCategories = useSelector((state) => state.analytics.topCategories);
 
-  //Fetch data on page load
+
   useEffect(() => {
-
-    const storedName = localStorage.getItem('userName') || 'User'; // 
+    const storedName = localStorage.getItem('userName') || 'User';
     setUserName(storedName);
-
-    dispatch(fetchIncome());
-    dispatch(fetchExpenses());
-    dispatch(fetchCategories());
-    dispatch(fetchSources());
-    dispatch(fetchMonths()); // Fetch months dynamically
-  
+    dispatch(fetchKPIData());
+    dispatch(fetchTopExpenses());
+    dispatch(fetchBudgetWarnings());
+    dispatch(fetchExpenseBreakdown());
+    dispatch(fetchTopCategories());
   }, [dispatch]);
 
-  //Fetch chart data from API
-  const fetchChartData = async (type, filters, setData) => {
-    setLoading(true);
-    setNoData(false);
-    
-    try {
-      const response = await getAnalyticsData({ 
-        type, 
-        ...filters 
-      });
-      
-      if (response.data && Array.isArray(response.data)) {
-        setData(response.data.length > 0 ? response.data : []);
-        setNoData(response.data.length === 0);
-      } else {
-        setData([]);
-        setNoData(true);
-      }
-    } catch (error) {
-      console.error(`Error fetching ${type} data:`, error);
-      setData([]);
-      setNoData(true);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (viewType && year && (viewType === 'yearly' || month)) {
+      dispatch(fetchIncomeVsExpense({ 
+        viewType, 
+        year: Number(year),
+        ...(viewType === 'monthly' && { month: Number(month) })
+      }));
     }
+  }, [dispatch, viewType, year, month]);
+
+  const handleViewTypeChange = (newViewType) => {
+    setViewType(newViewType);
+    dispatch(fetchIncomeVsExpense({ 
+      viewType: newViewType, 
+      year,
+      ...(newViewType === 'monthly' && { month })
+    }));
   };
 
-  //Fetch expense data
-    useEffect(() => {
-      fetchChartData(
-        'expenses',
-        {
-          category: selectedExpenseCategory !== 'All' ? selectedExpenseCategory : undefined,
-          timePeriod: 
-            selectedExpenseMonth === 'This Year'
-            ? 'This Year' // Pass the start of the current year
-            : selectedExpenseMonth !== 'All'
-            ? selectedExpenseMonth
-            : undefined,
-        },
-        setExpenseData
-      );
-    }, [selectedExpenseCategory, selectedExpenseMonth]);
+  const handleYearChange = (newYear) => {
+    setYear(Number(newYear));
+    dispatch(fetchIncomeVsExpense({
+      viewType,
+      year: Number(newYear),
+      ...(viewType === 'monthly' && { month })
+    }));
+  };
 
-    // Fetch income data
-    useEffect(() => {
-      fetchChartData(
-        'income',
-        {
-          source: selectedIncomeSource !== 'All' ? selectedIncomeSource : undefined,
-          timePeriod: 
-            selectedIncomeMonth === 'This Year'
-            ? 'This Year' // Pass the start of the current year
-            : selectedIncomeMonth !== 'All'
-            ? selectedIncomeMonth
-            : undefined,
-        },
-        setIncomeData
-      );
-    }, [selectedIncomeSource, selectedIncomeMonth]);
+  const handleMonthChange = (newMonth) => {
+    const monthNum = Number(newMonth);
+    setMonth(monthNum);
+    dispatch(fetchIncomeVsExpense({
+      viewType: 'monthly',
+      year: Number(year),
+      month: monthNum
+    }));
+  };
 
-  
- //Logout function
   const handleLogout = () => {
-    localStorage.removeItem('token'); 
-    localStorage.removeItem('userName'); 
-    window.location.href = '/'; 
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    window.location.href = '/';
   };
 
   return (
     <div className={styles.container}>
       <nav className={styles.navbar}>
-
         <h1 className={styles.logo}>TrackMyFinance</h1>
-
         <div className={styles.navLinks}>
           <button className={styles.button} onClick={() => alert('Profile Clicked')}>
             Profile
@@ -137,105 +100,131 @@ function Dashboard() {
             Logout
           </button>
         </div>
-
       </nav>
 
-    {/* Chart Sections */}
       <main className={styles.main}>
         <h2 className={styles.welcome}>Welcome, {userName}!</h2>
-
-        {/* Expense Chart */}
-      <div className={styles.chartSection}>
-        <h3>Expense Bar Chart</h3>
-        <div className={styles.filters}>
-          <select
-            value={selectedExpenseCategory}
-            onChange={(e) => setSelectedExpenseCategory(e.target.value)}
-          >
-            <option value="All">All Categories</option>
-            {categories.map(cat=> (
-              <option key={cat.id} value={cat.id}>
-                {cat.category}
-              </option>
-            ))}
-          </select>
-          <select
-            value={selectedExpenseMonth}
-            
-            onChange={(e) => {
-              console.log('Selected Expense Month:', e.target.value); // Debug log
-              setSelectedExpenseMonth(e.target.value)
-            }}
-          >
-             <option value="This Year">This Year</option>
-            {months.length > 0 ? (
-              months.map((month, idx) => (
-                <option key={idx} value={month}>
-                  {month}
-                </option>
-              ))
-            ) : (
-              <option disabled>No months available</option>
-            )}
-          </select>
-        </div>
-        <AnalyticsChart
-          data={expenseData}
-          title="Expenses by Category"
-          chartType="Bar"
-          activeChart="expenses"
-        />
-        <div className={styles.exportButtons}>
-          <button onClick={() => exportCSV(expenseData, 'expenses')}>Export CSV</button>
-          <button onClick={() => exportPDF(expenseData, 'Expenses Report')}>Export PDF</button>
-        </div>
-      </div>
-
-      {/* Income Chart */}
-      <div className={styles.chartSection}>
-        <h3>Income Bar Chart</h3>
-        <div className={styles.filters}>
-          <select
-            value={selectedIncomeSource}
-            onChange={(e) => {
-              console.log('Selected Expense Month:', e.target.value); // Debug log
-              setSelectedIncomeSource(e.target.value)
-            }}
-          >
-            <option value="All">All Sources</option>
-            {sources.map((source) => (
-            <option key={`source-${source.id}`} value={source.id}>
-              {source.source}
-            </option>
-          ))}
-          </select>
-          <select
-            value={selectedIncomeMonth}
-            onChange={(e) => setSelectedIncomeMonth(e.target.value)}
-          >
-            <option value="This Year">This Year</option>
-            {months.length > 0 ? (
-              months.map((month, idx) => (
-                <option key={idx} value={month}>
-                  {month}
-                </option>
-              ))
-            ) : (
-              <option disabled>No months available</option>
-            )}
-          </select>
-        </div>
-        <AnalyticsChart
-          data={incomeData}
-          title="Income by Source"
-          chartType="Bar"
-          activeChart="income"
-        />
-          <div className={styles.exportButtons}>
-            <button onClick={() => exportCSV(incomeData, 'income')}>Export CSV</button>
-            <button onClick={() => exportPDF(incomeData, 'Income Report')}>Export PDF</button>
+        <div className={styles.dashboardGrid}>
+          <div className={styles.kpiContainer}>
+            <div className={`${styles.kpiCard} ${styles.income}`}>
+              <FaMoneyBillWave className={styles.kpiIcon} />
+              <h3>Income</h3>
+              <p>${kpiData.income}</p>
+            </div>
+            <div className={`${styles.kpiCard} ${styles.expenses}`}>
+              <FaReceipt className={styles.kpiIcon} />
+              <h3>Expenses</h3>
+              <p>${kpiData.expenses}</p>
+            </div>
+            <div className={`${styles.kpiCard} ${styles.savings}`}>
+              <FaPiggyBank className={styles.kpiIcon} />
+              <h3>Savings</h3>
+              <p>${kpiData.savings}</p>
+            </div>
           </div>
-      </div>
+
+          <div className={styles.chartSection}>
+            <div className={styles.chartContainer}>
+            {loading && (
+              <div className={styles.loadingOverlay}>
+                    Fetching data...
+                  </div>
+                )}
+                <IncomeExpenseChart 
+                  data={incomeVsExpense}
+                  viewType={viewType}
+                  onViewTypeChange={handleViewTypeChange}
+                  year={year}
+                  onYearChange={handleYearChange}
+                  month={month}
+                  onMonthChange={handleMonthChange}
+                />
+              </div>
+          </div>
+
+          <div className={`${styles.analyticsCard}`}>
+            <div className={styles.cardHeader}>
+              <FaReceipt className={styles.cardIcon} />
+              <h3>Top Expenses</h3>
+            </div>
+            <div className={styles.listContainer}>
+              {topExpenses.length > 0 ? (
+                <>
+                  <div className={styles.largestExpense}>
+                    <h4>Largest Expense</h4>
+                    <p className={styles.expenseHighlight}>
+                      {topExpenses[0].category}: <strong>${topExpenses[0].amount}</strong>
+                    </p>
+                  </div>
+                  <ul>
+                    {topExpenses.slice(1).map((expense) => (
+                      <li key={expense.id}>
+                        <span className={styles.category}>{expense.category}</span>
+                        <span className={styles.amount}>${expense.amount}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p className={styles.noDataMessage}>No expenses recorded yet.</p>
+              )}
+            </div>
+          </div>
+
+          <div className={`${styles.analyticsCard}`}>
+            <div className={styles.cardHeader}>
+              <FaExclamationTriangle className={styles.cardIcon} />
+              <h3>Budget Warnings</h3>
+            </div>
+            <div className={styles.listContainer}>
+              <ul>
+                {budgetWarnings.map((budget) => (
+                  <li key={budget.id}>
+                    <div className={styles.warningInfo}>
+                      <span className={styles.category}>{budget.category}</span>
+                      <span className={styles.progress}>
+                        ${budget.spent} of ${budget.amount}
+                      </span>
+                    </div>
+                    <span 
+                      className={`${styles.status} ${
+                        budget.spent / budget.amount >= 0.9 
+                          ? styles.danger 
+                          : styles.warning
+                      }`}
+                    >
+                      ${budget.amount - budget.spent} remaining
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className={`${styles.analyticsCard}`}>
+            <div className={styles.cardHeader}>
+              <h3>Top 5 Expense Categories</h3>
+            </div>
+            <div className={styles.listContainer}>
+              {topCategories.length > 0 ? (
+                <ul>
+                  {topCategories.map((category, index) => (
+                    <li key={index}>
+                      <span className={styles.category}>{category.category}</span>
+                      <span className={styles.amount}>${category.totalAmount}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className={styles.noDataMessage}>No category data available.</p>
+              )}
+            </div>
+          </div>
+
+
+          <ExpensePieChart />
+
+        </div>
       </main>
     </div>
   );
