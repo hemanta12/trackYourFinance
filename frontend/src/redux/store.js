@@ -13,6 +13,10 @@ const store = configureStore({
     budgets: budgetReducer,     // Add this
     analytics: analyticsReducer, // Add this
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // Prevents errors when using FormData
+    }),
 });
 
 export default store;

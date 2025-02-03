@@ -118,7 +118,7 @@
 /* Chart Section */
 .chartSection {
   grid-column: span 12;
-  margin-bottom: 24px; 
+  margin-bottom: 24px;
   width: 90%;
 }
 
@@ -146,7 +146,6 @@
   font-weight: bold;
   color: #e53e3e;
 }
-
 
 /* Card Headers */
 .cardHeader {
@@ -231,6 +230,68 @@
   color: #dc2626;
 }
 
+/* Container for both filter sections */
+.filtersContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  justify-content: space-between;
+}
+
+/* Each individual filter card */
+.filterSection {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  min-width: 250px;
+}
+
+/* Title for each filter section */
+.filterTitle {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Controls inside a filter section */
+.filterControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Labels for filter controls */
+.filterControls label {
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+/* Select dropdown styling */
+.filterSelect {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  background: white;
+  color: #1e293b;
+  transition: border-color 0.2s ease;
+}
+
+.filterSelect:hover {
+  border-color: #94a3b8;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .analyticsCard {
@@ -242,7 +303,7 @@
   .main {
     padding: 1rem;
   }
-  
+
   .kpiContainer {
     grid-template-columns: 1fr;
   }

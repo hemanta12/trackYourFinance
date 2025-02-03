@@ -13,7 +13,9 @@ const {
     getSources, 
     addSource,
     updateSource,
-    deleteSource 
+    deleteSource , 
+    getMerchants, 
+    addMerchant
 } = require('../controllers/listController');
 
 const router = express.Router();
@@ -38,8 +40,8 @@ router.delete('/sources/:id', verifyToken, deleteSource);
 
 router.get('/months', verifyToken, analyticsController.getMonths);
 
-
-
+router.get('/merchants', verifyToken, getMerchants);
+router.post('/merchants', verifyToken, addMerchant);
 
 
 module.exports = router;

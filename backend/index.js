@@ -33,6 +33,7 @@ const listRoutes = require('./routes/listRoutes');
 const budgetRoutes = require('./routes/budgetRoutes');
 
 const analyticsRoutes = require('./routes/analyticsRoute'); 
+const fileUploadRoutes = require('./routes/fileUploadRoutes');
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -41,6 +42,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/analytics', analyticsRoutes); 
 app.use('/api/lists', listRoutes);
 app.use('/api/budgets', budgetRoutes);
+app.use('/api/upload', fileUploadRoutes);
 
 
 

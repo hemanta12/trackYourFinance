@@ -22,7 +22,6 @@ const BudgetPage = () => {
   useEffect(() => {
     dispatch(fetchBudgets());
     dispatch(fetchExpenses());
-    // dispatch(checkBudgetResetThunk());
   }, [dispatch]);
 
   

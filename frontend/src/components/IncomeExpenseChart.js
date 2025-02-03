@@ -1,136 +1,47 @@
-import React from 'react';
+import React from "react";
 import {
   ResponsiveContainer,
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend
-} from 'recharts';
-import styles from '../styles/AnalyticsChart.module.css';
+  Legend,
+} from "recharts";
+import styles from "../styles/AnalyticsChart.module.css";
 
-const IncomeExpenseChart = ({ data, viewType, onViewTypeChange, year, onYearChange,month, onMonthChange }) => {
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({length: 5}, (_, i) => currentYear - i);
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-
-  
-   // Add no data check
-   if (!data || (Array.isArray(data) && data.length === 0)) {
+const IncomeExpenseChart = ({ data, viewType, year, month }) => {
+  if (!data || data.length === 0) {
     return (
-      <div className={styles.chartContainer}>
-
-        <div className={styles.chartHeader}>
-          <h3>Income vs Expenses Over Time</h3>
-          
-          <div className={styles.filters}>
-          <select 
-            value={viewType} 
-            onChange={(e) => onViewTypeChange(e.target.value)}
-            // className={styles.viewTypeSelect}
-          >
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly View</option>
-          </select>
-
-          <select
-            value={year}
-            onChange={(e) => onYearChange(e.target.value)}
-            // className={styles.yearSelect}
-          >
-            {years.map(y => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
-
-          {viewType === 'monthly' && (
-            <select
-              value={month}
-              // className={styles.monthSelect}
-              onChange={(e) => onMonthChange(e.target.value)}
-            >
-              {months.map((m, index) => (
-                <option key={index} value={index + 1}>
-                  {`${m}`}
-                </option>
-              ))}
-            </select>
-          )}
-         </div>
-        </div>
-        <div className={styles.noDataMessage}>
-            No transactions found for {months[month - 1]} {year}
-        </div>
-      </div>
+      <p className={styles.noData}>
+        No income and expense data available for the selected filters.
+      </p>
     );
   }
 
+  // Create a header title based on the filter.
+  const title =
+    viewType === "monthly"
+      ? `Income vs Expense Trend for ${month}/${year}`
+      : `Income vs Expense Trend for ${year}`;
+
   return (
     <div className={styles.chartContainer}>
-
-      <div className={styles.chartHeader}>
-        <h3>Income vs Expenses Over Time</h3>
-
-        <div className={styles.filters}>
-          <select 
-            value={viewType} 
-            onChange={(e) => onViewTypeChange(e.target.value)}
-            // className={styles.viewTypeSelect}
-          >
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly View</option>
-          </select>
-
-          <select
-            value={year}
-            onChange={(e) => onYearChange(e.target.value)}
-            // className={styles.yearSelect}
-          >
-            {years.map(y => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
-
-          {viewType === 'monthly' && (
-            <select
-              value={month}
-              // className={styles.monthSelect}
-              onChange={(e) => onMonthChange(e.target.value)}
-            >
-              {months.map((m, index) => (
-                <option key={index} value={index + 1}>
-                  {`${m}`}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-      </div>
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={data}>
+      <h3 className={styles.chartTitle}>{title}</h3>
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart
+          data={data}
+          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="period" />
           <YAxis />
-          <Tooltip />
+          <Tooltip formatter={(value) => `$${value}`} />
           <Legend />
-          <Line 
-            type="monotone" 
-            dataKey="Income" 
-            stroke="#82ca9d" 
-            strokeWidth={2}
-          />
-          <Line 
-            type="monotone" 
-            dataKey="Expense" 
-            stroke="#8884d8" 
-            strokeWidth={2}
-          />
-        </LineChart>
+          <Bar dataKey="Income" fill="#48bb78" name="Income" />
+          <Bar dataKey="Expense" fill="#f56565" name="Expense" />
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );

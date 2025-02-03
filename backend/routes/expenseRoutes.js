@@ -9,6 +9,8 @@ router.get('/', verifyToken, expenseController.getExpenses);
 
 router.put('/:id', verifyToken, expenseController.updateExpense);
 router.delete('/:id', verifyToken, expenseController.deleteExpense);
+router.post('/save-statement-expenses', verifyToken, expenseController.saveStatementExpenses);
+
 
 
 

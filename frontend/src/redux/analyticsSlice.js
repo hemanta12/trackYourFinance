@@ -1,30 +1,29 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { 
-  getTopExpenses, 
-  getBudgetWarnings, 
-  getKPIData, 
-  getIncomeVsExpense , 
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  getTopExpenses,
+  getBudgetWarnings,
+  getKPIData,
+  getIncomeVsExpense,
   getExpenseBreakdown,
-  getTopCategories
-
-} from '../services/api';
+  getTopCategories,
+} from "../services/api";
 
 // Thunks
 export const fetchTopExpenses = createAsyncThunk(
-  'analytics/fetchTopExpenses', 
-  async () => {
-    const response = await getTopExpenses();
+  "analytics/fetchTopExpenses",
+  async (params) => {
+    const response = await getTopExpenses(params);
     return response.data;
   }
 );
 
 export const fetchTopCategories = createAsyncThunk(
-  'analytics/fetchTopCategories',
-  async () => {
+  "analytics/fetchTopCategories",
+  async (params) => {
     try {
-      const response = await getTopCategories();
-     
-      return response || [];  // Ensure response is always an array
+      const response = await getTopCategories(params);
+
+      return response || []; // Ensure response is always an array
     } catch (error) {
       console.error("Error fetching top categories:", error);
       throw error;
@@ -32,53 +31,52 @@ export const fetchTopCategories = createAsyncThunk(
   }
 );
 
-
 export const fetchBudgetWarnings = createAsyncThunk(
-  'analytics/fetchBudgetWarnings', 
-  async () => {
-    const response = await getBudgetWarnings();
+  "analytics/fetchBudgetWarnings",
+  async (params) => {
+    const response = await getBudgetWarnings(params);
     return response.data;
   }
 );
 
 export const fetchKPIData = createAsyncThunk(
-  'analytics/fetchKPIData', 
-  async () => {
-    const response = await getKPIData();
+  "analytics/fetchKPIData",
+  async (params) => {
+    const response = await getKPIData(params);
     return response.data;
   }
 );
 
 export const fetchIncomeVsExpense = createAsyncThunk(
-  'analytics/fetchIncomeVsExpense',
+  "analytics/fetchIncomeVsExpense",
   async (params) => {
     try {
       const response = await getIncomeVsExpense(params);
       return response.data;
     } catch (error) {
-      console.error('Error fetching income vs expense data:', error);
+      console.error("Error fetching income vs expense data:", error);
       throw error;
     }
   }
 );
 // Fetch Expense Breakdown by Category
 export const fetchExpenseBreakdown = createAsyncThunk(
-  'analytics/fetchExpenseBreakdown',
-  async () => {
+  "analytics/fetchExpenseBreakdown",
+  async (params) => {
     try {
-      const response = await getExpenseBreakdown();
-     
-      return response || [];  // ✅ Ensure response is always an array
+      const response = await getExpenseBreakdown(params);
+
+      return response || []; // ✅ Ensure response is always an array
     } catch (error) {
       console.error("Error fetching expense breakdown:", error);
-      throw error;  // ✅ Ensure Redux correctly catches the error
+      throw error; // ✅ Ensure Redux correctly catches the error
     }
   }
 );
 
 // Slice
 const analyticsSlice = createSlice({
-  name: 'analytics',
+  name: "analytics",
   initialState: {
     topExpenses: [],
     budgetWarnings: [],

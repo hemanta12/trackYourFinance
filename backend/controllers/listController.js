@@ -327,3 +327,45 @@ exports.deleteSource = async (req, res) => {
     res.status(500).json({ message: 'Error deleting source' });
   }
 };
+
+// Fetch merchants
+exports.getMerchants = async (req, res) => {
+    try {
+        const [merchants] = await pool.query('SELECT * FROM merchants');
+        res.json(merchants);
+    } catch (error) {
+        console.error('❌ Error fetching merchants:', error);
+        res.status(500).json({ message: 'Error fetching merchants' });
+    }
+};
+
+// Add new merchant
+exports.addMerchant = async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name) {
+            return res.status(400).json({ message: 'Merchant name is required' });
+        }
+
+        const [result] = await pool.query('INSERT INTO merchants (name) VALUES (?)', [name]);
+        res.status(201).json({ id: result.insertId, name });
+    } catch (error) {
+        console.error('❌ Error adding merchant:', error);
+        res.status(500).json({ message: 'Error adding merchant' });
+    }
+};
+
+// Get or Create Merchant for Transactions
+exports.getOrCreateMerchant = async (merchantName) => {
+    try {
+        const [existing] = await pool.query('SELECT id FROM merchants WHERE name = ?', [merchantName]);
+        if (existing.length > 0) return existing[0].id;
+
+        const [inserted] = await pool.query('INSERT INTO merchants (name) VALUES (?)', [merchantName]);
+        return inserted.insertId;
+    } catch (error) {
+        console.error('❌ Error handling merchant:', error);
+        throw error;
+    }
+};
+

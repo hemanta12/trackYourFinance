@@ -8,7 +8,8 @@ import {
   addSource,
   updateSource,
   deleteSource,
-  getMonths , getPaymentTypes, addPaymentType, updatePaymentType, deletePaymentType
+  getMonths , getPaymentTypes, addPaymentType, updatePaymentType, deletePaymentType,
+  getMerchants, addMerchant
 } from '../services/api';
 
 // Categories Thunks
@@ -110,6 +111,24 @@ export const deletePaymentTypeThunk = createAsyncThunk(
   }
 );
 
+// Fetch merchants from the backend
+export const fetchMerchants = createAsyncThunk(
+  'lists/fetchMerchants',
+  async () => {
+    const response = await getMerchants();
+    return response;
+  }
+);
+
+// Add a new merchant to the backend
+export const addMerchantThunk = createAsyncThunk(
+  'lists/addMerchant',
+  async (merchantName) => {
+    const response = await addMerchant(merchantName);
+    return response;
+  }
+);
+
 // Months Thunk
 export const fetchMonths = createAsyncThunk(
   'lists/fetchMonths', 
@@ -126,6 +145,7 @@ const listSlice = createSlice({
     sources: [],
     paymentTypes: [],
     months: [],
+    merchants: [],
     status: 'idle',
     error: null
   },
@@ -184,6 +204,15 @@ const listSlice = createSlice({
       // Months
       .addCase(fetchMonths.fulfilled, (state, action) => {
         state.months = action.payload || [];
+      })
+      // Fetch merchants
+      .addCase(fetchMerchants.fulfilled, (state, action) => {
+        state.merchants = action.payload;
+      })
+
+      // Add new merchant
+      .addCase(addMerchantThunk.fulfilled, (state, action) => {
+        state.merchants.push(action.payload);
       });
   },
 });
