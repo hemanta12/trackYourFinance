@@ -1,21 +1,23 @@
-import { configureStore } from '@reduxjs/toolkit';
-import incomeReducer from './incomeSlice';
-import expensesReducer from './expensesSlice';
-import listReducer from './listSlice';
-import budgetReducer from './budgetSlice'; // Add this
-import analyticsReducer from './analyticsSlice'; // Add this
+import { configureStore } from "@reduxjs/toolkit";
+import incomeReducer from "./incomeSlice";
+import expensesReducer from "./expensesSlice";
+import listReducer from "./listSlice";
+import budgetReducer from "./budgetSlice";
+import analyticsReducer from "./analyticsSlice";
+import authReducer from "./authSlice";
 
 const store = configureStore({
   reducer: {
     income: incomeReducer,
     expenses: expensesReducer,
     lists: listReducer,
-    budgets: budgetReducer,     // Add this
-    analytics: analyticsReducer, // Add this
+    budgets: budgetReducer,
+    analytics: analyticsReducer,
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false, // Prevents errors when using FormData
+      serializableCheck: false,
     }),
 });
 

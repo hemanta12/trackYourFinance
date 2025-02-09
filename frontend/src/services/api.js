@@ -45,6 +45,11 @@ export const getIncome = async () => await api.get("/incomes");
 export const addIncome = async (incomeData) => api.post("/incomes", incomeData);
 export const getExpenses = async () => api.get("/expenses");
 export const addExpense = async (data) => api.post("/expenses", data);
+export const bulkDeleteExpenses = async (expenseIds) => {
+  return api.post("/expenses/bulk-delete", {
+    ids: expenseIds,
+  });
+};
 
 // Categories
 export const getCategories = async () => api.get("/lists/categories");

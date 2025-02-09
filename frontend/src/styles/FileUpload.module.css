@@ -1,51 +1,82 @@
 .container {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin: 20px auto;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 25px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
-  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
   color: #333;
   margin-bottom: 20px;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fileInputContainer {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px dashed #007bff;
+  padding: 12px;
+  border-radius: 6px;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fileInputContainer:hover {
+  border-color: #0056b3;
+  background: #f1f8ff;
+}
+
+.fileInputContainer input[type="file"] {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.fileInputLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  color: #555;
 }
 
 .inputGroup {
   display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-}
-
-.inputGroup label {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.inputGroup input,
-.inputGroup select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
-
-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
+  align-items: center;
+  gap: 10px;
   width: 100%;
-  margin-top: 10px;
 }
 
-button:hover {
-  background-color: #0056b3;
+.selectInput {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.selectInput:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  outline: none;
 }
 
 .error {
@@ -54,43 +85,55 @@ button:hover {
   margin-top: 10px;
 }
 
+/* Preview table styling */
+
 .preview {
   margin-top: 20px;
+  align-items: center;
+  border: 1px solid #ddd;
 }
 
 .preview h3 {
   text-align: center;
   color: #333;
 }
-
-table {
+.previewTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
-table,
-th,
-td {
-  border: 1px solid #ddd;
-}
-
-th,
-td {
-  padding: 10px;
+.previewTable th,
+.previewTable td {
+  padding: 12px;
   text-align: left;
+  border-bottom: 1px solid #eee;
 }
 
-th {
-  background-color: #f8f8f8;
+.previewTable th {
+  background-color: #f8f9fa;
+  font-weight: 600;
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  width: 100%;
 }
 
-/* FileUpload.module.css */
+.confirmButton {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: 100%;
+}
+
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -115,8 +158,9 @@ button:disabled {
 
 .modalActions {
   display: flex;
-  justify-content: space-around;
-  margin-top: 1rem;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
 }
 
 .cancelButton {
@@ -132,4 +176,26 @@ button:disabled {
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 18px;
+  background: #e9ecef;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* Progress Bar Fill */
+.progressBar {
+  height: 100%;
+  background: #007bff;
+  text-align: center;
+  color: white;
+  transition: width 0.3s ease-in-out;
+  border-radius: 6px;
+  min-width: 5%;
 }

@@ -5,6 +5,7 @@ import {
   uploadStatement,
   saveExpensesFromStatement,
   reuploadTheStatement,
+  bulkDeleteExpenses as bulkDeleteService,
 } from "../services/api";
 import { api } from "../services/api";
 
@@ -40,12 +41,46 @@ export const deleteExpense = createAsyncThunk(
   }
 );
 
+// Bulk delete imported expenses
+export const bulkDeleteExpenses = createAsyncThunk(
+  "expenses/bulkDeleteExpenses",
+  async (ids, { rejectWithValue }) => {
+    try {
+      const response = await bulkDeleteService(ids);
+      return { ids, ...response.data };
+      // 'response.data' might contain 'deletedCount'
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Bulk delete failed"
+      );
+    }
+  }
+);
+
 // Upload bank statement file
 export const uploadBankStatement = createAsyncThunk(
   "expenses/uploadStatement",
-  async (file, { rejectWithValue }) => {
+  async (file, { rejectWithValue, dispatch }) => {
     try {
-      const response = await uploadStatement(file);
+      dispatch(setUploadProgress(0));
+      // Simulate gradual upload progress
+      for (let i = 1; i <= 90; i += 10) {
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        dispatch(setUploadProgress(i));
+        console.log(`Fake Upload Progress: ${i}%`);
+      }
+      const config = {
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          console.log(`Upload Progress: ${percentCompleted}%`);
+          dispatch(setUploadProgress(percentCompleted));
+          // dispatch(expensesSlice.actions.setUploadProgress(percentCompleted));
+        },
+      };
+      const response = await uploadStatement(file, config);
+      dispatch(setUploadProgress(100));
       return response;
     } catch (error) {
       return rejectWithValue({
@@ -55,7 +90,6 @@ export const uploadBankStatement = createAsyncThunk(
     }
   }
 );
-
 export const reuploadStatement = createAsyncThunk(
   "expenses/reuploadStatement",
   async (statementId, { rejectWithValue }) => {
@@ -100,16 +134,21 @@ const expensesSlice = createSlice({
     statementId: null,
     status: "idle",
     error: null,
+    uploadProgress: 0,
   },
   reducers: {
     setUploadedTransactions: (state, action) => {
       state.uploadedTransactions = action.payload;
+    },
+    setUploadProgress: (state, action) => {
+      state.uploadProgress = action.payload;
     },
 
     resetStatementData: (state) => {
       state.statementId = null;
       state.error = null;
       state.uploadedTransactions = [];
+      state.uploadProgress = 0;
     },
   },
   extraReducers: (builder) => {
@@ -133,6 +172,13 @@ const expensesSlice = createSlice({
         state.data = state.data.filter(
           (expense) => expense.id !== action.payload
         );
+      })
+      .addCase(bulkDeleteExpenses.fulfilled, (state, action) => {
+        const { ids } = action.payload;
+        state.data = state.data.filter((expense) => !ids.includes(expense.id));
+      })
+      .addCase(bulkDeleteExpenses.rejected, (state, action) => {
+        state.error = action.payload;
       })
       .addCase(uploadBankStatement.fulfilled, (state, action) => {
         if (action.payload.duplicate) {
@@ -162,6 +208,9 @@ const expensesSlice = createSlice({
       });
   },
 });
-export const { setUploadedTransactions, resetStatementData } =
-  expensesSlice.actions;
+export const {
+  setUploadedTransactions,
+  resetStatementData,
+  setUploadProgress,
+} = expensesSlice.actions;
 export default expensesSlice.reducer;

@@ -1,27 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/authSlice";
+import { isTokenValid } from "../utils/auth";
 
 function PrivateRoute({ children }) {
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const location = useLocation();
-  useEffect(() => {
-    const onFocus = () => setToken(localStorage.getItem("token"));
-    window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
-  }, []);
+  const { token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
 
-  if (!token) {
-    // Check if the current URL already has a session expiration flag.
-    const params = new URLSearchParams(location.search);
-    if (params.get("session") === "expired") {
-      // If session expired was already set (for example via axios interceptor),
-      // we keep that message.
-      return <Navigate to="/?session=expired" />;
-    }
-    // Otherwise, assume the user simply isn’t authorized.
+  if (!token || !isTokenValid(token)) {
+    // Clear any stale data.
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    dispatch(logout());
     return <Navigate to="/?message=unauthorized" />;
   }
-
   return children;
 }
 

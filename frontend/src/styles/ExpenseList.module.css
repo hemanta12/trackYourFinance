@@ -1,9 +1,9 @@
 /* Container & General Styles */
 .expenseSection {
   padding: 24px;
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   color: #1e293b;
 }
 
@@ -16,7 +16,7 @@
 /* Wrapping the table for responsive overflow if needed */
 .tableWrapper {
   width: 100%;
-  overflow-x: auto; /* So table can scroll if it’s too wide on mobile */
+  overflow-x: auto;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -27,7 +27,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 800px; /* optional: so columns don’t squish too much */
+  min-width: 800px;
 }
 
 .expenseTable thead tr {
@@ -41,7 +41,72 @@
   font-size: 14px;
   border-bottom: 1px solid #e2e8f0;
   vertical-align: middle;
-  white-space: nowrap; /* keeps items from wrapping; you can remove if you prefer wrapping */
+  white-space: nowrap;
+}
+
+.importedIndicator {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+.legendContainer {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Button to toggle bulk mode */
+.manageButton {
+  background-color: #3498db;
+  color: #fff;
+  padding: 0.4rem 0.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  margin-right: 1rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.manageButton:hover {
+  background-color: #2980b9;
+}
+.manageButton:active {
+  transform: scale(0.98);
+}
+
+.bulkActions {
+  display: flex;
+  margin: 0.75rem 0 1rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bulkActions button:hover {
+  background-color: #666;
+}
+.bulkActions button:active {
+  transform: scale(0.98);
+}
+
+.bulkDeleteButton {
+  background-color: #c0392b;
+  color: #fff;
+  padding: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+.bulkDeleteButton:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
 }
 
 .expenseTable th {
@@ -61,13 +126,14 @@
 
 /* Editing Row highlight */
 .editingRow {
-  background-color: #fef9c3; /* subtle highlight for the editing row */
+  background-color: #fef9c3;
 }
 
 /* Action Cell */
 .actionCell {
   display: flex;
   gap: 8px;
+  white-space: nowrap;
 }
 
 /* Buttons */
@@ -138,12 +204,11 @@
 }
 
 .editField[type="date"] {
-  /* Helps keep date input from auto-clamping to small size in some browsers */
   min-width: 130px;
 }
 
 .editField[type="number"] {
-  max-width: 100px; /* just a suggestion if you want a narrower field for amounts */
+  max-width: 100px;
 }
 
 .editField[type="textarea"],

@@ -4,12 +4,15 @@ import {
   updateExpense,
   deleteExpense,
   fetchExpenses,
+  bulkDeleteExpenses,
 } from "../redux/expensesSlice";
 import {
   fetchCategories,
   fetchPaymentTypes,
   fetchMerchants,
 } from "../redux/listSlice";
+import Button from "../components/Button";
+import { FaCloudDownloadAlt } from "react-icons/fa";
 import styles from "../styles/ExpenseList.module.css";
 
 const groupExpensesByMonth = (expenses) => {
@@ -42,6 +45,8 @@ const ExpenseList = ({ expenses = [] }) => {
   });
 
   const [editingId, setEditingId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkMode, setBulkMode] = useState(false);
   const [formData, setFormData] = useState({
     date: "",
     category_id: "",
@@ -113,6 +118,41 @@ const ExpenseList = ({ expenses = [] }) => {
     }
   };
 
+  const toggleBulkMode = () => {
+    // If turning bulk mode OFF, clear selection
+    if (bulkMode) setSelectedIds([]);
+    setBulkMode((prev) => !prev);
+  };
+
+  const toggleSelect = (expenseId) => {
+    setSelectedIds((prevSelected) =>
+      prevSelected.includes(expenseId)
+        ? prevSelected.filter((id) => id !== expenseId)
+        : [...prevSelected, expenseId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const allIds = expenses.map((ex) => ex.id);
+    setSelectedIds(allIds);
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds([]);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await dispatch(bulkDeleteExpenses(selectedIds)).unwrap();
+      setSelectedIds([]);
+      setBulkMode(false);
+    } catch (error) {
+      console.error("Bulk delete failed:", error);
+      alert(error);
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -142,6 +182,47 @@ const ExpenseList = ({ expenses = [] }) => {
     <div className={styles.expenseSection}>
       <h2 className={styles.title}>Expenses</h2>
 
+      <div className={styles.legendContainer}>
+        <span className={styles.legendItem}>
+          <FaCloudDownloadAlt
+            style={{ marginRight: "4px", color: "#348ceb" }}
+          />
+          = Imported from a bank statement
+        </span>
+      </div>
+
+      {/* Bulk mode toggle */}
+      <Button onClick={toggleBulkMode} variant="primary">
+        {bulkMode ? "Cancel Bulk Edit" : "Manage (Bulk)"}
+      </Button>
+
+      {/* If in bulk mode, show an action bar (e.g., “Delete Selected”) */}
+      {bulkMode && (
+        <div className={styles.bulkActions}>
+          <Button
+            onClick={handleSelectAll}
+            disabled={expenses.length === 0}
+            variant="primary"
+          >
+            Select All
+          </Button>
+          <Button
+            onClick={handleClearSelection}
+            disabled={selectedIds.length === 0}
+            variant="primary"
+          >
+            Clear Selection
+          </Button>
+          <Button
+            onClick={handleBulkDelete}
+            disabled={selectedIds.length === 0}
+            variant="danger"
+          >
+            Delete Selected
+          </Button>
+        </div>
+      )}
+
       {sortedMonths.map(([monthYear, monthExpenses]) => (
         <div key={monthYear} className={styles.monthGroup}>
           <h3 className={styles.monthTitle}>{monthYear}</h3>
@@ -150,6 +231,7 @@ const ExpenseList = ({ expenses = [] }) => {
             <table className={styles.expenseTable}>
               <thead>
                 <tr>
+                  {bulkMode && <th>Select</th>}
                   <th>Date</th>
                   <th>Merchant</th>
                   <th>Category</th>
@@ -163,14 +245,37 @@ const ExpenseList = ({ expenses = [] }) => {
               <tbody>
                 {monthExpenses.map((item, index) => {
                   const isEditing = editingId === item.id;
+                  const isChecked = selectedIds.includes(item.id);
 
                   return (
                     <tr
                       key={`expense-${item.id || index}`}
                       className={isEditing ? styles.editingRow : ""}
                     >
+                      {/* Checkbox cell */}
+                      {bulkMode && (
+                        <td>
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => toggleSelect(item.id)}
+                          />
+                        </td>
+                      )}
+
                       {/* Date */}
                       <td>
+                        {/* Show an icon/label if statement_id exists */}
+                        {item.statement_id && (
+                          <span
+                            title="Imported from a statement"
+                            className={styles.importedIndicator}
+                          >
+                            <FaCloudDownloadAlt
+                              style={{ marginRight: "4px", color: "#348ceb" }}
+                            />
+                          </span>
+                        )}
                         {isEditing ? (
                           <input
                             type="date"
@@ -306,33 +411,30 @@ const ExpenseList = ({ expenses = [] }) => {
                       <td className={styles.actionCell}>
                         {isEditing ? (
                           <>
-                            <button
-                              onClick={saveEdit}
-                              className={styles.saveButton}
-                            >
+                            <Button onClick={saveEdit} variant="success">
                               Save
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={() => setEditingId(null)}
-                              className={styles.cancelButton}
+                              variant="primary"
                             >
                               Cancel
-                            </button>
+                            </Button>
                           </>
                         ) : (
                           <>
-                            <button
+                            <Button
                               onClick={() => handleEdit(item.id, item)}
-                              className={styles.editButton}
+                              variant="warning"
                             >
                               Edit
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                               onClick={() => handleDelete(item.id)}
-                              className={styles.deleteButton}
+                              variant="danger"
                             >
                               Delete
-                            </button>
+                            </Button>
                           </>
                         )}
                       </td>

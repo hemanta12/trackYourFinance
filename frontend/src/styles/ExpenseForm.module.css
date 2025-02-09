@@ -1,5 +1,5 @@
 .container {
-  max-width: 550px;
+  max-width: 700px;
   margin: 40px auto;
   padding: 25px;
   background-color: #ffffff;
@@ -19,43 +19,42 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  }
-  
+}
+
 .input {
-  
-    flex: 1;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .inputGroup {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-  
-  .input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
-    outline: none;
-  }
+
+.input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
 
 .smallInput {
-    width: calc(50% - 15px);
-    padding: 10px;
-    font-size: 0.9rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+  width: calc(50% - 15px);
+  padding: 10px;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
 }
 .icon {
   font-size: 1.2rem;
   color: #007bff;
 }
-  
-  /* Styling for the submit button */
+
+/* Styling for the submit button */
 .addButton {
   background-color: #007bff;
   color: white;
@@ -68,37 +67,37 @@
   font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  }
-  
-  .addButton:hover {
-    background-color: #0056b3;
-    transform: translateY(-1px);
-  }
-  
-  .button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
+}
 
-  .submitButton {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 12px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+.addButton:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.submitButton {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .submitButton:hover {
-    background-color: #218838;
-    transform: translateY(-2px);
+  background-color: #218838;
+  transform: translateY(-2px);
 }
 
 .submitButton:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .textarea {
@@ -117,11 +116,11 @@
   box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
   outline: none;
 }
-  
-  /* Styling for error messages */
-  .error {
-    color: red;
-    font-size: 0.9rem;
-    margin-top: -10px;
-    text-align: center;
-  }
+
+/* Styling for error messages */
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: -10px;
+  text-align: center;
+}
