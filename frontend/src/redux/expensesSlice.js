@@ -64,11 +64,11 @@ export const uploadBankStatement = createAsyncThunk(
     try {
       dispatch(setUploadProgress(0));
       // Simulate gradual upload progress
-      for (let i = 1; i <= 90; i += 10) {
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        dispatch(setUploadProgress(i));
-        console.log(`Fake Upload Progress: ${i}%`);
-      }
+      // for (let i = 1; i <= 90; i += 10) {
+      //   await new Promise((resolve) => setTimeout(resolve, 300));
+      //   dispatch(setUploadProgress(i));
+      //   console.log(`Fake Upload Progress: ${i}%`);
+      // }
       const config = {
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round(
@@ -76,7 +76,6 @@ export const uploadBankStatement = createAsyncThunk(
           );
           console.log(`Upload Progress: ${percentCompleted}%`);
           dispatch(setUploadProgress(percentCompleted));
-          // dispatch(expensesSlice.actions.setUploadProgress(percentCompleted));
         },
       };
       const response = await uploadStatement(file, config);

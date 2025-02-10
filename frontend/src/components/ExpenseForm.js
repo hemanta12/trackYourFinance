@@ -6,6 +6,8 @@ import {
   addCategoryThunk,
   fetchPaymentTypes,
   addPaymentTypeThunk,
+  fetchMerchants,
+  addMerchantThunk,
 } from "../redux/listSlice";
 import styles from "../styles/ExpenseForm.module.css";
 import Button from "../components/Button";
@@ -15,24 +17,34 @@ import {
   FaPlus,
   FaFolder,
   FaCreditCard,
+  FaStore,
 } from "react-icons/fa";
 
 const ExpenseForm = () => {
   const [amount, setAmount] = useState("");
   const [paymentType, setPaymentType] = useState("");
+  const [newPaymentType, setNewPaymentType] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [error, setError] = useState("");
   const [notes, setNotes] = useState("");
-  const dispatch = useDispatch();
-  const categories = useSelector((state) => state.lists.categories);
-  const [newCategory, setNewCategory] = useState("");
-  const paymentTypes = useSelector((state) => state.lists.paymentTypes);
-  const [newPaymentType, setNewPaymentType] = useState("");
+
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+
+  // For Merchant
+  const [selectedMerchant, setSelectedMerchant] = useState("");
+  const [newMerchant, setNewMerchant] = useState("");
+
+  const dispatch = useDispatch();
+
+  const categories = useSelector((state) => state.lists.categories);
+  const paymentTypes = useSelector((state) => state.lists.paymentTypes);
+  const merchants = useSelector((state) => state.lists.merchants);
 
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchPaymentTypes());
+    dispatch(fetchMerchants());
   }, [dispatch]);
 
   const handleSubmit = async (e) => {
@@ -42,6 +54,24 @@ const ExpenseForm = () => {
       setError("All fields are required.");
       return;
     }
+
+    let merchantId;
+    if (newMerchant.trim()) {
+      // Create new merchant and use its id
+      try {
+        const result = await dispatch(addMerchantThunk(newMerchant)).unwrap();
+        merchantId = result.id;
+      } catch (err) {
+        setError(err.message || "Failed to add merchant");
+        return;
+      }
+    } else if (selectedMerchant) {
+      merchantId = Number(selectedMerchant);
+    } else {
+      setError("Merchant is required.");
+      return;
+    }
+
     try {
       await dispatch(
         createExpense({
@@ -50,6 +80,7 @@ const ExpenseForm = () => {
           payment_type_id: Number(paymentType), // Ensure it's a number
           date,
           notes,
+          merchant_id: merchantId,
         })
       ).unwrap();
       resetForm();
@@ -62,6 +93,7 @@ const ExpenseForm = () => {
     setAmount("");
     setSelectedCategory("");
     setPaymentType("");
+    setSelectedMerchant("");
     setDate(new Date().toISOString().split("T")[0]);
     setError("");
     setNotes("");
@@ -91,10 +123,24 @@ const ExpenseForm = () => {
     }
   };
 
+  // New function to add a merchant
+  const handleAddMerchant = async () => {
+    if (!newMerchant.trim()) return;
+
+    try {
+      await dispatch(addMerchantThunk(newMerchant)).unwrap();
+      setNewMerchant("");
+      dispatch(fetchMerchants());
+    } catch (err) {
+      setError(err.message || "Failed to add merchant");
+    }
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.header}>Add Expense</h2>
       <form className={styles.form} onSubmit={handleSubmit}>
+        {/* Amount */}
         <div className={styles.inputGroup}>
           <FaDollarSign className={styles.icon} />
           <input
@@ -106,6 +152,7 @@ const ExpenseForm = () => {
           />
         </div>
 
+        {/* Category */}
         <div className={styles.inputGroup}>
           <FaFolder className={styles.icon} />
           <select
@@ -133,6 +180,7 @@ const ExpenseForm = () => {
           </Button>
         </div>
 
+        {/* Payment Type */}
         <div className={styles.inputGroup}>
           <FaCreditCard className={styles.icon} />
           <select
@@ -164,6 +212,35 @@ const ExpenseForm = () => {
           </Button>
         </div>
 
+        {/* Merchant */}
+        <div className={styles.inputGroup}>
+          <FaStore className={styles.icon} />
+          <select
+            value={selectedMerchant}
+            onChange={(e) => setSelectedMerchant(e.target.value)}
+            className={styles.input}
+          >
+            <option value="">Select Merchant</option>
+            {merchants.map((merchant) => (
+              <option key={`merchant-${merchant.id}`} value={merchant.id}>
+                {merchant.name}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            placeholder="OR Enter new merchant"
+            value={newMerchant}
+            onChange={(e) => setNewMerchant(e.target.value)}
+            className={styles.smallInput}
+          />
+          <Button type="button" onClick={handleAddMerchant} variant="primary">
+            <FaPlus />
+            Add
+          </Button>
+        </div>
+
+        {/* Date */}
         <div className={styles.inputGroup}>
           <FaCalendarAlt className={styles.icon} />
           <input
@@ -173,6 +250,8 @@ const ExpenseForm = () => {
             className={styles.input}
           />
         </div>
+
+        {/* Notes */}
         <div className={styles.inputGroup}>
           <textarea
             placeholder="Add notes (optional)"
@@ -181,6 +260,8 @@ const ExpenseForm = () => {
             className={styles.textarea}
           />
         </div>
+
+        {/* Submit Button */}
         <Button type="submit" variant="success">
           Add Expense
         </Button>

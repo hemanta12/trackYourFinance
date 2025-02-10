@@ -1,8 +1,12 @@
 // /services/expenseService.js
 const pool = require("../config/db");
 const crypto = require("crypto");
-const { getOrCreateMerchant } = require("./merchantService"); // See next file
+const {
+  getOrCreateMerchant,
+  extractMerchantName,
+} = require("./merchantService"); // See next file
 const logger = require("../utils/logger");
+const assignCategory = require("../utils/assignCategory");
 
 async function saveStatementExpenses({
   transactions,
@@ -16,10 +20,12 @@ async function saveStatementExpenses({
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
+
     const [[defaultCategory]] = await connection.query(
       'SELECT id FROM categories WHERE category = "Uncategorized" LIMIT 1'
     );
     const defaultCategoryId = defaultCategory?.id || 21;
+
     const paymentTypeId = Number(paymentTypes);
     if (isNaN(paymentTypeId)) {
       throw new Error("Invalid payment type ID");
@@ -27,15 +33,54 @@ async function saveStatementExpenses({
 
     const insertValues = [];
     for (let txn of transactions) {
+      const fullDescription = txn.fullDescription || "";
+
+      // Use our custom helper to extract the refined merchant name
+      const refinedMerchantName =
+        txn.refinedMerchantName || extractMerchantName(fullDescription);
+
+      // Determine the category name based on the full description
+      const suggestedCategory =
+        txn.suggestedCategory || assignCategory(fullDescription);
+
+      // Query the database to get the category id for the suggested category.
+      // If not found, create the new category.
+      let categoryId;
+
+      // Query the database to get the category id for the suggested category
+      const [categoryRows] = await connection.query(
+        "SELECT id FROM categories WHERE category = ? LIMIT 1",
+        [suggestedCategory]
+      );
+      if (categoryRows.length > 0) {
+        categoryId = categoryRows[0].id;
+      } else {
+        const [insertResult] = await connection.query(
+          "INSERT INTO categories (category, user_id) VALUES (?, ?)",
+          [suggestedCategory, userId]
+        );
+        categoryId = insertResult.insertId;
+      }
+      // Insert the full description into the `descriptions` table
+      const [descResult] = await connection.query(
+        "INSERT INTO descriptions (text) VALUES (?)",
+        [fullDescription]
+      );
+      const descriptionId = descResult.insertId;
+
       // Pass the connection to re-use it in getOrCreateMerchant.
-      const merchantId = await getOrCreateMerchant(txn.merchant, connection);
+      const merchantId = await getOrCreateMerchant(
+        refinedMerchantName,
+        connection
+      );
+
       const transactionHash = crypto
         .createHash("sha256")
         .update(
           txn.postedDate +
-            txn.merchant +
+            fullDescription +
             txn.amount +
-            txn.description +
+            txn.refinedMerchantName +
             paymentTypeId
         )
         .digest("hex");
@@ -54,19 +99,20 @@ async function saveStatementExpenses({
         userId,
         txn.amount,
         txn.postedDate,
-        defaultCategoryId,
+        categoryId,
         paymentTypeId,
         merchantId,
         txn.notes || "",
         sequenceNumber,
         statement_id,
         transactionHash,
+        descriptionId,
       ]);
     }
     if (insertValues.length > 0) {
       await connection.query(
         `INSERT INTO expenses 
-         (user_id, amount, date, category_id, payment_type_id, merchant_id, notes, sequence_number, statement_id, hash) 
+         (user_id, amount, date, category_id, payment_type_id, merchant_id, notes, sequence_number, statement_id, hash, description_id) 
          VALUES ?`,
         [insertValues]
       );

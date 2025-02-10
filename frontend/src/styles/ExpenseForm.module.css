@@ -52,6 +52,8 @@
 .icon {
   font-size: 1.2rem;
   color: #007bff;
+  height: 19px;
+  width: 19px;
 }
 
 /* Styling for the submit button */

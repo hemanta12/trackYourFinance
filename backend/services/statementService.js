@@ -3,6 +3,9 @@ const path = require("path");
 const crypto = require("crypto");
 const pool = require("../config/db");
 
+const { extractMerchantName } = require("../services/merchantService");
+const assignCategory = require("../utils/assignCategory");
+
 // Import processors
 const { processCSV } = require("../parsers/csvProcessor");
 const { processPDF } = require("../parsers/pdfProcessor");
@@ -30,10 +33,35 @@ async function processStatementUpload(user, file) {
       [statementHash]
     );
     if (existingStatement.length > 0) {
-      const errorObj = new Error("This statement has already been uploaded.");
-      errorObj.status = 409;
-      errorObj.statement_id = statementHash;
-      throw errorObj;
+      // Query the existing transactions for that statement.
+      const [transactions] = await connection.query(
+        `SELECT 
+             e.*,
+            DATE_FORMAT(e.date, '%m-%d-%Y') AS postedDate,
+            m.name AS merchant_name,
+            d.text AS full_description
+          FROM expenses e
+          LEFT JOIN merchants m ON e.merchant_id = m.id
+          LEFT JOIN descriptions d ON e.description_id = d.id
+          WHERE e.statement_id = ?`,
+        [statementHash]
+      );
+      // Map the duplicate data to the same structure as the fresh parser output:
+      const mappedTransactions = transactions.map((txn) => ({
+        postedDate: txn.postedDate,
+        merchant: txn.full_description, // use the full description field as merchant input
+        amount: txn.amount,
+        // Optionally, compute refinedMerchantName and suggestedCategory here:
+        fullDescription: txn.full_description,
+        refinedMerchantName: txn.merchant_name,
+        suggestedCategory: assignCategory(txn.full_description),
+      }));
+      return {
+        duplicate: true,
+        message: "This statement has already been uploaded.",
+        statement_id: statementHash,
+        transactions: mappedTransactions,
+      };
     }
 
     // Process the file based on its type
@@ -49,6 +77,23 @@ async function processStatementUpload(user, file) {
     if (transactions.length === 0) {
       console.warn("No transactions found in the uploaded file.");
     }
+
+    // Process each transaction so that the backend computes:
+    // - fullDescription: the raw text from the bank statement
+    // - refinedMerchantName: using your extractMerchantName function
+    transactions = transactions.map((txn) => {
+      // Assume that txn.merchant holds the full bank statement text
+      const fullDescription = txn.description;
+      const refinedMerchantName = extractMerchantName(fullDescription);
+      const suggestedCategory =
+        txn.suggestedCategory || assignCategory(fullDescription);
+      return {
+        ...txn,
+        fullDescription, // will be stored later in descriptions table
+        refinedMerchantName, // used to create or look up the merchant record
+        suggestedCategory,
+      };
+    });
 
     // Insert the statement record into the database
     await connection.query(

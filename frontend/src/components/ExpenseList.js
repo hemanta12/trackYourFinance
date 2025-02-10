@@ -234,6 +234,7 @@ const ExpenseList = ({ expenses = [] }) => {
                   {bulkMode && <th>Select</th>}
                   <th>Date</th>
                   <th>Merchant</th>
+                  <th>Description</th>
                   <th>Category</th>
                   <th>Amount</th>
                   <th>Payment Type</th>
@@ -314,6 +315,19 @@ const ExpenseList = ({ expenses = [] }) => {
                           </select>
                         ) : (
                           getMerchantName(item.merchant_id)
+                        )}
+                      </td>
+
+                      {/* New Description cell */}
+                      <td>
+                        {isEditing ? (
+                          <textarea
+                            value={item.full_description || ""}
+                            readOnly
+                            className={styles.editField}
+                          />
+                        ) : (
+                          item.full_description || "-"
                         )}
                       </td>
 

@@ -9,21 +9,59 @@ const { getOrCreateMerchant } = require("./listController");
  */
 exports.createExpense = async (req, res) => {
   try {
-    const { amount, category_id, payment_type_id, date, notes } = req.body;
+    const { amount, category_id, payment_type_id, date, notes, merchant_id } =
+      req.body;
     const userId = req.user.id;
 
+    // For manual entries, if a merchant is provided,
+    // use it to create a corresponding description record.
+    let descriptionId = null;
+    if (merchant_id) {
+      // Get the merchant's name from the merchants table
+      const [merchantRows] = await pool.query(
+        "SELECT name FROM merchants WHERE id = ?",
+        [merchant_id]
+      );
+      if (merchantRows.length > 0) {
+        const merchantName = merchantRows[0].name;
+        // Insert this name as the full description into the descriptions table
+        const [descResult] = await pool.query(
+          "INSERT INTO descriptions (text) VALUES (?)",
+          [merchantName]
+        );
+        descriptionId = descResult.insertId;
+      }
+    }
+
     const [result] = await pool.query(
-      "INSERT INTO expenses (user_id, amount, category_id, payment_type_id, date, notes) VALUES (?, ?, ?, ?, ?, ?)",
-      [userId, amount, category_id, payment_type_id, date, notes]
+      "INSERT INTO expenses (user_id, amount, category_id, payment_type_id, date, notes, merchant_id, description_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      [
+        userId,
+        amount,
+        category_id,
+        payment_type_id,
+        date,
+        notes,
+        merchant_id,
+        descriptionId,
+      ]
     );
 
-    // Fetch the complete expense record after insertion
-    const [newExpense] = await pool.query(
-      "SELECT * FROM expenses WHERE id = ?",
+    // Fetch the complete expense record with joined merchant and description
+    const [newExpenseRows] = await pool.query(
+      `SELECT e.*, m.name AS merchant_name, d.text AS full_description
+       FROM expenses e
+       LEFT JOIN merchants m ON e.merchant_id = m.id
+       LEFT JOIN descriptions d ON e.description_id = d.id
+       WHERE e.id = ?`,
       [result.insertId]
     );
+    // If no row is returned, send a fallback response
+    if (!newExpenseRows || newExpenseRows.length === 0) {
+      return res.status(201).json({ id: result.insertId });
+    }
 
-    res.status(201).json(newExpense[0]);
+    res.status(201).json(newExpenseRows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -33,13 +71,18 @@ exports.getExpenses = async (req, res) => {
   try {
     console.time("Expense Query Execution Time");
     const userId = req.user.id;
+    const expenseQuery = `SELECT 
+        e.*,
+        DATE_FORMAT(e.date, '%m-%d-%Y') AS postedDate,
+        m.name AS merchant_name,
+        d.text AS full_description
+      FROM expenses e
+      LEFT JOIN merchants m ON e.merchant_id = m.id
+      LEFT JOIN descriptions d ON e.description_id = d.id
+      WHERE e.user_id = ?
+      ORDER BY e.date DESC`;
 
-    const [expenses] = await pool.query(
-      `SELECT * FROM expenses 
-       WHERE user_id = ? 
-       ORDER BY date DESC`, // ✅ Sort by date (most recent first)
-      [userId]
-    );
+    const [expenses] = await pool.query(expenseQuery, [userId]);
     console.timeEnd("Expense Query Execution Time"); // ✅ Logs query time
     res.status(200).json(expenses);
   } catch (err) {
@@ -112,12 +155,10 @@ exports.bulkDeleteExpenses = async (req, res) => {
         .json({ message: "No expenses found or you are not authorized." });
     }
 
-    return res
-      .status(200)
-      .json({
-        message: "Expenses deleted successfully",
-        deletedCount: result.affectedRows,
-      });
+    return res.status(200).json({
+      message: "Expenses deleted successfully",
+      deletedCount: result.affectedRows,
+    });
   } catch (error) {
     console.error("Error in bulkDeleteExpenses:", error);
     return res.status(500).json({

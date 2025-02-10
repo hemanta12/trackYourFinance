@@ -19,6 +19,8 @@ const FileUpload = ({ paymentSources }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [previewActive, setPreviewActive] = useState(false);
+
+  const [forceUpdateRequested, setForceUpdateRequested] = useState(false);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
 
   // Create a ref for the file input element
@@ -56,6 +58,7 @@ const FileUpload = ({ paymentSources }) => {
     setFile(event.target.files[0]);
     setUploadError(null);
     setPreviewActive(false);
+    setForceUpdateRequested(false);
   };
 
   const handleUpload = async () => {
@@ -77,25 +80,27 @@ const FileUpload = ({ paymentSources }) => {
     }
   };
 
-  // ✅ Function to handle "Upload Anyway" scenario
-  const handleForceUpload = async () => {
-    if (!statementId) return;
-    try {
-      setPreviewActive(false);
-      console.log("🔥 Force update started. StatementId:", statementId);
-      // 1) "Reupload" on backend (which deletes the old statement records)
-      await dispatch(reuploadStatement(statementId)).unwrap();
-
-      // 2) Clear out any old error and statement ID to avoid confusion
-      setUploadError(null);
-      console.log("Reupload successful. Clearing statement ID.");
-
-      // 3) Attempt fresh upload
-      await handleUpload();
-    } catch (error) {
-      console.error("❌ reuploadStatement failed:", error.message);
-      setUploadError("Error reprocessing statement: " + error.message);
+  const handleForceUpdateRequest = () => {
+    setForceUpdateRequested(true);
+    setShowDuplicateModal(false);
+    if (uploadedTransactions && uploadedTransactions.length > 0) {
+      setPreviewActive(true);
     }
+  };
+
+  const handleCancelPreview = () => {
+    // Reset local state related to the file upload
+    setPreviewActive(false);
+    setForceUpdateRequested(false);
+    setFile(null);
+    setSelectedPaymentType("");
+    setUploadError(null);
+    // Optionally, clear the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    // Also, you can dispatch resetStatementData if needed
+    dispatch(resetStatementData());
   };
 
   const handleConfirmUpload = async () => {
@@ -106,6 +111,9 @@ const FileUpload = ({ paymentSources }) => {
     setIsSaving(true);
     try {
       console.log("frontend payment type", selectedPaymentType);
+      if (forceUpdateRequested && statementId) {
+        await dispatch(reuploadStatement(statementId)).unwrap();
+      }
 
       await dispatch(
         saveStatementExpenses({
@@ -118,6 +126,9 @@ const FileUpload = ({ paymentSources }) => {
       setFile(null);
       setSelectedPaymentType("");
       setPreviewActive(false);
+      setUploadError(null);
+
+      setForceUpdateRequested(false);
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -184,30 +195,14 @@ const FileUpload = ({ paymentSources }) => {
               <div className={styles.modalActions}>
                 <Button
                   variant="primary"
-                  onClick={() => {
-                    // Cancel the duplicate reupload
-                    setShowDuplicateModal(false);
-                    setUploadError(null);
-                    // Optionally clear file selection
-                    setFile(null);
-                    if (fileInputRef.current) {
-                      fileInputRef.current.value = "";
-                    }
-
-                    // Optionally, clear the selected payment type
-                    setSelectedPaymentType("");
-                  }}
+                  onClick={handleCancelPreview}
                   className={styles.cancelButton}
                 >
                   Cancel
                 </Button>
                 <Button
                   variant="primary"
-                  onClick={async () => {
-                    // Force update: hide modal, reset preview flag, and proceed.
-                    setShowDuplicateModal(false);
-                    await handleForceUpload();
-                  }}
+                  onClick={handleForceUpdateRequest}
                   className={styles.forceUpdateButton}
                 >
                   Force Update
@@ -218,7 +213,7 @@ const FileUpload = ({ paymentSources }) => {
         )}
 
         {/* Upload action button */}
-        {!showDuplicateModal && (
+        {!showDuplicateModal && !previewActive && (
           <Button
             variant="primary"
             onClick={handleUpload}
@@ -249,6 +244,8 @@ const FileUpload = ({ paymentSources }) => {
                 <tr>
                   <th>Posted Date</th>
                   <th>Merchant</th>
+                  <th>Description</th>
+                  <th>Category</th>
                   <th>Amount</th>
                   <th>Payment Type</th>
                 </tr>
@@ -257,8 +254,10 @@ const FileUpload = ({ paymentSources }) => {
                 {uploadedTransactions.map((txn, index) => (
                   <tr key={index}>
                     <td>{txn.postedDate}</td>
-                    <td>{txn.merchant}</td>
-                    <td>${txn.amount.toFixed(2)}</td>
+                    <td>{txn.refinedMerchantName || "Unknown Merchant"}</td>
+                    <td>{txn.fullDescription || "-"}</td>
+                    <td>{txn.suggestedCategory || "Uncategorized"}</td>
+                    <td>${Number(txn.amount).toFixed(2)}</td>
                     <td>
                       {paymentTypes.find(
                         (pt) => pt.id === Number(selectedPaymentType)
@@ -270,8 +269,11 @@ const FileUpload = ({ paymentSources }) => {
             </table>
 
             <div className={styles.buttonContainer}>
+              <Button variant="secondary" onClick={handleCancelPreview}>
+                Cancel the File Upload Process
+              </Button>
               <Button
-                variant="success"
+                variant="danger"
                 onClick={handleConfirmUpload}
                 disabled={isSaving}
               >
