@@ -1,8 +1,8 @@
 /* Navigation.module.css */
 .navContainer {
-  width: 15%;
-  max-width: 220px;
-  min-width: 180px;
+  width: 20%;
+  max-width: 230px;
+  min-width: 210px;
   background-color: #f4f4f4;
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -17,35 +17,36 @@
 }
 
 .logo {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: bold;
   margin-bottom: 20px;
 }
 
 .navList {
   list-style: none;
-  padding: 0;
+  padding: 0.7rem;
   margin: 0;
+  width: 100%;
 }
 .navList li {
   margin-bottom: 15px;
+  padding: 0.3rem;
 }
 
 .navList li a {
   text-decoration: none;
   font-size: 1.1rem;
   color: #333;
+  padding: 0.5rem;
 }
 
 .navList li a.active {
   font-weight: bold;
   color: #007bff;
+  border-bottom: 3px solid #007bff;
 }
 
 @media (max-width: 1024px) {
-  .logo {
-    font-size: 1.6rem;
-  }
   .navList li a {
     font-size: 1rem;
   }
@@ -80,12 +81,12 @@
     display: none;
   }
   .logo {
-    font-size: 1.3rem;
+    font-size: 1rem;
   }
 
   nav {
-    flex: 1; /* Take remaining space */
-    overflow: hidden; /* Prevent scrollbar */
+    flex: 1;
+    overflow: hidden;
   }
   .navList {
     display: flex;
@@ -96,7 +97,7 @@
     padding: 0;
     list-style: none;
     flex-wrap: nowrap;
-    overflow-x: auto; /* Only scroll if absolutely necessary */
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
   .navList li {

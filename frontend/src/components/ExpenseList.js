@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { addCategory, addPaymentType, addMerchant } from "../services/api";
 import {
   updateExpense,
   deleteExpense,
   fetchExpenses,
   bulkDeleteExpenses,
+  createExpense,
 } from "../redux/expensesSlice";
 import {
   fetchCategories,
@@ -14,6 +16,7 @@ import {
 import Button from "../components/Button";
 import { FaCloudDownloadAlt, FaEdit, FaTrash } from "react-icons/fa";
 import styles from "../styles/ExpenseList.module.css";
+import AutoSuggestInput from "../utils/autoSuggestInput";
 
 const groupExpensesByMonth = (expenses) => {
   return expenses
@@ -32,8 +35,35 @@ const groupExpensesByMonth = (expenses) => {
       return grouped;
     }, {});
 };
+function getDefaultDateForMonth(monthYearString) {
+  // Parse something like "January 2025" => { monthIndex: 0, year: 2025 }
+  // Or if your grouping used a different format, parse accordingly
+  const [monthName, year] = monthYearString.split(" ");
+  const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+  const parsedYear = parseInt(year, 10);
 
-const ExpenseList = ({ expenses = [] }) => {
+  // Check if it's the current month/year
+  const now = new Date();
+  const currentMonthIndex = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  if (parsedYear === currentYear && monthIndex === currentMonthIndex) {
+    // If it's the current month: default date = today
+    return now.toISOString().split("T")[0];
+  } else {
+    // Otherwise, last day of that month
+    // new Date(year, monthIndex+1, 0) => last day
+    const lastDay = new Date(parsedYear, monthIndex + 1, 0);
+    return lastDay.toISOString().split("T")[0];
+  }
+}
+
+const ExpenseList = ({
+  expenses = [],
+  filterCategory = "",
+  filterPayment = "",
+  filterMerchant = "",
+}) => {
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.lists.categories);
   const paymentTypes = useSelector((state) => state.lists.paymentTypes);
@@ -52,8 +82,67 @@ const ExpenseList = ({ expenses = [] }) => {
   });
 
   const [scrollPosition, setScrollPosition] = useState(0);
+  // Right inside the ExpenseList component:
+  const [addExpenseInfo, setAddExpenseInfo] = useState(null);
+  const [newExpenseForm, setNewExpenseForm] = useState({
+    date: "",
+    category_id: "",
+    payment_type_id: "",
+    merchant_id: "",
+    amount: "",
+    notes: "",
+  });
+  const [successMessage, setSuccessMessage] = useState(null);
 
   const tableRef = useRef(null);
+
+  const handleCreateExpense = async () => {
+    const { date, category_id, payment_type_id, merchant_id, amount, notes } =
+      newExpenseForm;
+
+    if (!date || !category_id || !payment_type_id || !merchant_id || !amount) {
+      alert("Please fill out all required fields");
+      return;
+    }
+
+    try {
+      await dispatch(
+        createExpense({
+          date,
+          category_id: Number(category_id),
+          payment_type_id: Number(payment_type_id),
+          merchant_id: Number(merchant_id),
+          amount: Number(amount),
+          notes,
+        })
+      ).unwrap();
+
+      // If successful, reset the new expense row
+      setNewExpenseForm({
+        date: addExpenseInfo.defaultDate,
+        category_id: addExpenseInfo.defaultCategory,
+        payment_type_id: addExpenseInfo.defaultPayment,
+        merchant_id: addExpenseInfo.defaultMerchant,
+        amount: "",
+        notes: "",
+      });
+      // Show success message
+      setSuccessMessage("Expense added successfully!");
+      // Optionally refetch or rely on the slice update
+      dispatch(fetchExpenses());
+    } catch (err) {
+      console.error("Failed to create expense:", err);
+      alert("Could not create expense");
+    }
+  };
+
+  // Auto-clear success message after 3 seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
 
   // Preserve scroll position during re-renders
   useEffect(() => {
@@ -186,7 +275,54 @@ const ExpenseList = ({ expenses = [] }) => {
     setExpandedRow(expandedRow === id ? null : id);
   };
 
-  const grouped = groupExpensesByMonth(expenses);
+  function handleAddExpenseClick(monthYear) {
+    const defaultDate = getDefaultDateForMonth(monthYear);
+    // We also want to take currently selected filterCategory, filterPayment, filterMerchant
+    // and store them, so we can use them when we actually show the form:
+    setAddExpenseInfo({
+      monthYear,
+      defaultDate,
+      defaultCategory: filterCategory,
+      defaultPayment: filterPayment,
+      defaultMerchant: filterMerchant,
+    });
+
+    setNewExpenseForm({
+      date: defaultDate,
+      category_id: filterCategory || "",
+      payment_type_id: filterPayment || "",
+      merchant_id: filterMerchant || "",
+      amount: "",
+      notes: "",
+    });
+    console.log(
+      "Add Expense for ",
+      monthYear,
+      " => date=",
+      defaultDate,
+      "category=",
+      filterCategory,
+      "payment=",
+      filterPayment,
+      "merchant=",
+      filterMerchant
+    );
+  }
+
+  // 1) Filter the expenses based on the props
+  const filteredExpenses = expenses.filter((exp) => {
+    if (filterCategory && Number(exp.category_id) !== Number(filterCategory))
+      return false;
+    if (filterPayment && Number(exp.payment_type_id) !== Number(filterPayment))
+      return false;
+    if (filterMerchant && Number(exp.merchant_id) !== Number(filterMerchant))
+      return false;
+    return true;
+  });
+
+  // 2) Now group the filtered expenses by month
+  const grouped = groupExpensesByMonth(filteredExpenses);
+
   const sortedMonths = Object.entries(grouped).sort(([a], [b]) => {
     const dateA = new Date(a);
     const dateB = new Date(b);
@@ -195,7 +331,8 @@ const ExpenseList = ({ expenses = [] }) => {
 
   return (
     <div className={styles.expenseSection}>
-      <h2 className={styles.title}>Expenses</h2>
+      <h2 className={styles.title}>List of Expenses</h2>
+
       <div className={styles.legendContainer}>
         <span className={styles.legendItem}>
           <FaCloudDownloadAlt
@@ -204,9 +341,11 @@ const ExpenseList = ({ expenses = [] }) => {
           = Imported from a bank statement
         </span>
       </div>
+
       <Button onClick={toggleBulkMode} variant="primary">
         {bulkMode ? "Cancel Multiple Select" : "Select Multiple"}
       </Button>
+
       {bulkMode && (
         <div className={styles.bulkActions}>
           <Button
@@ -233,235 +372,405 @@ const ExpenseList = ({ expenses = [] }) => {
         </div>
       )}
 
-      {sortedMonths.map(([monthYear, monthExpenses]) => (
-        <div key={monthYear} className={styles.monthGroup}>
-          <h3 className={styles.monthTitle}>{monthYear}</h3>
+      {sortedMonths.map(([monthYear, monthExpenses]) => {
+        const isAdding =
+          addExpenseInfo && addExpenseInfo.monthYear === monthYear;
 
-          <div
-            className={styles.tableWrapper}
-            ref={tableRef}
-            onScroll={handleScroll}
-            style={{
-              scrollLeft: scrollPosition,
-              overflowX: "auto",
-            }}
-          >
-            <table className={styles.expenseTable}>
-              <thead>
-                <tr>
-                  {bulkMode && <th>Select</th>}
-                  <th>Date</th>
-                  <th>Merchant</th>
-                  <th>Category</th>
-                  <th>Amount</th>
-                  <th>Payment Type</th>
-                  {/* <th className={styles.hideOnMobile}>Details</th> */}
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {monthExpenses.map((item, index) => {
-                  const isEditing = editingId === item.id;
-                  const isChecked = selectedIds.includes(item.id);
-                  const isExpanded = expandedRow === item.id;
-                  return (
-                    <React.Fragment key={`expense-${item.id || index}`}>
-                      <tr
-                        className={isEditing ? styles.editingRow : ""}
-                        onClick={() => toggleExpand(item.id)}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {bulkMode && (
+        return (
+          <div key={monthYear} className={styles.monthGroup}>
+            <h3 className={styles.monthTitle}>{monthYear}</h3>
+            <Button
+              className={styles.addExpenseButton}
+              variant="primary"
+              size="small"
+              onClick={() => handleAddExpenseClick(monthYear)}
+            >
+              + New
+            </Button>
+
+            {isAdding && successMessage && (
+              <div className={styles.successMessage}>✅ {successMessage}</div>
+            )}
+
+            {/* If we are adding an expense for this month, display the inline form */}
+            {isAdding && (
+              <div className={styles.addExpenseFormContainer}>
+                <h4>Adding a New Expense for {monthYear}</h4>
+                {successMessage && (
+                  <div className={styles.successMessage}>
+                    ✅ {successMessage} - New entry is selected below!
+                  </div>
+                )}
+
+                <div className={styles.newExpenseRow}>
+                  <div className={styles.inlineInputsLeft}>
+                    <input
+                      type="date"
+                      value={newExpenseForm.date}
+                      onChange={(e) =>
+                        setNewExpenseForm({
+                          ...newExpenseForm,
+                          date: e.target.value,
+                        })
+                      }
+                      className={styles.editField}
+                    />
+
+                    <input
+                      type="number"
+                      placeholder="Amount"
+                      value={newExpenseForm.amount}
+                      onChange={(e) =>
+                        setNewExpenseForm({
+                          ...newExpenseForm,
+                          amount: e.target.value,
+                        })
+                      }
+                      className={styles.editField}
+                    />
+                  </div>
+
+                  <div className={styles.inlineInputsRight}>
+                    {/* Category AutoSuggest */}
+                    <AutoSuggestInput
+                      name="category_id"
+                      options={categories.map((cat) => ({
+                        label: cat.category,
+                        value: cat.id,
+                      }))}
+                      placeholder="Select or Add new Category"
+                      value={newExpenseForm.category_id}
+                      onChange={(newVal) => {
+                        setNewExpenseForm({
+                          ...newExpenseForm,
+                          category_id: newVal,
+                        });
+                      }}
+                      onAddNew={async (newCategoryName) => {
+                        // Call API to add new category
+                        const newCategory = await addCategory(newCategoryName);
+                        await dispatch(fetchCategories());
+                        return {
+                          label: newCategory.category,
+                          value: newCategory.id,
+                        };
+                      }}
+                    />
+
+                    {/* Payment Type AutoSuggest */}
+                    <AutoSuggestInput
+                      name="payment_type_id"
+                      options={paymentTypes.map((pt) => ({
+                        label: pt.payment_type,
+                        value: pt.id,
+                      }))}
+                      placeholder="Select or Add new Payment"
+                      value={newExpenseForm.payment_type_id}
+                      onChange={(newVal) =>
+                        setNewExpenseForm({
+                          ...newExpenseForm,
+                          payment_type_id: newVal,
+                        })
+                      }
+                      onAddNew={async (newPaymentName) => {
+                        // Call API to add new payment type
+                        const newPayment = await addPaymentType(newPaymentName);
+                        await dispatch(fetchPaymentTypes());
+                        return {
+                          label: newPayment.payment_type,
+                          value: newPayment.id,
+                        };
+                      }}
+                    />
+
+                    {/* Merchant AutoSuggest */}
+                    <AutoSuggestInput
+                      name="merchant_id"
+                      options={merchants.map((m) => ({
+                        label: m.name,
+                        value: m.id,
+                      }))}
+                      placeholder="Select or Add new Merchant"
+                      value={newExpenseForm.merchant_id}
+                      onChange={(newVal) =>
+                        setNewExpenseForm({
+                          ...newExpenseForm,
+                          merchant_id: newVal,
+                        })
+                      }
+                      onAddNew={async (newMerchantName) => {
+                        // Call API to add new merchant
+                        const newMerchant = await addMerchant(newMerchantName);
+                        await dispatch(fetchMerchants());
+                        return {
+                          label: newMerchant.name,
+                          value: newMerchant.id,
+                        };
+                      }}
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Notes"
+                      value={newExpenseForm.notes}
+                      onChange={(e) =>
+                        setNewExpenseForm({
+                          ...newExpenseForm,
+                          notes: e.target.value,
+                        })
+                      }
+                      className={styles.editField}
+                    />
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className={styles.inlineActionButtons}>
+                    <Button
+                      variant="success"
+                      onClick={handleCreateExpense}
+                      classNames={styles.inlineSaveButton}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => setAddExpenseInfo(null)}
+                      classNames={styles.inlineCancelButton}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div
+              className={styles.tableWrapper}
+              ref={tableRef}
+              onScroll={handleScroll}
+              style={{
+                scrollLeft: scrollPosition,
+                overflowX: "auto",
+              }}
+            >
+              <table className={styles.expenseTable}>
+                <thead>
+                  <tr>
+                    {bulkMode && <th>Select</th>}
+                    <th>Date</th>
+                    <th>Merchant</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                    <th>Payment Type</th>
+                    {/* <th className={styles.hideOnMobile}>Details</th> */}
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {monthExpenses.map((item, index) => {
+                    const isEditing = editingId === item.id;
+                    const isChecked = selectedIds.includes(item.id);
+                    const isExpanded = expandedRow === item.id;
+                    return (
+                      <React.Fragment key={`expense-${item.id || index}`}>
+                        <tr
+                          className={isEditing ? styles.editingRow : ""}
+                          onClick={() => toggleExpand(item.id)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {bulkMode && (
+                            <td>
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={() => toggleSelect(item.id)}
+                              />
+                            </td>
+                          )}
+
+                          {/* Date Column */}
                           <td>
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onClick={(e) => e.stopPropagation()}
-                              onChange={() => toggleSelect(item.id)}
-                            />
+                            {isEditing ? (
+                              <input
+                                type="date"
+                                value={formData.date}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    date: e.target.value,
+                                  })
+                                }
+                                className={styles.editField}
+                              />
+                            ) : (
+                              formatDate(item.date)
+                            )}
                           </td>
-                        )}
 
-                        {/* Date Column */}
-                        <td>
-                          {isEditing ? (
-                            <input
-                              type="date"
-                              value={formData.date}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  date: e.target.value,
-                                })
-                              }
-                              className={styles.editField}
-                            />
-                          ) : (
-                            formatDate(item.date)
-                          )}
-                        </td>
+                          {/* Merchant Column */}
+                          <td>
+                            {isEditing ? (
+                              <select
+                                value={formData.merchant_id}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    merchant_id: e.target.value,
+                                  })
+                                }
+                                className={styles.editField}
+                              >
+                                {merchants.map((merchant) => (
+                                  <option
+                                    key={`merchant-${merchant.id}`}
+                                    value={merchant.id}
+                                  >
+                                    {merchant.name}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              getMerchantName(item.merchant_id)
+                            )}
+                          </td>
 
-                        {/* Merchant Column */}
-                        <td>
-                          {isEditing ? (
-                            <select
-                              value={formData.merchant_id}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  merchant_id: e.target.value,
-                                })
-                              }
-                              className={styles.editField}
-                            >
-                              {merchants.map((merchant) => (
-                                <option
-                                  key={`merchant-${merchant.id}`}
-                                  value={merchant.id}
+                          {/* Category Column */}
+                          <td>
+                            {isEditing ? (
+                              <select
+                                value={formData.category_id}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    category_id: e.target.value,
+                                  })
+                                }
+                                className={styles.editField}
+                              >
+                                {categories.map((cat) => (
+                                  <option key={`cat-${cat.id}`} value={cat.id}>
+                                    {cat.category}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              getCategoryName(item.category_id)
+                            )}
+                          </td>
+
+                          {/* Amount Column */}
+                          <td>
+                            {isEditing ? (
+                              <input
+                                type="number"
+                                value={formData.amount}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    amount: e.target.value,
+                                  })
+                                }
+                                min="0"
+                                step="0.01"
+                                className={styles.editField}
+                              />
+                            ) : (
+                              `$${item.amount}`
+                            )}
+                          </td>
+
+                          {/* Payment Type Column */}
+                          <td>
+                            {isEditing ? (
+                              <select
+                                value={formData.payment_type_id}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    payment_type_id: e.target.value,
+                                  })
+                                }
+                                className={styles.editField}
+                              >
+                                {paymentTypes.map((type) => (
+                                  <option
+                                    key={`paytype-${type.id}`}
+                                    value={type.id}
+                                  >
+                                    {type.payment_type}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              getPaymentTypeName(item.payment_type_id)
+                            )}
+                          </td>
+
+                          {/* <td className={styles.hideOnMobile}> */}
+                          {/* This cell serves as a summary for extra details */}
+                          {/* {item.full_description || item.notes || "-"} */}
+                          {/* </td> */}
+
+                          {/* Action Column */}
+                          <td className={styles.actionCell}>
+                            {isEditing ? (
+                              <>
+                                <Button onClick={saveEdit} variant="success">
+                                  Save
+                                </Button>
+                                <Button
+                                  onClick={() => setEditingId(null)}
+                                  variant="primary"
                                 >
-                                  {merchant.name}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            getMerchantName(item.merchant_id)
-                          )}
-                        </td>
-
-                        {/* Category Column */}
-                        <td>
-                          {isEditing ? (
-                            <select
-                              value={formData.category_id}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  category_id: e.target.value,
-                                })
-                              }
-                              className={styles.editField}
-                            >
-                              {categories.map((cat) => (
-                                <option key={`cat-${cat.id}`} value={cat.id}>
-                                  {cat.category}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            getCategoryName(item.category_id)
-                          )}
-                        </td>
-
-                        {/* Amount Column */}
-                        <td>
-                          {isEditing ? (
-                            <input
-                              type="number"
-                              value={formData.amount}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  amount: e.target.value,
-                                })
-                              }
-                              min="0"
-                              step="0.01"
-                              className={styles.editField}
-                            />
-                          ) : (
-                            `$${item.amount}`
-                          )}
-                        </td>
-
-                        {/* Payment Type Column */}
-                        <td>
-                          {isEditing ? (
-                            <select
-                              value={formData.payment_type_id}
-                              onChange={(e) =>
-                                setFormData({
-                                  ...formData,
-                                  payment_type_id: e.target.value,
-                                })
-                              }
-                              className={styles.editField}
-                            >
-                              {paymentTypes.map((type) => (
-                                <option
-                                  key={`paytype-${type.id}`}
-                                  value={type.id}
+                                  Cancel
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  onClick={() => handleEdit(item.id, item)}
+                                  variant="warning"
+                                  aria-label="Edit"
+                                  className={styles.actionButton}
                                 >
-                                  {type.payment_type}
-                                </option>
-                              ))}
-                            </select>
-                          ) : (
-                            getPaymentTypeName(item.payment_type_id)
-                          )}
-                        </td>
-
-                        {/* <td className={styles.hideOnMobile}> */}
-                        {/* This cell serves as a summary for extra details */}
-                        {/* {item.full_description || item.notes || "-"} */}
-                        {/* </td> */}
-
-                        {/* Action Column */}
-                        <td className={styles.actionCell}>
-                          {isEditing ? (
-                            <>
-                              <Button onClick={saveEdit} variant="success">
-                                Save
-                              </Button>
-                              <Button
-                                onClick={() => setEditingId(null)}
-                                variant="primary"
-                              >
-                                Cancel
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                onClick={() => handleEdit(item.id, item)}
-                                variant="warning"
-                                aria-label="Edit"
-                                className={styles.actionButton}
-                              >
-                                <FaEdit className={styles.icon} />
-                              </Button>
-                              <Button
-                                onClick={() => handleDelete(item.id)}
-                                variant="danger"
-                                aria-label="Delete"
-                                className={styles.actionButton}
-                              >
-                                <FaTrash className={styles.icon} />
-                              </Button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                      {/* Expanded Row */}
-                      {isExpanded && !isEditing && (
-                        <tr className={styles.expandedRow}>
-                          <td colSpan={bulkMode ? 8 : 7}>
-                            <div className={styles.expandedContent}>
-                              <strong>Description:</strong>{" "}
-                              {item.full_description || "N/A"}
-                              <br />
-                              <strong>Notes:</strong> {item.notes || "N/A"}
-                            </div>
+                                  <FaEdit className={styles.icon} />
+                                </Button>
+                                <Button
+                                  onClick={() => handleDelete(item.id)}
+                                  variant="danger"
+                                  aria-label="Delete"
+                                  className={styles.actionButton}
+                                >
+                                  <FaTrash className={styles.icon} />
+                                </Button>
+                              </>
+                            )}
                           </td>
                         </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </tbody>
-            </table>
+                        {/* Expanded Row */}
+                        {isExpanded && !isEditing && (
+                          <tr className={styles.expandedRow}>
+                            <td colSpan={bulkMode ? 8 : 7}>
+                              <div className={styles.expandedContent}>
+                                <strong>Description:</strong>{" "}
+                                {item.full_description || "N/A"}
+                                <br />
+                                <strong>Notes:</strong> {item.notes || "N/A"}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
+      {/* ))} */}
     </div>
   );
 };

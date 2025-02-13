@@ -6,6 +6,7 @@ import MultiExpenseModal from "../components/MultiExpenseModal";
 import "../styles/ExpensesTabs.css";
 import { useSelector } from "react-redux";
 import Button from "../components/Button";
+import ExpenseFilterBar from "../components/ExpenseFilterBar";
 import { addCategory, addPaymentType, addMerchant } from "../services/api";
 
 const Expenses = () => {
@@ -17,41 +18,34 @@ const Expenses = () => {
 
   const [activeTab, setActiveTab] = useState("single"); // Default: no modal open
 
+  const [filterCategory, setFilterCategory] = useState("");
+  const [filterPaymentType, setFilterPaymentType] = useState("");
+  const [filterMerchant, setFilterMerchant] = useState("");
+
   if (loading) {
     return <p>Loading expenses...</p>;
   }
 
   return (
     <div className="pageContainer">
-      <h2>Expenses</h2>
+      <h2>Welcome to Expenses Page</h2>
 
-      <div
-        className="tabs"
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "8px",
-          justifyContent: "center",
-        }}
-      >
+      <div className="tabs">
         <Button
           variant={activeTab === "single" ? "primary" : "secondary"}
-          size="small"
           onClick={() => setActiveTab("single")}
         >
           Add Single Expense
         </Button>
 
-        {/* <Button
+        <Button
           variant={activeTab === "import" ? "primary" : "secondary"}
-          size="small"
           onClick={() => setActiveTab("import")}
         >
           Import Bank Statement
-        </Button> */}
+        </Button>
         <Button
           variant={activeTab === "multiple" ? "primary" : "secondary"}
-          size="small"
           onClick={() => setActiveTab("multiple")}
         >
           Add multiple expenses
@@ -91,7 +85,22 @@ const Expenses = () => {
           />
         )}
       </div>
-      <ExpenseList expenses={expenses} />
+
+      {/* --- Filter Bar --- */}
+      <ExpenseFilterBar
+        filterCategory={filterCategory}
+        onCategoryChange={setFilterCategory}
+        filterPayment={filterPaymentType}
+        onPaymentChange={setFilterPaymentType}
+        filterMerchant={filterMerchant}
+        onMerchantChange={setFilterMerchant}
+      />
+      <ExpenseList
+        expenses={expenses}
+        filterCategory={filterCategory}
+        filterPayment={filterPaymentType}
+        filterMerchant={filterMerchant}
+      />
     </div>
   );
 };
