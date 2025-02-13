@@ -1,34 +1,129 @@
+/* Navigation.module.css */
 .navContainer {
-    width: 180px;
-    height: 100vh;
-    background-color: #f4f4f4;
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  }
-  
+  width: 15%;
+  max-width: 220px;
+  min-width: 180px;
+  background-color: #f4f4f4;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-right: 1px solid #ddd;
+}
+
+.brand {
+  flex-shrink: 0;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.navList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.navList li {
+  margin-bottom: 15px;
+}
+
+.navList li a {
+  text-decoration: none;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.navList li a.active {
+  font-weight: bold;
+  color: #007bff;
+}
+
+@media (max-width: 1024px) {
   .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-size: 1.6rem;
   }
-  
+  .navList li a {
+    font-size: 1rem;
+  }
+}
+
+/* Mobile styles: switch to a top nav */
+@media (max-width: 768px) {
+  .navContainer {
+    /* Reset desktop styles */
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 0.5rem 1rem;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    box-shadow: none;
+
+    /* Mobile-specific styles */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #f4f4f4;
+    z-index: 1000;
+  }
+
+  .brand {
+    display: none;
+  }
+  .logo {
+    font-size: 1.3rem;
+  }
+
+  nav {
+    flex: 1; /* Take remaining space */
+    overflow: hidden; /* Prevent scrollbar */
+  }
   .navList {
-    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    gap: 1rem;
+    margin: 0;
     padding: 0;
+    list-style: none;
+    flex-wrap: nowrap;
+    overflow-x: auto; /* Only scroll if absolutely necessary */
+    -webkit-overflow-scrolling: touch;
   }
-  
   .navList li {
-    margin-bottom: 15px;
+    margin-bottom: 0;
+    flex: 0 0 auto;
   }
-  
-  .navList a {
+  .navList li a {
+    white-space: nowrap;
+    padding: 0.5rem;
+    font-size: 0.9rem;
     text-decoration: none;
-    font-size: 1.1rem;
     color: #333;
   }
-  
-  .navList a.active {
-    font-weight: bold;
-    color: #007bff;
+}
+
+@media (max-width: 480px) {
+  .navContainer {
+    padding: 0.5rem 1rem;
   }
-  
+  .logo {
+    font-size: 1rem;
+  }
+  .navList {
+    gap: 1rem;
+  }
+  .navList li a {
+    font-size: 0.9rem;
+    padding: 0.3rem;
+  }
+}

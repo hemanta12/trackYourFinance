@@ -6,6 +6,7 @@ import {
   saveExpensesFromStatement,
   reuploadTheStatement,
   bulkDeleteExpenses as bulkDeleteService,
+  createMultipleExpenses as createMultipleExpensesApi,
 } from "../services/api";
 import { api } from "../services/api";
 
@@ -22,6 +23,20 @@ export const createExpense = createAsyncThunk(
   async (data) => {
     const response = await addExpense(data);
     return response.data;
+  }
+);
+
+export const createMultipleExpenses = createAsyncThunk(
+  "expenses/createMultipleExpenses",
+  async (expenses, { rejectWithValue }) => {
+    try {
+      const response = await createMultipleExpensesApi(expenses);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Bulk expense creation failed"
+      );
+    }
   }
 );
 
@@ -158,6 +173,17 @@ const expensesSlice = createSlice({
       })
       .addCase(createExpense.fulfilled, (state, action) => {
         state.data.push(action.payload);
+      })
+      .addCase(createMultipleExpenses.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(createMultipleExpenses.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        // Optionally update state.data or trigger a re-fetch.
+      })
+      .addCase(createMultipleExpenses.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       })
       .addCase(updateExpense.fulfilled, (state, action) => {
         const index = state.data.findIndex(

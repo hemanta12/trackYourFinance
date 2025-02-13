@@ -1,0 +1,26 @@
+.appContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.mainContent {
+  overflow-x: visible;
+  max-width: 100vw;
+  padding: 1rem;
+  margin-top: 60px; /* For fixed nav */
+}
+
+@media (min-width: 769px) {
+  .appContainer {
+    flex-direction: row;
+  }
+
+  .mainContent {
+    margin-top: 0;
+    flex: 1;
+    padding: 1rem;
+    overflow-x: hidden;
+  }
+}

@@ -1,0 +1,204 @@
+/* MultiExpenseModal.module.css */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 10px;
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalContent h2 {
+  margin-top: 0;
+  text-align: center;
+  font-size: 1.75rem;
+  color: #333;
+}
+
+/* Expense Card styles */
+.expenseCard {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Two-column layout for desktop */
+.cardRow {
+  display: flex;
+  gap: 16px;
+}
+
+/* Primary and Secondary columns */
+.primaryColumn,
+.secondaryColumn {
+  flex: 1;
+}
+
+/* Adjust input groups, fields, etc. remain the same... */
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.field label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.field input,
+.field textarea,
+.field select {
+  padding: 8px 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+.errorMessage {
+  color: #d9534f;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.advancedToggle {
+  margin-top: 8px;
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.toggleButton:hover {
+  text-decoration: underline;
+}
+
+.removeButtonContainer {
+  margin-top: 8px;
+  text-align: right;
+}
+
+.removeButton {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.removeButton:hover {
+  background-color: #d32f2f;
+}
+
+.modalActions {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.addRow {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.addRow:hover {
+  background-color: #0056b3;
+}
+
+.submitActions {
+  display: flex;
+  gap: 16px;
+}
+
+.submitButton {
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.submitButton:hover {
+  background-color: #218838;
+}
+
+.cancelButton {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.cancelButton:hover {
+  background-color: #c82333;
+}
+
+/* Responsive Design */
+/* For screens up to 600px, stack the columns vertically */
+@media (max-width: 600px) {
+  .cardRow {
+    flex-direction: column;
+  }
+  .primaryColumn,
+  .secondaryColumn {
+    width: 100%;
+  }
+  .modalContent {
+    padding: 16px;
+    max-width: 100%;
+  }
+}

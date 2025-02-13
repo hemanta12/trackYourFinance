@@ -45,6 +45,10 @@ export const getIncome = async () => await api.get("/incomes");
 export const addIncome = async (incomeData) => api.post("/incomes", incomeData);
 export const getExpenses = async () => api.get("/expenses");
 export const addExpense = async (data) => api.post("/expenses", data);
+
+export const createMultipleExpenses = async (expenses) => {
+  return api.post("/expenses/bulk", { expenses });
+};
 export const bulkDeleteExpenses = async (expenseIds) => {
   return api.post("/expenses/bulk-delete", {
     ids: expenseIds,
@@ -54,7 +58,7 @@ export const bulkDeleteExpenses = async (expenseIds) => {
 // Categories
 export const getCategories = async () => api.get("/lists/categories");
 export const addCategory = async (category) =>
-  api.post("/lists/categories", { category });
+  api.post("/lists/categories", { category }).then((res) => res.data);
 export const updateCategory = async (id, category) =>
   api.put(`/lists/categories/${id}`, { category });
 export const deleteCategory = async (id) =>

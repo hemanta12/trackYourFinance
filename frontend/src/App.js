@@ -15,6 +15,7 @@ import OAuthCallback from "./pages/OAuthCallback";
 import Navigation from "./components/Navigation";
 import Settings from "./components/settings/SettingsLayout";
 import BudgetPage from "./pages/BudgetPage";
+import styles from "./styles/AppLayout.module.css";
 
 const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 const SignupPage = React.lazy(() => import("./pages/SignupPage"));
@@ -25,6 +26,7 @@ const Income = React.lazy(() => import("./pages/Income"));
 function App() {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
+
   useEffect(() => {
     if (token && !isTokenValid(token)) {
       dispatch(logout());
@@ -33,24 +35,19 @@ function App() {
 
   return (
     <Router>
-      <div style={{ display: "flex" }}>
-        {/* Render Navigation only if user is authenticated */}
+      <div className={styles.appContainer}>
         {token && <Navigation />}
-
-        <div style={{ flex: 1, padding: "20px" }}>
+        <div className={styles.mainContent}>
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>
-              {/* Public Routes */}
               <Route
                 path="/"
                 element={token ? <Navigate to="/dashboard" /> : <LoginPage />}
               />
-              {/* <Route path="/" element={<LoginPage />} />  */}
               <Route
                 path="/signup"
                 element={token ? <Navigate to="/dashboard" /> : <SignupPage />}
               />
-              {/* Private Routes */}
               <Route
                 path="/settings"
                 element={
@@ -93,7 +90,6 @@ function App() {
                 }
               />
               <Route path="*" element={<Navigate to="/" />} />
-              {/* Redirect unknown routes */}
             </Routes>
           </Suspense>
         </div>

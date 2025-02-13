@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateExpense,
@@ -12,39 +12,35 @@ import {
   fetchMerchants,
 } from "../redux/listSlice";
 import Button from "../components/Button";
-import { FaCloudDownloadAlt } from "react-icons/fa";
+import { FaCloudDownloadAlt, FaEdit, FaTrash } from "react-icons/fa";
 import styles from "../styles/ExpenseList.module.css";
 
 const groupExpensesByMonth = (expenses) => {
   return expenses
     .slice()
-    .sort((a, b) => new Date(b.date) - new Date(a.date)) // ✅ Sort by date descending
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
     .reduce((grouped, expense) => {
       const date = new Date(expense.date);
       const monthYear = date.toLocaleString("default", {
         month: "long",
         year: "numeric",
       });
-
       if (!grouped[monthYear]) {
         grouped[monthYear] = [];
       }
       grouped[monthYear].push(expense);
-
       return grouped;
     }, {});
 };
 
 const ExpenseList = ({ expenses = [] }) => {
-  const groupedExpenses = groupExpensesByMonth(expenses);
-
-  const sortedMonths = Object.entries(groupedExpenses).sort(([a], [b]) => {
-    const dateA = new Date(a);
-    const dateB = new Date(b);
-    return dateB - dateA; // ✅ Newer months come first
-  });
+  const dispatch = useDispatch();
+  const categories = useSelector((state) => state.lists.categories);
+  const paymentTypes = useSelector((state) => state.lists.paymentTypes);
+  const merchants = useSelector((state) => state.lists.merchants);
 
   const [editingId, setEditingId] = useState(null);
+  const [expandedRow, setExpandedRow] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
   const [bulkMode, setBulkMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -55,10 +51,21 @@ const ExpenseList = ({ expenses = [] }) => {
     notes: "",
   });
 
-  const dispatch = useDispatch();
-  const categories = useSelector((state) => state.lists.categories);
-  const paymentTypes = useSelector((state) => state.lists.paymentTypes);
-  const merchants = useSelector((state) => state.lists.merchants);
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  const tableRef = useRef(null);
+
+  // Preserve scroll position during re-renders
+  useEffect(() => {
+    const savedPosition = sessionStorage.getItem("tableScroll");
+    if (savedPosition && tableRef.current) {
+      tableRef.current.scrollLeft = parseInt(savedPosition);
+    }
+  }, []);
+
+  const handleScroll = (e) => {
+    setScrollPosition(e.target.scrollLeft);
+  };
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -88,7 +95,6 @@ const ExpenseList = ({ expenses = [] }) => {
       alert("All fields are required");
       return;
     }
-
     try {
       const updateData = {
         amount: Number(formData.amount),
@@ -97,7 +103,6 @@ const ExpenseList = ({ expenses = [] }) => {
         date: formData.date,
         notes: formData.notes || "",
       };
-
       await dispatch(
         updateExpense({ id: editingId, data: updateData })
       ).unwrap();
@@ -119,7 +124,6 @@ const ExpenseList = ({ expenses = [] }) => {
   };
 
   const toggleBulkMode = () => {
-    // If turning bulk mode OFF, clear selection
     if (bulkMode) setSelectedIds([]);
     setBulkMode((prev) => !prev);
   };
@@ -178,10 +182,20 @@ const ExpenseList = ({ expenses = [] }) => {
     return merchant ? merchant.name : "Unknown Merchant";
   };
 
+  const toggleExpand = (id) => {
+    setExpandedRow(expandedRow === id ? null : id);
+  };
+
+  const grouped = groupExpensesByMonth(expenses);
+  const sortedMonths = Object.entries(grouped).sort(([a], [b]) => {
+    const dateA = new Date(a);
+    const dateB = new Date(b);
+    return dateB - dateA;
+  });
+
   return (
     <div className={styles.expenseSection}>
       <h2 className={styles.title}>Expenses</h2>
-
       <div className={styles.legendContainer}>
         <span className={styles.legendItem}>
           <FaCloudDownloadAlt
@@ -190,13 +204,9 @@ const ExpenseList = ({ expenses = [] }) => {
           = Imported from a bank statement
         </span>
       </div>
-
-      {/* Bulk mode toggle */}
       <Button onClick={toggleBulkMode} variant="primary">
-        {bulkMode ? "Cancel Bulk Edit" : "Manage (Bulk)"}
+        {bulkMode ? "Cancel Multiple Select" : "Select Multiple"}
       </Button>
-
-      {/* If in bulk mode, show an action bar (e.g., “Delete Selected”) */}
       {bulkMode && (
         <div className={styles.bulkActions}>
           <Button
@@ -227,232 +237,224 @@ const ExpenseList = ({ expenses = [] }) => {
         <div key={monthYear} className={styles.monthGroup}>
           <h3 className={styles.monthTitle}>{monthYear}</h3>
 
-          <div className={styles.tableWrapper}>
+          <div
+            className={styles.tableWrapper}
+            ref={tableRef}
+            onScroll={handleScroll}
+            style={{
+              scrollLeft: scrollPosition,
+              overflowX: "auto",
+            }}
+          >
             <table className={styles.expenseTable}>
               <thead>
                 <tr>
                   {bulkMode && <th>Select</th>}
                   <th>Date</th>
                   <th>Merchant</th>
-                  <th>Description</th>
                   <th>Category</th>
                   <th>Amount</th>
                   <th>Payment Type</th>
-                  <th>Notes</th>
+                  {/* <th className={styles.hideOnMobile}>Details</th> */}
                   <th>Actions</th>
                 </tr>
               </thead>
-
               <tbody>
                 {monthExpenses.map((item, index) => {
                   const isEditing = editingId === item.id;
                   const isChecked = selectedIds.includes(item.id);
-
+                  const isExpanded = expandedRow === item.id;
                   return (
-                    <tr
-                      key={`expense-${item.id || index}`}
-                      className={isEditing ? styles.editingRow : ""}
-                    >
-                      {/* Checkbox cell */}
-                      {bulkMode && (
-                        <td>
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => toggleSelect(item.id)}
-                          />
-                        </td>
-                      )}
-
-                      {/* Date */}
-                      <td>
-                        {/* Show an icon/label if statement_id exists */}
-                        {item.statement_id && (
-                          <span
-                            title="Imported from a statement"
-                            className={styles.importedIndicator}
-                          >
-                            <FaCloudDownloadAlt
-                              style={{ marginRight: "4px", color: "#348ceb" }}
+                    <React.Fragment key={`expense-${item.id || index}`}>
+                      <tr
+                        className={isEditing ? styles.editingRow : ""}
+                        onClick={() => toggleExpand(item.id)}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {bulkMode && (
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={() => toggleSelect(item.id)}
                             />
-                          </span>
+                          </td>
                         )}
-                        {isEditing ? (
-                          <input
-                            type="date"
-                            value={formData.date}
-                            onChange={(e) =>
-                              setFormData({ ...formData, date: e.target.value })
-                            }
-                            className={styles.editField}
-                          />
-                        ) : (
-                          formatDate(item.date)
-                        )}
-                      </td>
 
-                      {/* Merchant */}
-                      <td>
-                        {isEditing ? (
-                          <select
-                            value={formData.merchant_id}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                merchant_id: e.target.value,
-                              })
-                            }
-                            className={styles.editField}
-                          >
-                            {merchants.map((merchant) => (
-                              <option
-                                key={`merchant-${merchant.id}`}
-                                value={merchant.id}
+                        {/* Date Column */}
+                        <td>
+                          {isEditing ? (
+                            <input
+                              type="date"
+                              value={formData.date}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  date: e.target.value,
+                                })
+                              }
+                              className={styles.editField}
+                            />
+                          ) : (
+                            formatDate(item.date)
+                          )}
+                        </td>
+
+                        {/* Merchant Column */}
+                        <td>
+                          {isEditing ? (
+                            <select
+                              value={formData.merchant_id}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  merchant_id: e.target.value,
+                                })
+                              }
+                              className={styles.editField}
+                            >
+                              {merchants.map((merchant) => (
+                                <option
+                                  key={`merchant-${merchant.id}`}
+                                  value={merchant.id}
+                                >
+                                  {merchant.name}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            getMerchantName(item.merchant_id)
+                          )}
+                        </td>
+
+                        {/* Category Column */}
+                        <td>
+                          {isEditing ? (
+                            <select
+                              value={formData.category_id}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  category_id: e.target.value,
+                                })
+                              }
+                              className={styles.editField}
+                            >
+                              {categories.map((cat) => (
+                                <option key={`cat-${cat.id}`} value={cat.id}>
+                                  {cat.category}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            getCategoryName(item.category_id)
+                          )}
+                        </td>
+
+                        {/* Amount Column */}
+                        <td>
+                          {isEditing ? (
+                            <input
+                              type="number"
+                              value={formData.amount}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  amount: e.target.value,
+                                })
+                              }
+                              min="0"
+                              step="0.01"
+                              className={styles.editField}
+                            />
+                          ) : (
+                            `$${item.amount}`
+                          )}
+                        </td>
+
+                        {/* Payment Type Column */}
+                        <td>
+                          {isEditing ? (
+                            <select
+                              value={formData.payment_type_id}
+                              onChange={(e) =>
+                                setFormData({
+                                  ...formData,
+                                  payment_type_id: e.target.value,
+                                })
+                              }
+                              className={styles.editField}
+                            >
+                              {paymentTypes.map((type) => (
+                                <option
+                                  key={`paytype-${type.id}`}
+                                  value={type.id}
+                                >
+                                  {type.payment_type}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            getPaymentTypeName(item.payment_type_id)
+                          )}
+                        </td>
+
+                        {/* <td className={styles.hideOnMobile}> */}
+                        {/* This cell serves as a summary for extra details */}
+                        {/* {item.full_description || item.notes || "-"} */}
+                        {/* </td> */}
+
+                        {/* Action Column */}
+                        <td className={styles.actionCell}>
+                          {isEditing ? (
+                            <>
+                              <Button onClick={saveEdit} variant="success">
+                                Save
+                              </Button>
+                              <Button
+                                onClick={() => setEditingId(null)}
+                                variant="primary"
                               >
-                                {merchant.name}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          getMerchantName(item.merchant_id)
-                        )}
-                      </td>
-
-                      {/* New Description cell */}
-                      <td>
-                        {isEditing ? (
-                          <textarea
-                            value={item.full_description || ""}
-                            readOnly
-                            className={styles.editField}
-                          />
-                        ) : (
-                          item.full_description || "-"
-                        )}
-                      </td>
-
-                      {/* Category */}
-                      <td>
-                        {isEditing ? (
-                          <select
-                            value={formData.category_id}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                category_id: e.target.value,
-                              })
-                            }
-                            className={styles.editField}
-                          >
-                            {categories.map((cat) => (
-                              <option key={`cat-${cat.id}`} value={cat.id}>
-                                {cat.category}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          getCategoryName(item.category_id)
-                        )}
-                      </td>
-
-                      {/* Amount */}
-                      <td>
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            value={formData.amount}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                amount: e.target.value,
-                              })
-                            }
-                            min="0"
-                            step="0.01"
-                            className={styles.editField}
-                          />
-                        ) : (
-                          `$${item.amount}`
-                        )}
-                      </td>
-
-                      {/* Payment Type */}
-                      <td>
-                        {isEditing ? (
-                          <select
-                            value={formData.payment_type_id}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                payment_type_id: e.target.value,
-                              })
-                            }
-                            className={styles.editField}
-                          >
-                            {paymentTypes.map((type) => (
-                              <option
-                                key={`paytype-${type.id}`}
-                                value={type.id}
+                                Cancel
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                onClick={() => handleEdit(item.id, item)}
+                                variant="warning"
+                                aria-label="Edit"
+                                className={styles.actionButton}
                               >
-                                {type.payment_type}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          getPaymentTypeName(item.payment_type_id)
-                        )}
-                      </td>
-
-                      {/* Notes */}
-                      <td>
-                        {isEditing ? (
-                          <textarea
-                            value={formData.notes}
-                            onChange={(e) =>
-                              setFormData({
-                                ...formData,
-                                notes: e.target.value,
-                              })
-                            }
-                            className={styles.editField}
-                          />
-                        ) : (
-                          item.notes || "-"
-                        )}
-                      </td>
-
-                      {/* Actions */}
-                      <td className={styles.actionCell}>
-                        {isEditing ? (
-                          <>
-                            <Button onClick={saveEdit} variant="success">
-                              Save
-                            </Button>
-                            <Button
-                              onClick={() => setEditingId(null)}
-                              variant="primary"
-                            >
-                              Cancel
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button
-                              onClick={() => handleEdit(item.id, item)}
-                              variant="warning"
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              onClick={() => handleDelete(item.id)}
-                              variant="danger"
-                            >
-                              Delete
-                            </Button>
-                          </>
-                        )}
-                      </td>
-                    </tr>
+                                <FaEdit className={styles.icon} />
+                              </Button>
+                              <Button
+                                onClick={() => handleDelete(item.id)}
+                                variant="danger"
+                                aria-label="Delete"
+                                className={styles.actionButton}
+                              >
+                                <FaTrash className={styles.icon} />
+                              </Button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                      {/* Expanded Row */}
+                      {isExpanded && !isEditing && (
+                        <tr className={styles.expandedRow}>
+                          <td colSpan={bulkMode ? 8 : 7}>
+                            <div className={styles.expandedContent}>
+                              <strong>Description:</strong>{" "}
+                              {item.full_description || "N/A"}
+                              <br />
+                              <strong>Notes:</strong> {item.notes || "N/A"}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </tbody>

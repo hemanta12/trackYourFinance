@@ -67,6 +67,88 @@ exports.createExpense = async (req, res) => {
   }
 };
 
+// In expenseController.js
+
+exports.createMultipleExpenses = async (req, res) => {
+  const userId = req.user.id;
+  const expenses = req.body.expenses;
+
+  // Validate that expenses is a non-empty array.
+  if (!Array.isArray(expenses) || expenses.length === 0) {
+    return res.status(400).json({ message: "No expenses provided." });
+  }
+
+  // Validate required fields for each expense.
+  for (const expense of expenses) {
+    const { amount, category_id, payment_type_id, date, merchant_id } = expense;
+    if (!amount || !category_id || !payment_type_id || !date || !merchant_id) {
+      return res
+        .status(400)
+        .json({ message: "Required fields missing in one or more expenses." });
+    }
+  }
+
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const insertValues = [];
+
+    // Loop through each expense and process it.
+    for (const expense of expenses) {
+      const { amount, category_id, payment_type_id, date, notes, merchant_id } =
+        expense;
+      let descriptionId = null;
+
+      // If a merchant is provided, retrieve the merchant's name and insert into descriptions.
+      if (merchant_id) {
+        const [merchantRows] = await connection.query(
+          "SELECT name FROM merchants WHERE id = ?",
+          [merchant_id]
+        );
+        if (merchantRows.length > 0) {
+          const merchantName = merchantRows[0].name;
+          const [descResult] = await connection.query(
+            "INSERT INTO descriptions (text) VALUES (?)",
+            [merchantName]
+          );
+          descriptionId = descResult.insertId;
+        }
+      }
+
+      // Prepare the row values.
+      insertValues.push([
+        userId,
+        amount,
+        category_id,
+        payment_type_id,
+        date,
+        notes || "",
+        merchant_id,
+        descriptionId,
+      ]);
+    }
+
+    // Perform a bulk insert using the prepared values.
+    const [result] = await connection.query(
+      "INSERT INTO expenses (user_id, amount, category_id, payment_type_id, date, notes, merchant_id, description_id) VALUES ?",
+      [insertValues]
+    );
+
+    await connection.commit();
+
+    res.status(201).json({
+      message: "Expenses created successfully",
+      insertedCount: result.affectedRows,
+    });
+  } catch (err) {
+    await connection.rollback();
+    res.status(500).json({ error: err.message });
+  } finally {
+    connection.release();
+  }
+};
+
 exports.getExpenses = async (req, res) => {
   try {
     console.time("Expense Query Execution Time");
