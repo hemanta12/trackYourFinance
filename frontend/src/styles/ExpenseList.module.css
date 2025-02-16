@@ -251,7 +251,7 @@ textarea.editField {
   display: grid;
   grid-template-columns: 1fr 1.5fr auto;
   gap: 14px;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   padding: 5px;
 }

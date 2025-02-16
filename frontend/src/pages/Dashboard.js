@@ -24,7 +24,7 @@ function Dashboard() {
   const [kpiYear, setKpiYear] = useState(new Date().getFullYear());
 
   // --- Trend Filter State (for Income vs Expense & related cards) ---
-  const [trendViewType, setTrendViewType] = useState("monthly"); // 'monthly' or 'yearly'
+  const [trendViewType, setTrendViewType] = useState("yearly"); // 'monthly' or 'yearly'
   const [trendYear, setTrendYear] = useState(new Date().getFullYear());
   const [trendMonth, setTrendMonth] = useState(new Date().getMonth() + 1);
 
@@ -114,7 +114,6 @@ function Dashboard() {
   return (
     <div className={styles.container}>
       <nav className={styles.navbar}>
-        <h1 className={styles.logo}>TrackMyFinance</h1>
         <div className={styles.navLinks}>
           <button
             className={styles.button}
@@ -209,17 +208,17 @@ function Dashboard() {
             <div className={`${styles.kpiCard} ${styles.income}`}>
               <FaMoneyBillWave className={styles.kpiIcon} />
               <h3>Income</h3>
-              <p>${kpiData.income}</p>
+              <p>${Number(kpiData.income).toFixed(2)}</p>
             </div>
             <div className={`${styles.kpiCard} ${styles.expenses}`}>
               <FaReceipt className={styles.kpiIcon} />
               <h3>Expenses</h3>
-              <p>${kpiData.expenses}</p>
+              <p>${Number(kpiData.expenses).toFixed(2)}</p>
             </div>
             <div className={`${styles.kpiCard} ${styles.savings}`}>
               <FaPiggyBank className={styles.kpiIcon} />
               <h3>Savings</h3>
-              <p>${kpiData.savings}</p>
+              <p>${Number(kpiData.savings).toFixed(2)}</p>
             </div>
           </div>
 

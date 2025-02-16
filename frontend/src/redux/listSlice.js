@@ -15,6 +15,8 @@ import {
   deletePaymentType,
   getMerchants,
   addMerchant,
+  updateMerchant,
+  deleteMerchant,
 } from "../services/api";
 
 // Categories Thunks
@@ -36,9 +38,13 @@ export const addCategoryThunk = createAsyncThunk(
 
 export const updateCategoryThunk = createAsyncThunk(
   "lists/updateCategory",
-  async ({ id, category }) => {
-    const response = await updateCategory(id, category);
-    return response.data;
+  async ({ id, category }, { rejectWithValue }) => {
+    try {
+      const response = await updateCategory(id, category);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
   }
 );
 
@@ -66,9 +72,15 @@ export const addSourceThunk = createAsyncThunk(
 
 export const updateSourceThunk = createAsyncThunk(
   "lists/updateSource",
-  async ({ id, source }) => {
-    const response = await updateSource(id, source);
-    return response.data;
+  async ({ id, source }, { rejectWithValue }) => {
+    try {
+      const response = await updateSource(id, source);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Source update failed"
+      );
+    }
   }
 );
 
@@ -99,9 +111,13 @@ export const addPaymentTypeThunk = createAsyncThunk(
 
 export const updatePaymentTypeThunk = createAsyncThunk(
   "lists/updatePaymentType",
-  async ({ id, paymentType }) => {
-    const response = await updatePaymentType(id, paymentType);
-    return response.data;
+  async ({ id, paymentType }, { rejectWithValue }) => {
+    try {
+      const response = await updatePaymentType(id, paymentType);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
   }
 );
 
@@ -128,6 +144,28 @@ export const addMerchantThunk = createAsyncThunk(
   async (merchantName) => {
     const response = await addMerchant(merchantName);
     return response;
+  }
+);
+
+export const updateMerchantThunk = createAsyncThunk(
+  "lists/updateMerchant",
+  async ({ id, name }, { rejectWithValue }) => {
+    try {
+      const response = await updateMerchant(id, name);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+// Delete Merchant Thunk
+export const deleteMerchantThunk = createAsyncThunk(
+  "lists/deleteMerchant",
+  async (id) => {
+    // Implement deleteMerchant API similar to deleteCategory
+    await deleteMerchant(id);
+    return id;
   }
 );
 

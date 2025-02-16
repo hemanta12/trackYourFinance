@@ -5,6 +5,7 @@ const API_BASE_URL = "http://localhost:8080/api";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
+  responseType: "json",
 });
 
 // Token expiration handler
@@ -207,3 +208,8 @@ export const addMerchant = async (merchantName) => {
   const response = await api.post("/lists/merchants", { name: merchantName });
   return response.data;
 };
+
+export const updateMerchant = async (id, name) =>
+  api.put(`/lists/merchants/${id}`, { name });
+export const deleteMerchant = async (id) =>
+  api.delete(`/lists/merchants/${id}`);

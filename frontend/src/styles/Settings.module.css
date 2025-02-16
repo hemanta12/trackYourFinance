@@ -1,17 +1,18 @@
 .container {
-  padding: 20px;
-  max-width: 800px;
+  width: 95%;
+  padding: 15px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .tabs {
   display: flex;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .tabButton {
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: none;
   background: #f0f0f0;
   cursor: pointer;
@@ -25,37 +26,157 @@
 
 .managerContainer {
   background: white;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 90%;
 }
 
+/* Fixed list container with a maximum viewport height */
+.listContainer {
+  max-height: calc(100vh - 200px); /* Adjust as needed */
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+/* Each list item with reduced padding and margin */
 .listItem {
-  padding: 10px;
+  padding: 5px 10px;
   border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
 }
 
-.actions {
+/* Style checkboxes inside list items */
+.listItem input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+/* Container for each item with flex layout for spacing */
+.itemContainer {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  /* width: 100%; */
+}
+
+/* Actions container aligned to the right */
+.actions {
+  margin-left: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.multiSelectToolbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+/* Visual cue for edit mode */
+.editMode {
+  border: 1px solid #007bff;
+  background-color: #e7f1ff;
+  transition: background-color 0.3s ease;
+}
+
+.editContainer {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: center;
+  width: 100%;
   gap: 10px;
 }
 
-.editBtn,
-.deleteBtn,
-.saveBtn,
-.cancelBtn {
-  padding: 5px 10px;
-  border: none;
+.editInputContainer {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.editInput {
+  width: 75%;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
-  cursor: pointer;
+}
+.buttonContainer {
+  display: flex;
+  /* justify-content: flex-end; */
+  gap: 5px;
 }
 
-.editBtn {
-  background: #4caf50;
-  color: white;
+/* Feedback messages styling */
+.feedbackMessage {
+  padding: 4px 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  animation: fadeIn 0.5s;
+  font-size: 14px;
 }
 
-.deleteBtn {
-  background: #f44336;
-  color: white;
+.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Inline deletion confirmation styling */
+.confirmation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  border-radius: 4px;
+  animation: fadeIn 0.3s;
+  font-size: 14px;
+}
+
+/* Keyframe animation for fading in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive design breakpoints */
+@media (max-width: 1024px) {
+  .managerContainer {
+    padding: 12px;
+  }
+  .tabButton {
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .managerContainer {
+    padding: 10px;
+  }
+  .tabButton {
+    padding: 5px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .managerContainer {
+    padding: 8px;
+  }
+  .tabButton {
+    padding: 4px 8px;
+    font-size: 14px;
+  }
 }
