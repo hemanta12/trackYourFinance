@@ -78,20 +78,19 @@
 
 .clearButton {
   position: absolute;
-  right: 12px;
+  right: 5px;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
   border: none;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 0;
-  color: #999;
-  display: none;
+  padding: 0.4rem 0.5rem;
+  transition: opacity 0.2s ease;
 }
 
 /* Show clear button when input has value */
 .inputWrapper.hasValue .clearButton {
-  display: block;
+  opacity: 1;
 }
 
 /* Adjust input padding to make space for clear button */

@@ -1,5 +1,6 @@
 .pageContainer {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 1.5rem;
   display: flex;
@@ -20,6 +21,16 @@ h2 {
 
 .tabContent {
   width: 100%;
-  max-width: 700px;
   margin: auto;
+}
+.tabButton {
+  padding: 1rem;
+}
+
+.tabButton.active,
+.tabButton:hover {
+  background-color: #005abb;
+  font-weight: bold;
+  border: 1px solid white;
+  transition: background-color 0.3s ease;
 }

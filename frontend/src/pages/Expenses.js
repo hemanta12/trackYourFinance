@@ -16,7 +16,7 @@ const Expenses = () => {
   const paymentTypes = useSelector((state) => state.lists.paymentTypes);
   const merchants = useSelector((state) => state.lists.merchants);
 
-  const [activeTab, setActiveTab] = useState("single"); // Default: no modal open
+  const [activeTab, setActiveTab] = useState("");
 
   const [filterCategory, setFilterCategory] = useState("");
   const [filterPaymentType, setFilterPaymentType] = useState("");
@@ -32,23 +32,26 @@ const Expenses = () => {
 
       <div className="tabs">
         <Button
-          variant={activeTab === "single" ? "primary" : "secondary"}
+          className={activeTab === "single" ? "tabButton active" : "tabButton"}
           onClick={() => setActiveTab("single")}
         >
           Add Single Expense
         </Button>
 
         <Button
-          variant={activeTab === "import" ? "primary" : "secondary"}
+          className={
+            activeTab === "multiple" ? "tabButton active" : "tabButton"
+          }
+          onClick={() => setActiveTab("multiple")}
+        >
+          Add Multiple Expenses
+        </Button>
+
+        <Button
+          className={activeTab === "import" ? "tabButton active" : "tabButton"}
           onClick={() => setActiveTab("import")}
         >
           Import Bank Statement
-        </Button>
-        <Button
-          variant={activeTab === "multiple" ? "primary" : "secondary"}
-          onClick={() => setActiveTab("multiple")}
-        >
-          Add multiple expenses
         </Button>
       </div>
 

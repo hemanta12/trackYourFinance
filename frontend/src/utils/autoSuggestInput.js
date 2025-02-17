@@ -13,6 +13,7 @@ function AutoSuggestInputRHF({
   options,
   onAddNew,
   placeholder,
+  rules,
   ...rest
 }) {
   const [inputValue, setInputValue] = React.useState("");
@@ -46,6 +47,7 @@ function AutoSuggestInputRHF({
       name={name}
       control={control}
       defaultValue=""
+      rules={rules}
       render={({ field: { onChange: rhfOnChange, value: rhfValue } }) => (
         <div
           className={`${styles.inputWrapper} ${
@@ -67,19 +69,21 @@ function AutoSuggestInputRHF({
             placeholder={placeholder}
           />
 
-          <Button
-            variant="danger"
-            size="small"
-            className={styles.clearButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              setInputValue("");
-              rhfOnChange("");
-            }}
-            aria-label="Clear input"
-          >
-            x
-          </Button>
+          {inputValue && (
+            <Button
+              variant="danger"
+              size="small"
+              className={styles.clearButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                setInputValue("");
+                rhfOnChange("");
+              }}
+              aria-label="Clear input"
+            >
+              x
+            </Button>
+          )}
 
           {showSuggestions && (
             <ul className={styles.suggestionsList}>
@@ -212,20 +216,22 @@ function AutoSuggestInputControlled({
         }}
       />
 
-      <Button
-        variant="danger"
-        size="small"
-        className={styles.clearButton}
-        onClick={(e) => {
-          e.stopPropagation();
-          setInputValue("");
-          onChange("");
-          setShowSuggestions(false);
-        }}
-        aria-label="Clear input"
-      >
-        x
-      </Button>
+      {inputValue && (
+        <Button
+          variant="danger"
+          size="small"
+          className={styles.clearButton}
+          onClick={(e) => {
+            e.stopPropagation();
+            setInputValue("");
+            onChange("");
+            setShowSuggestions(false);
+          }}
+          aria-label="Clear input"
+        >
+          x
+        </Button>
+      )}
 
       {showSuggestions && (
         <ul className={styles.suggestionsList}>
