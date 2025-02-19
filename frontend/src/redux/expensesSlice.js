@@ -20,9 +20,18 @@ export const fetchExpenses = createAsyncThunk(
 
 export const createExpense = createAsyncThunk(
   "expenses/createExpense",
-  async (data) => {
-    const response = await addExpense(data);
-    return response.data;
+  async (data, { rejectWithValue }) => {
+    if (!data.expense_name || data.expense_name.trim() === "") {
+      return rejectWithValue("Expense name is required.");
+    }
+    try {
+      const response = await addExpense(data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to add expense"
+      );
+    }
   }
 );
 
@@ -42,9 +51,18 @@ export const createMultipleExpenses = createAsyncThunk(
 
 export const updateExpense = createAsyncThunk(
   "expenses/updateExpense",
-  async ({ id, data }) => {
-    const response = await api.put(`/expenses/${id}`, data);
-    return response.data;
+  async ({ id, data }, { rejectWithValue }) => {
+    if (!data.expense_name || data.expense_name.trim() === "") {
+      return rejectWithValue("Expense name is required.");
+    }
+    try {
+      const response = await api.put(`/expenses/${id}`, data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update expense"
+      );
+    }
   }
 );
 
@@ -125,12 +143,17 @@ export const reuploadStatement = createAsyncThunk(
 // Save imported transactions to database
 export const saveStatementExpenses = createAsyncThunk(
   "expenses/saveStatementExpenses",
-  async ({ transactions, paymentTypes, statementId }, { rejectWithValue }) => {
+  async (
+    { transactions, paymentTypes, statementId, forceUpdate, fileName },
+    { rejectWithValue }
+  ) => {
     try {
       return await saveExpensesFromStatement(
         transactions,
         paymentTypes,
-        statementId
+        statementId,
+        forceUpdate,
+        fileName
       );
     } catch (error) {
       return rejectWithValue(error.message);
@@ -222,7 +245,7 @@ const expensesSlice = createSlice({
       })
       .addCase(reuploadStatement.fulfilled, (state) => {
         state.error = null;
-        state.statementId = null;
+        // state.statementId = null;
       })
       .addCase(saveStatementExpenses.fulfilled, (state, action) => {
         state.uploadedTransactions = [];

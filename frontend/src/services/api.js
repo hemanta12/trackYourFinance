@@ -179,13 +179,17 @@ export const reuploadTheStatement = async (statementId) => {
 export const saveExpensesFromStatement = async (
   transactions,
   paymentTypes,
-  statementId
+  statementId,
+  forceUpdate = false,
+  fileName = null
 ) => {
   try {
     const response = await api.post("/expenses/save-statement-expenses", {
       transactions,
       paymentTypes,
-      statement_id: statementId,
+      statementId,
+      forceUpdate,
+      fileName,
     });
     return response.data;
   } catch (error) {

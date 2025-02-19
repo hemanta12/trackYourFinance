@@ -7,12 +7,15 @@ const {
 } = require("./merchantService"); // See next file
 const logger = require("../utils/logger");
 const assignCategory = require("../utils/assignCategory");
+const { log } = require("console");
 
 async function saveStatementExpenses({
   transactions,
   paymentTypes,
-  statement_id,
+  statementId,
   userId,
+  forceUpdate = false,
+  fileName = null,
 }) {
   if (!transactions || transactions.length === 0) {
     throw new Error("No transactions to save");
@@ -21,6 +24,28 @@ async function saveStatementExpenses({
   try {
     await connection.beginTransaction();
 
+    // 1) If the user forced an update (and it's duplicate),
+    //    remove old data (including the row in `statement_uploads`).
+    if (forceUpdate) {
+      await connection.query(
+        "DELETE FROM expenses WHERE statement_id = ? AND user_id = ?",
+        [statementId, userId]
+      );
+      await connection.query(
+        "DELETE FROM statement_uploads WHERE id = ? AND user_id = ?",
+        [statementId, userId]
+      );
+    }
+
+    // 2) Now insert a new row in `statement_uploads`.
+    //    (Provided we want a statement_uploads record for every confirm/save.)
+    const safeFileName = fileName || "Unknown File";
+    await connection.query(
+      "INSERT INTO statement_uploads (id, user_id, filename) VALUES (?, ?, ?)",
+      [statementId, userId, safeFileName]
+    );
+
+    // 3) Prepare for expense insertion
     const [[defaultCategory]] = await connection.query(
       'SELECT id FROM categories WHERE category = "Uncategorized" LIMIT 1'
     );
@@ -33,11 +58,22 @@ async function saveStatementExpenses({
 
     const insertValues = [];
     for (let txn of transactions) {
-      const fullDescription = txn.fullDescription || "";
+      const fullDescription = txn.description || "";
+
+      // console.log(
+      //   "In save statement, the fullDescription is: ",
+      //   fullDescription
+      // );
 
       // Use our custom helper to extract the refined merchant name
       const refinedMerchantName =
         txn.refinedMerchantName || extractMerchantName(fullDescription);
+      // console.log(
+      //   "In save statement, the refinedMerchantName is: ",
+      //   refinedMerchantName
+      // );
+
+      const expenseName = txn.expenseName?.trim() || refinedMerchantName;
 
       // Determine the category name based on the full description
       const suggestedCategory =
@@ -104,15 +140,16 @@ async function saveStatementExpenses({
         merchantId,
         txn.notes || "",
         sequenceNumber,
-        statement_id,
+        statementId,
         transactionHash,
         descriptionId,
+        expenseName,
       ]);
     }
     if (insertValues.length > 0) {
       await connection.query(
         `INSERT INTO expenses 
-         (user_id, amount, date, category_id, payment_type_id, merchant_id, notes, sequence_number, statement_id, hash, description_id) 
+         (user_id, amount, date, category_id, payment_type_id, merchant_id, notes, sequence_number, statement_id, hash, description_id, expense_name) 
          VALUES ?`,
         [insertValues]
       );

@@ -78,13 +78,13 @@ exports.parseChaseStyleLine = (line, yearMapping) => {
   const regex = /^(\d{2}\/\d{2})\s+(.*?)([+-]?\d*\.\d{2})$/;
   const match = line.match(regex);
   if (!match) return null;
-  const [_, dateStr, merchant, amountStr] = match;
+  const [_, dateStr, description, amountStr] = match;
   const [month, day] = dateStr.split("/").map(Number);
   const year = yearMapping(month);
   const fullDate = formatDate(year, month, day);
   const amount = parseFloat(amountStr);
   if (isNaN(amount)) return null;
-  return { postedDate: fullDate, merchant: merchant.trim(), amount };
+  return { postedDate: fullDate, description: description.trim(), amount };
 };
 
 exports.isBofAStyleDateLine = (line) => {
@@ -110,5 +110,10 @@ exports.parseBofAStyleLines = (line1, line2, yearMapping) => {
   if (!amtMatch) return null;
   const amount = parseFloat(amtMatch[1]);
   if (isNaN(amount)) return null;
-  return { transactionDate, postedDate, merchant: description.trim(), amount };
+  return {
+    transactionDate,
+    postedDate,
+    description: description.trim(),
+    amount,
+  };
 };

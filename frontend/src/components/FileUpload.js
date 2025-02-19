@@ -83,6 +83,8 @@ const FileUpload = ({ paymentSources }) => {
   const handleForceUpdateRequest = () => {
     setForceUpdateRequested(true);
     setShowDuplicateModal(false);
+    console.log("Uploaded transactions:", uploadedTransactions);
+
     if (uploadedTransactions && uploadedTransactions.length > 0) {
       setPreviewActive(true);
     }
@@ -120,6 +122,8 @@ const FileUpload = ({ paymentSources }) => {
           transactions: uploadedTransactions,
           paymentTypes: selectedPaymentType,
           statementId,
+          forceUpdate: forceUpdateRequested,
+          fileName: file ? file.name : null,
         })
       ).unwrap();
 
@@ -243,26 +247,32 @@ const FileUpload = ({ paymentSources }) => {
               <thead>
                 <tr>
                   <th>Posted Date</th>
-                  <th>Merchant</th>
-                  <th>Description</th>
-                  <th>Category</th>
+                  <th>Name</th>
                   <th>Amount</th>
+                  <th>Merchant</th>
+                  <th>Category</th>
                   <th>Payment Type</th>
+                  <th>Description</th>
                 </tr>
               </thead>
               <tbody>
                 {uploadedTransactions.map((txn, index) => (
                   <tr key={index}>
                     <td>{txn.postedDate}</td>
-                    <td>{txn.refinedMerchantName || "Unknown Merchant"}</td>
-                    <td>{txn.fullDescription || "-"}</td>
-                    <td>{txn.suggestedCategory || "Uncategorized"}</td>
+                    <td>
+                      {txn.expense_name ||
+                        txn.refinedMerchantName ||
+                        "No name fileUpload"}
+                    </td>
                     <td>${Number(txn.amount).toFixed(2)}</td>
+                    <td>{txn.refinedMerchantName || "Unknown Merchant"}</td>
+                    <td>{txn.suggestedCategory || "Uncategorized"}</td>
                     <td>
                       {paymentTypes.find(
                         (pt) => pt.id === Number(selectedPaymentType)
                       )?.payment_type || "Unknown"}
                     </td>
+                    <td>{txn.fullDescription || "-"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -270,7 +280,7 @@ const FileUpload = ({ paymentSources }) => {
 
             <div className={styles.buttonContainer}>
               <Button variant="secondary" onClick={handleCancelPreview}>
-                Cancel the File Upload Process
+                Cancel
               </Button>
               <Button
                 variant="danger"

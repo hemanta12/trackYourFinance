@@ -79,6 +79,7 @@ const ExpenseList = ({
     amount: "",
     payment_type_id: "",
     notes: "",
+    expense_name: "",
   });
 
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -97,10 +98,24 @@ const ExpenseList = ({
   const tableRef = useRef(null);
 
   const handleCreateExpense = async () => {
-    const { date, category_id, payment_type_id, merchant_id, amount, notes } =
-      newExpenseForm;
+    const {
+      date,
+      category_id,
+      payment_type_id,
+      merchant_id,
+      amount,
+      notes,
+      expense_name,
+    } = newExpenseForm;
 
-    if (!date || !category_id || !payment_type_id || !merchant_id || !amount) {
+    if (
+      !date ||
+      !category_id ||
+      !payment_type_id ||
+      !merchant_id ||
+      !amount ||
+      !expense_name
+    ) {
       alert("Please fill out all required fields");
       return;
     }
@@ -114,6 +129,7 @@ const ExpenseList = ({
           merchant_id: Number(merchant_id),
           amount: Number(amount),
           notes,
+          expense_name,
         })
       ).unwrap();
 
@@ -125,6 +141,7 @@ const ExpenseList = ({
         merchant_id: addExpenseInfo.defaultMerchant,
         amount: "",
         notes: "",
+        expense_name: "",
       });
       // Show success message
       setSuccessMessage("Expense added successfully!");
@@ -171,6 +188,7 @@ const ExpenseList = ({
       amount: currentData.amount,
       payment_type_id: currentData.payment_type_id,
       notes: currentData.notes || "",
+      expense_name: currentData.expense_name,
     });
   };
 
@@ -179,7 +197,8 @@ const ExpenseList = ({
       !formData.date ||
       !formData.category_id ||
       !formData.amount ||
-      !formData.payment_type_id
+      !formData.payment_type_id ||
+      !formData.expense_name
     ) {
       alert("All fields are required");
       return;
@@ -191,6 +210,7 @@ const ExpenseList = ({
         payment_type_id: Number(formData.payment_type_id),
         date: formData.date,
         notes: formData.notes || "",
+        expense_name: formData.expense_name,
       };
       await dispatch(
         updateExpense({ id: editingId, data: updateData })
@@ -294,6 +314,7 @@ const ExpenseList = ({
       merchant_id: filterMerchant || "",
       amount: "",
       notes: "",
+      expense_name: "",
     });
     console.log(
       "Add Expense for ",
@@ -404,6 +425,19 @@ const ExpenseList = ({
 
                 <div className={styles.newExpenseRow}>
                   <div className={styles.inlineInputsLeft}>
+                    <input
+                      type="text"
+                      placeholder="Expense Name"
+                      value={newExpenseForm.expense_name}
+                      onChange={(e) =>
+                        setNewExpenseForm({
+                          ...newExpenseForm,
+                          expense_name: e.target.value,
+                        })
+                      }
+                      className={styles.editField}
+                    />
+
                     <input
                       type="date"
                       value={newExpenseForm.date}
@@ -558,9 +592,10 @@ const ExpenseList = ({
                   <tr>
                     {bulkMode && <th>Select</th>}
                     <th>Date</th>
+                    <th>Name</th>
+                    <th>Amount</th>
                     <th>Merchant</th>
                     <th>Category</th>
-                    <th>Amount</th>
                     <th>Payment Type</th>
                     {/* <th className={styles.hideOnMobile}>Details</th> */}
                     <th>Actions</th>
@@ -591,6 +626,20 @@ const ExpenseList = ({
 
                           {/* Date Column */}
                           <td>
+                            {/* Show an icon/label if statement_id exists */}
+                            {item.statement_id && (
+                              <span
+                                title="Imported from a statement"
+                                className={styles.importedIndicator}
+                              >
+                                <FaCloudDownloadAlt
+                                  style={{
+                                    marginRight: "4px",
+                                    color: "#348ceb",
+                                  }}
+                                />
+                              </span>
+                            )}
                             {isEditing ? (
                               <input
                                 type="date"
@@ -605,6 +654,46 @@ const ExpenseList = ({
                               />
                             ) : (
                               formatDate(item.date)
+                            )}
+                          </td>
+
+                          {/* Name Column */}
+                          <td>
+                            {isEditing ? (
+                              <input
+                                type="text"
+                                value={formData.expense_name}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    name: e.target.value,
+                                  })
+                                }
+                                className={styles.editField}
+                              />
+                            ) : (
+                              item.expense_name
+                            )}
+                          </td>
+
+                          {/* Amount Column */}
+                          <td>
+                            {isEditing ? (
+                              <input
+                                type="number"
+                                value={formData.amount}
+                                onChange={(e) =>
+                                  setFormData({
+                                    ...formData,
+                                    amount: e.target.value,
+                                  })
+                                }
+                                min="0"
+                                step="0.01"
+                                className={styles.editField}
+                              />
+                            ) : (
+                              `$${item.amount}`
                             )}
                           </td>
 
@@ -656,27 +745,6 @@ const ExpenseList = ({
                               </select>
                             ) : (
                               getCategoryName(item.category_id)
-                            )}
-                          </td>
-
-                          {/* Amount Column */}
-                          <td>
-                            {isEditing ? (
-                              <input
-                                type="number"
-                                value={formData.amount}
-                                onChange={(e) =>
-                                  setFormData({
-                                    ...formData,
-                                    amount: e.target.value,
-                                  })
-                                }
-                                min="0"
-                                step="0.01"
-                                className={styles.editField}
-                              />
-                            ) : (
-                              `$${item.amount}`
                             )}
                           </td>
 

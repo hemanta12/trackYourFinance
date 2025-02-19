@@ -7,11 +7,27 @@ const { getOrCreateMerchant } = require("./listController");
  * @param {Object} req.body - Expense data
  * @param {Object} req.user - Authenticated user
  */
+
+function capitalizeFirstLetter(str) {
+  if (!str) return ""; // Handle empty strings
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
 exports.createExpense = async (req, res) => {
   try {
-    const { amount, category_id, payment_type_id, date, notes, merchant_id } =
-      req.body;
+    const {
+      amount,
+      category_id,
+      payment_type_id,
+      date,
+      notes,
+      merchant_id,
+      expense_name,
+    } = req.body;
     const userId = req.user.id;
+
+    if (!expense_name || expense_name.trim() === "") {
+      return res.status(400).json({ message: "Expense name is required" });
+    }
 
     // For manual entries, if a merchant is provided,
     // use it to create a corresponding description record.
@@ -34,9 +50,10 @@ exports.createExpense = async (req, res) => {
     }
 
     const [result] = await pool.query(
-      "INSERT INTO expenses (user_id, amount, category_id, payment_type_id, date, notes, merchant_id, description_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO expenses (user_id,expense_name, amount, category_id, payment_type_id, date, notes, merchant_id, description_id) VALUES (?, ?,?, ?, ?, ?, ?, ?, ?)",
       [
         userId,
+        capitalizeFirstLetter(expense_name),
         amount,
         category_id,
         payment_type_id,
@@ -80,8 +97,22 @@ exports.createMultipleExpenses = async (req, res) => {
 
   // Validate required fields for each expense.
   for (const expense of expenses) {
-    const { amount, category_id, payment_type_id, date, merchant_id } = expense;
-    if (!amount || !category_id || !payment_type_id || !date || !merchant_id) {
+    const {
+      expense_name,
+      amount,
+      category_id,
+      payment_type_id,
+      date,
+      merchant_id,
+    } = expense;
+    if (
+      !expense_name ||
+      !amount ||
+      !category_id ||
+      !payment_type_id ||
+      !date ||
+      !merchant_id
+    ) {
       return res
         .status(400)
         .json({ message: "Required fields missing in one or more expenses." });
@@ -96,8 +127,15 @@ exports.createMultipleExpenses = async (req, res) => {
 
     // Loop through each expense and process it.
     for (const expense of expenses) {
-      const { amount, category_id, payment_type_id, date, notes, merchant_id } =
-        expense;
+      const {
+        expense_name,
+        amount,
+        category_id,
+        payment_type_id,
+        date,
+        notes,
+        merchant_id,
+      } = expense;
       let descriptionId = null;
 
       // If a merchant is provided, retrieve the merchant's name and insert into descriptions.
@@ -119,6 +157,7 @@ exports.createMultipleExpenses = async (req, res) => {
       // Prepare the row values.
       insertValues.push([
         userId,
+        capitalizeFirstLetter(expense_name),
         amount,
         category_id,
         payment_type_id,
@@ -131,7 +170,7 @@ exports.createMultipleExpenses = async (req, res) => {
 
     // Perform a bulk insert using the prepared values.
     const [result] = await connection.query(
-      "INSERT INTO expenses (user_id, amount, category_id, payment_type_id, date, notes, merchant_id, description_id) VALUES ?",
+      "INSERT INTO expenses (user_id, expense_name, amount, category_id, payment_type_id, date, notes, merchant_id, description_id) VALUES ?",
       [insertValues]
     );
 
@@ -151,7 +190,7 @@ exports.createMultipleExpenses = async (req, res) => {
 
 exports.getExpenses = async (req, res) => {
   try {
-    console.time("Expense Query Execution Time");
+    // console.time("Expense Query Execution Time");
     const userId = req.user.id;
     const expenseQuery = `SELECT 
         e.*,
@@ -165,7 +204,7 @@ exports.getExpenses = async (req, res) => {
       ORDER BY e.date DESC`;
 
     const [expenses] = await pool.query(expenseQuery, [userId]);
-    console.timeEnd("Expense Query Execution Time"); // ✅ Logs query time
+    // console.timeEnd("Expense Query Execution Time"); // ✅ Logs query time
     res.status(200).json(expenses);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -175,8 +214,13 @@ exports.getExpenses = async (req, res) => {
 exports.updateExpense = async (req, res) => {
   try {
     const { id } = req.params;
-    const { amount, category_id, payment_type_id, date, notes } = req.body;
+    const { expense_name, amount, category_id, payment_type_id, date, notes } =
+      req.body;
     const userId = req.user.id;
+
+    if (!expense_name || expense_name.trim() === "") {
+      return res.status(400).json({ message: "Expense name is required." });
+    }
 
     if (!amount || !category_id || !payment_type_id || !date) {
       return res.status(400).json({ message: "Required fields missing" });
@@ -184,9 +228,18 @@ exports.updateExpense = async (req, res) => {
 
     const [result] = await pool.query(
       `UPDATE expenses 
-       SET amount = ?, category_id = ?, payment_type_id = ?, date = ?, notes = ? 
+       SET expense_name = ?, amount = ?, category_id = ?, payment_type_id = ?, date = ?, notes = ? 
        WHERE id = ? AND user_id = ?`,
-      [amount, category_id, payment_type_id, date, notes, id, userId]
+      [
+        capitalizeFirstLetter(expense_name),
+        amount,
+        category_id,
+        payment_type_id,
+        date,
+        notes,
+        id,
+        userId,
+      ]
     );
 
     if (result.affectedRows === 0) {
@@ -252,16 +305,20 @@ exports.bulkDeleteExpenses = async (req, res) => {
 
 const expenseService = require("../services/expenseService");
 const logger = require("../utils/logger");
+const exp = require("constants");
 
 exports.saveStatementExpenses = async (req, res) => {
   try {
-    const { transactions, paymentTypes, statement_id } = req.body;
+    const { transactions, paymentTypes, statementId, forceUpdate, fileName } =
+      req.body;
     const userId = req.user.id;
     const result = await expenseService.saveStatementExpenses({
       transactions,
       paymentTypes,
-      statement_id,
+      statementId,
       userId,
+      forceUpdate,
+      fileName,
     });
     res.status(201).json(result);
   } catch (error) {

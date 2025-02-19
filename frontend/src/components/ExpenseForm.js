@@ -33,6 +33,7 @@ const ExpenseForm = ({ onClose }) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
+      expense_name: "",
       amount: "",
       date: new Date().toISOString().split("T")[0],
       category_id: "",
@@ -63,6 +64,7 @@ const ExpenseForm = ({ onClose }) => {
     try {
       await dispatch(
         createExpense({
+          expense_name: data.expense_name,
           amount: Number(data.amount),
           category_id: Number(data.category_id),
           payment_type_id: Number(data.payment_type_id),
@@ -112,6 +114,28 @@ const ExpenseForm = ({ onClose }) => {
           <div className={styles.cardRow}>
             {/* Primary Column */}
             <div className={styles.primaryColumn}>
+              {/* Expense Name Field */}
+              <div className={styles.field}>
+                <label>
+                  Expense Name{" "}
+                  <span className={styles.requiredAsterisk}>*</span>:
+                </label>
+                <input
+                  {...register("expense_name", {
+                    required: "Expense name is required",
+                  })}
+                  className={`${styles.input} ${
+                    errors.expense_name ? styles.inputError : ""
+                  }`}
+                  placeholder="ex: Onions"
+                />
+                {errors.expense_name && (
+                  <span className={styles.errorMessage}>
+                    {errors.expense_name.message}
+                  </span>
+                )}
+              </div>
+
               {/* Amount Field */}
               <div className={styles.field}>
                 <label>
@@ -138,7 +162,7 @@ const ExpenseForm = ({ onClose }) => {
                               onChange(values.floatValue)
                             }
                             onBlur={onBlur}
-                            placeholder="Enter amount"
+                            placeholder="$0.00"
                             className={`${styles.input} ${
                               errors.amount ? styles.inputError : ""
                             }`}
@@ -287,7 +311,7 @@ const ExpenseForm = ({ onClose }) => {
                       label: m.name,
                       value: m.id,
                     }))}
-                    placeholder="ex: Starbucks"
+                    placeholder="ex: Safeway"
                     onAddNew={async (newMerchant) => {
                       const res = await dispatch(
                         addMerchantThunk(newMerchant)

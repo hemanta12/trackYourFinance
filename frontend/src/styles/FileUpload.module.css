@@ -91,16 +91,17 @@ h2 {
   margin-top: 20px;
   align-items: center;
   border: 1px solid #ddd;
+  width: 100%;
 }
 
-.preview h3 {
-  text-align: center;
-  color: #333;
-}
 .previewTable {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+}
+.preview h3 {
+  text-align: center;
+  color: #333;
 }
 
 .previewTable th,

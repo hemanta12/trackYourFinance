@@ -27,10 +27,26 @@ const ExpenseCard = ({
       <div className={styles.cardRow}>
         <div className={styles.primaryColumn}>
           <div className={styles.field}>
+            <label>Expense Name:</label>
+            <input
+              type="text"
+              placeholder="ex: Onions"
+              {...register(`expenses.${index}.expense_name`, {
+                required: "Expense name required",
+              })}
+            />
+            {errors.expenses?.[index]?.expense_name && (
+              <span className={styles.errorMessage}>
+                {errors.expenses[index].expense_name.message}
+              </span>
+            )}
+          </div>
+          <div className={styles.field}>
             <label>Amount:</label>
             <input
               type="number"
-              step="0.01"
+              placeholder="0.00"
+              step="1.00"
               {...register(`expenses.${index}.amount`, {
                 required: "Amount required",
               })}
@@ -63,7 +79,7 @@ const ExpenseCard = ({
               name={`expenses.${index}.category_id`}
               control={control}
               options={categoryOptions}
-              placeholder="Select or add category"
+              placeholder="ex: Groceries"
               onAddNew={onAddNewCategory}
             />
           </div>
@@ -73,7 +89,7 @@ const ExpenseCard = ({
               name={`expenses.${index}.payment_type_id`}
               control={control}
               options={paymentTypeOptions}
-              placeholder="Select or add payment type"
+              placeholder="ex: Chase"
               onAddNew={onAddNewPaymentType}
             />
           </div>
@@ -83,7 +99,7 @@ const ExpenseCard = ({
               name={`expenses.${index}.merchant_id`}
               control={control}
               options={merchantOptions}
-              placeholder="Select or add merchant"
+              placeholder="ex: Safeway"
               onAddNew={onAddNewMerchant}
             />
           </div>
@@ -138,6 +154,7 @@ const MultiExpenseModal = ({
     defaultValues: {
       expenses: [
         {
+          expense_name: "",
           amount: "",
           date: new Date().toISOString().split("T")[0],
           category_id: "",
@@ -146,6 +163,7 @@ const MultiExpenseModal = ({
           notes: "",
         },
         {
+          expense_name: "",
           amount: "",
           date: new Date().toISOString().split("T")[0],
           category_id: "",
@@ -163,6 +181,15 @@ const MultiExpenseModal = ({
   });
 
   const onSubmit = async (data) => {
+    const hasErrors = data.expenses.some(
+      (expense) => !expense.expense_name.trim()
+    );
+
+    if (hasErrors) {
+      alert("All expenses must have a name.");
+      return;
+    }
+
     try {
       await dispatch(createMultipleExpenses(data.expenses)).unwrap();
       await dispatch(fetchExpenses());
@@ -208,6 +235,7 @@ const MultiExpenseModal = ({
               type="button"
               onClick={() =>
                 append({
+                  expense_name: "",
                   amount: "",
                   date: new Date().toISOString().split("T")[0],
                   category_id: "",
