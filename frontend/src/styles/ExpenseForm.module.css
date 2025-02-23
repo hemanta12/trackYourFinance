@@ -73,6 +73,7 @@
 /* Input styling */
 .input,
 textarea {
+  width: 100%;
   padding: 8px 10px;
   font-size: 1rem;
   border: 1px solid #ccc;

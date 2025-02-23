@@ -26,17 +26,40 @@
 
 /* Container & General Styles */
 .incomeSection {
-  padding: 24px;
+  padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   color: #1e293b;
 }
 
 .title {
-  font-size: 24px;
+  font-size: 1.8rem;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Month Header Styles */
+.monthHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+.monthTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+.monthTotals {
+  font-size: 0.85rem;
+  color: #718096;
 }
 
 /* Table Wrapper */
@@ -46,6 +69,7 @@
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1.5rem;
 }
 
 /* Table Styling */
@@ -53,7 +77,8 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 800px;
+  min-width: 700px;
+  table-layout: fixed;
 }
 
 .incomeTable thead tr {
@@ -64,7 +89,7 @@
 .incomeTable td {
   padding: 12px 16px;
   text-align: left;
-  font-size: 14px;
+  font-size: 0.9rem;
   border-bottom: 1px solid #e2e8f0;
   vertical-align: middle;
   white-space: nowrap;
@@ -84,6 +109,31 @@
   background-color: #f1f5f9;
 }
 
+.incomeTable th:nth-child(1),
+.incomeTable td:nth-child(1) {
+  width: 100px;
+}
+
+.incomeTable th:nth-child(2),
+.incomeTable td:nth-child(2) {
+  width: 150px;
+}
+
+.incomeTable th:nth-child(3),
+.incomeTable td:nth-child(3) {
+  width: 80px;
+}
+
+.incomeTable th:nth-child(4),
+.incomeTable td:nth-child(4) {
+  width: 150px;
+}
+
+.incomeTable th:nth-child(5),
+.incomeTable td:nth-child(5) {
+  width: 80px;
+}
+
 .editingRow {
   background-color: #fef9c3;
 }
@@ -101,11 +151,19 @@
 .actionCell {
   display: flex;
   gap: 8px;
+  white-space: nowrap;
 }
 
 .actionButtons {
   display: flex;
   gap: 10px;
+}
+
+.monthTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #1a202c;
 }
 
 .editButton,
@@ -154,8 +212,31 @@
   .incomeSection {
     padding: 16px;
   }
-  
+
   .title {
     font-size: 20px;
+  }
+
+  .incomeTable {
+    table-layout: fixed;
+    min-width: auto;
+  }
+  .incomeTable th,
+  .incomeTable td {
+    width: auto;
+    /* overflow: hidden; */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .incomeTable th:nth-child(1),
+  .incomeTable td:nth-child(1) {
+    width: 55px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .monthHeader {
+    flex-direction: column;
   }
 }
