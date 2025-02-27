@@ -1,128 +1,132 @@
-/* KPI Cards Specific Styles */
+/* * Container to hold the 3 KPI cards side-by-side (or wrap on smaller screens) */
 .kpiContainer {
   grid-column: span 12;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 24px;
   margin-bottom: 24px;
   width: 100%;
-  justify-content: space-between;
 }
 
+/* Each KPI Card */
 .kpiCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 1.5rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-  min-height: 200px;
-  justify-content: space-evenly;
-  position: relative;
-  will-change: transform;
-  transition: transform 0.2s;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
 }
 
 .kpiCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.1);
 }
 
-.kpiCard h3 {
-  margin: 1rem 0;
-  font-size: 1.1rem;
-  font-weight: 500;
+/* Top area: icon + title */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-.kpiCard p {
-  font-size: 2rem;
-  font-weight: 600;
-  margin: 0;
+.iconCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.incomeCircle {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.expenseCircle {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.netCircle {
+  background-color: #ede9fe;
+  color: #6d28d9;
 }
 
 .kpiIcon {
-  font-size: 2rem;
-  margin-bottom: 12px;
+  font-size: 1.4rem;
 }
 
-/* Color Variants */
-.income {
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-  color: white;
+/* KPI Title & Value */
+.kpiTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
 }
 
-.expenses {
-  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
-  color: white;
+.kpiValue {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-left: 3.4rem;
+  margin-bottom: 0.75rem;
 }
 
-.net {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
-  color: white;
-}
-
-/* Trend Styles */
-.trendContainer {
+/* Footer: difference & "vs last month" text */
+.kpiFooter {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.85rem;
-  margin-top: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: auto;
 }
 
+/* Trend text (with arrow) - a small pill. Green or red. */
 .trendPositive,
 .trendNegative {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.95rem;
-  padding: 4px 12px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.203);
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 0.85rem;
 }
 
 .trendPositive {
-  color: #dcfce7;
+  background-color: #dcfce7;
+  color: #15803d;
 }
 
 .trendNegative {
-  color: #fee2e2;
+  background-color: #fee2e2;
+  color: #b91c1c;
 }
 
-.comparisonText {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
-  margin-top: 4px;
+/* "vs last month/year" text */
+.vsText {
+  font-size: 0.8rem;
+  color: #475569;
+  margin-left: 8px;
 }
 
-.miniTrend {
-  margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  width: 100%;
-}
-
-/* Responsive Design */
+/* Responsive breakpoints - 
+   optional if you want them to stack on smaller screens */
 @media (max-width: 768px) {
   .kpiContainer {
     grid-template-columns: 1fr;
-    gap: 1rem;
   }
-
   .kpiCard {
-    padding: 1.5rem;
-  }
-
-  .kpiCard p {
-    font-size: 1.8rem;
+    margin: 0 auto;
+    max-width: 400px;
   }
 }
 
 @media (max-width: 480px) {
-  .kpiCard p {
-    font-size: 1.6rem;
+  .kpiValue {
+    font-size: 1.5rem;
   }
 }

@@ -18,17 +18,6 @@
   padding: 2rem;
 }
 
-/* Navbar */
-.navbar {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-}
-
 .logo {
   font-size: 1.8rem;
   font-weight: bold;
@@ -39,20 +28,127 @@
   gap: 10px;
 }
 
-.button {
-  background-color: white;
-  color: #007bff;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.3s ease;
+/* New top bar / header */
+.topBar {
+  display: flex;
+  align-items: center;
+  /* justify-content: space-between; */
+  padding: 1rem 2rem;
+  background-color: #ffffff;
+  /* subtle shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem; /* space below header */
 }
 
-.button:hover {
-  background-color: #0056b3;
-  color: white;
+.topBarLeft {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dashboardTitle {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+.welcomeText {
+  margin: 0;
+  font-size: 1rem;
+  color: #475569;
+  margin-top: 0.5rem;
+}
+
+.flexSpacer {
+  flex: 1;
+}
+
+/* Profile/Dropdown */
+.profileMenu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  width: 120px;
+  border: 5px solid #f1f5f9;
+}
+
+.profilePic {
+  width: 50px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dropdownIcon {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 50px; /* slightly below the avatar */
+  right: 0;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  z-index: 100;
+  padding: 1rem;
+  width: 200px;
+}
+
+.dropdownItem {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #0f172a;
+  transition: background-color 0.2s ease;
+}
+
+.logoutButton {
+  width: 100%;
+}
+
+.chartsRow {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  /* margin-bottom: 24px; */
+  width: 100%;
+}
+
+/* Card styling for each chart or placeholder */
+.analyticsCard {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: relative;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* A quick placeholder style for RecurringPayments */
+.placeholderCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+}
+
+.placeholderTitle {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Dashboard Grid Layout */
@@ -83,17 +179,6 @@
   min-height: 500px;
 }
 
-/* Analytics Cards */
-.analyticsCard {
-  grid-column: span 6;
-  background: white;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.5rem;
-  width: 100%;
-}
-
 /* Card Headers */
 .cardHeader {
   display: flex;
@@ -118,8 +203,8 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .analyticsCard {
-    grid-column: span 12;
+  .chartsRow {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -18,18 +18,36 @@ const DashboardKPI = ({ kpiData, getPreviousPeriodLabel }) => {
   const expensesDifference = currentExpenses - previousExpenses;
 
   const currentNet = currentIncome - currentExpenses;
-  const previousNet =
-    Number(kpiData?.previous_income || 0) -
-    Number(kpiData?.previous_expenses || 0);
+  const previousNet = previousIncome - previousExpenses;
   const netDifference = currentNet - previousNet;
+
+  // Utility to format money
+  const formatCurrency = (value) => `$${value.toFixed(2)}`;
+
+  // Return a small difference component
+  const renderTrend = (difference, prevValue) => {
+    if (prevValue === 0) {
+      // If previous value is 0, we can't compute a valid percentage
+      return "N/A";
+    }
+    const pct = ((difference / Math.abs(prevValue)) * 100).toFixed(1);
+    return `${Math.abs(difference).toFixed(2)} (${pct}%)`;
+  };
 
   return (
     <div className={styles.kpiContainer}>
-      <div className={`${styles.kpiCard} ${styles.income}`}>
-        <FaMoneyBillWave className={styles.kpiIcon} />
-        <h3>Income</h3>
-        <p>${currentIncome.toFixed(2)}</p>
-        <div className={styles.miniTrend}>
+      {/* INCOME CARD */}
+      <div className={styles.kpiCard}>
+        <div className={styles.cardHeader}>
+          {/* Icon in a circle */}
+          <div className={`${styles.iconCircle} ${styles.incomeCircle}`}>
+            <FaMoneyBillWave className={styles.kpiIcon} />
+          </div>
+          <span className={styles.kpiTitle}>Income</span>
+        </div>
+        <div className={styles.kpiValue}>{formatCurrency(currentIncome)}</div>
+        <div className={styles.kpiFooter}>
+          {/* Difference & arrow */}
           <span
             className={
               incomeDifference >= 0
@@ -37,24 +55,23 @@ const DashboardKPI = ({ kpiData, getPreviousPeriodLabel }) => {
                 : styles.trendNegative
             }
           >
-            {incomeDifference >= 0 ? <FaArrowUp /> : <FaArrowDown />}$
-            {Math.abs(incomeDifference).toFixed(2)} (
-            {previousIncome !== 0
-              ? `${((incomeDifference / previousIncome) * 100).toFixed(1)}%`
-              : "N/A"}
-            )
+            {incomeDifference >= 0 ? <FaArrowUp /> : <FaArrowDown />}
+            {renderTrend(incomeDifference, previousIncome)}
           </span>
-          <div className={styles.comparisonText}>
-            vs {getPreviousPeriodLabel()}
-          </div>
+          <span className={styles.vsText}>vs {getPreviousPeriodLabel()}</span>
         </div>
       </div>
 
-      <div className={`${styles.kpiCard} ${styles.expenses}`}>
-        <FaReceipt className={styles.kpiIcon} />
-        <h3>Expenses</h3>
-        <p>${currentExpenses.toFixed(2)}</p>
-        <div className={styles.miniTrend}>
+      {/* EXPENSES CARD */}
+      <div className={styles.kpiCard}>
+        <div className={styles.cardHeader}>
+          <div className={`${styles.iconCircle} ${styles.expenseCircle}`}>
+            <FaReceipt className={styles.kpiIcon} />
+          </div>
+          <span className={styles.kpiTitle}>Expenses</span>
+        </div>
+        <div className={styles.kpiValue}>{formatCurrency(currentExpenses)}</div>
+        <div className={styles.kpiFooter}>
           <span
             className={
               expensesDifference <= 0
@@ -62,39 +79,32 @@ const DashboardKPI = ({ kpiData, getPreviousPeriodLabel }) => {
                 : styles.trendNegative
             }
           >
-            {expensesDifference <= 0 ? <FaArrowDown /> : <FaArrowUp />}$
-            {Math.abs(expensesDifference).toFixed(2)} (
-            {previousExpenses !== 0
-              ? `${((expensesDifference / previousExpenses) * 100).toFixed(1)}%`
-              : "N/A"}
-            )
+            {expensesDifference <= 0 ? <FaArrowDown /> : <FaArrowUp />}
+            {renderTrend(expensesDifference, previousExpenses)}
           </span>
-          <div className={styles.comparisonText}>
-            vs {getPreviousPeriodLabel()}
-          </div>
+          <span className={styles.vsText}>vs {getPreviousPeriodLabel()}</span>
         </div>
       </div>
 
-      <div className={`${styles.kpiCard} ${styles.net}`}>
-        <FaBalanceScale className={styles.kpiIcon} />
-        <h3>Net</h3>
-        <p>${currentNet.toFixed(2)}</p>
-        <div className={styles.miniTrend}>
+      {/* NET CARD */}
+      <div className={styles.kpiCard}>
+        <div className={styles.cardHeader}>
+          <div className={`${styles.iconCircle} ${styles.netCircle}`}>
+            <FaBalanceScale className={styles.kpiIcon} />
+          </div>
+          <span className={styles.kpiTitle}>Net</span>
+        </div>
+        <div className={styles.kpiValue}>{formatCurrency(currentNet)}</div>
+        <div className={styles.kpiFooter}>
           <span
             className={
               netDifference >= 0 ? styles.trendPositive : styles.trendNegative
             }
           >
-            {netDifference >= 0 ? <FaArrowUp /> : <FaArrowDown />}$
-            {Math.abs(netDifference).toFixed(2)} (
-            {previousNet !== 0
-              ? `${((netDifference / Math.abs(previousNet)) * 100).toFixed(1)}%`
-              : "N/A"}
-            )
+            {netDifference >= 0 ? <FaArrowUp /> : <FaArrowDown />}
+            {renderTrend(netDifference, previousNet)}
           </span>
-          <div className={styles.comparisonText}>
-            vs {getPreviousPeriodLabel()}
-          </div>
+          <span className={styles.vsText}>vs {getPreviousPeriodLabel()}</span>
         </div>
       </div>
     </div>

@@ -1,81 +1,93 @@
-/* Pie Chart Container */
-.pieChartContainer {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.15); /* Slightly deeper shadow for depth */
-  margin-bottom: 24px;
-  grid-column: span 12;
+.container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Smooth transition */
+  width: 100%;
 }
 
-/* Hover effect for a modern feel */
-.pieChartContainer:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px -3px rgba(0, 0, 0, 0.2);
-}
-
-/* Title */
-.pieChartContainer h3 {
-  font-size: 1.4rem;
-  font-weight: 700;
+.chartTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #1e293b;
-  margin-bottom: 16px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Tooltip Styling */
-:global(.recharts-tooltip-wrapper) {
-  background: rgba(255, 255, 255, 0.9); /* Slight transparency */
-  border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  padding: 12px;
-  font-size: 1rem;
-  color: #1e293b;
-}
-
-/* Tooltip Text */
-:global(.recharts-default-tooltip) {
-  border: none;
-  padding: 10px;
-  font-weight: 500;
+  margin-bottom: 1rem;
   text-align: left;
 }
 
-/* Legend Customization */
-:global(.recharts-legend-item) {
-  padding: 6px 12px;
-  font-size: 0.95rem;
+.chartContent {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* Left side: Donut chart container */
+.chartWrapper {
+  flex: 1;
+  position: relative;
+  height: 400px; /* Adjust as needed */
+}
+
+/* Center overlay in the donut */
+.centerLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.centerCategory {
+  font-size: 1rem;
   font-weight: 600;
   color: #1e293b;
+}
+
+.centerAmount {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-top: 4px;
+}
+
+/* Right side: Category list */
+.categoryList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-left: 1px solid #e2e8f0;
+}
+
+.categoryItem {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .pieChartContainer {
-    padding: 20px;
-  }
-
-  .pieChartContainer h3 {
-    font-size: 1.3rem;
-  }
+.colorBox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  margin-right: 8px;
+  flex-shrink: 0;
 }
 
-@media (max-width: 768px) {
-  .pieChartContainer {
-    padding: 16px;
-  }
+.categoryName {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
 
-  .pieChartContainer h3 {
-    font-size: 1.2rem;
-  }
+.categoryAmount {
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.noData {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
 }

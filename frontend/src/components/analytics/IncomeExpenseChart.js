@@ -79,8 +79,9 @@ const IncomeExpenseChart = ({ data, viewType, year, month }) => {
 
   return (
     <div className={styles.chartContainer}>
-      <h3 className={styles.chartTitle}>{title}</h3>
-
+      <div className={styles.chartHeader}>
+        <h3 className={styles.chartTitle}>{title}</h3>
+      </div>
       {/* Toggle buttons */}
       <div className={styles.chartControls}>
         <button
@@ -97,75 +98,77 @@ const IncomeExpenseChart = ({ data, viewType, year, month }) => {
         </button>
       </div>
 
-      <ResponsiveContainer width="100%" height="100%">
-        {chartView === "bar" ? (
-          <BarChart
-            data={sortedData}
-            margin={{ top: 40, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="period"
-              tickFormatter={(tick) => monthMap[tick] || tick}
-            />
-            <YAxis domain={[0, maxBarValue * 1.2]} />
-            <Legend />
-            {/* Display values on top of each bar */}
-            <Bar
-              dataKey="Income"
-              fill="#48bb78"
-              name="Income"
-              label={{ position: "top", formatter: (v) => `$${v}` }}
-            />
-            <Bar
-              dataKey="Expense"
-              fill="#f56565"
-              name="Expense"
-              label={{ position: "top", formatter: (v) => `$${v}` }}
-            />
-          </BarChart>
-        ) : (
-          <AreaChart
-            data={sortedData}
-            margin={{ top: 40, right: 30, left: 20, bottom: 15 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="period"
-              tickFormatter={(tick) => monthMap[tick] || tick}
-            />
-            <YAxis
-              domain={[0, maxAreaValue * 1.2]}
-              padding={{ top: 20, bottom: 0 }}
-            />
-            {/* <Tooltip formatter={(value) => `$${value}`} /> */}
-            <Legend />
-            {/* Two Areas with the same stackId to create a stacked effect */}
-            <Area
-              type="monotone"
-              dataKey="Income"
-              // stackId="1"
-              stroke="#48bb78"
-              fill="#48bb78"
-              name="Income"
-              label={{
-                position: "top",
-                padding: "20px",
-                formatter: (v) => `$${v}`,
-              }}
-            />
-            <Area
-              type="monotone"
-              dataKey="Expense"
-              // stackId="1"
-              stroke="#f56565"
-              fill="#f56565"
-              name="Expense"
-              label={{ position: "top", formatter: (v) => `$${v}` }}
-            />
-          </AreaChart>
-        )}
-      </ResponsiveContainer>
+      <div className={styles.chartBody}>
+        <ResponsiveContainer width="100%" height={350}>
+          {chartView === "bar" ? (
+            <BarChart
+              data={sortedData}
+              margin={{ top: 40, right: 10, left: 10, bottom: 5 }}
+            >
+              {/* <CartesianGrid strokeDasharray="3 3" /> */}
+              <XAxis
+                dataKey="period"
+                tickFormatter={(tick) => monthMap[tick] || tick}
+              />
+              <YAxis domain={[0, maxBarValue * 1.2]} />
+              <Legend />
+              {/* Display values on top of each bar */}
+              <Bar
+                dataKey="Income"
+                fill="#81c784"
+                name="Income"
+                label={{ position: "top", formatter: (v) => `$${v}` }}
+              />
+              <Bar
+                dataKey="Expense"
+                fill="#ef9a9a"
+                name="Expense"
+                label={{ position: "top", formatter: (v) => `$${v}` }}
+              />
+            </BarChart>
+          ) : (
+            <AreaChart
+              data={sortedData}
+              margin={{ top: 40, right: 30, left: 20, bottom: 15 }}
+            >
+              {/* <CartesianGrid strokeDasharray="3 3" /> */}
+              <XAxis
+                dataKey="period"
+                tickFormatter={(tick) => monthMap[tick] || tick}
+              />
+              <YAxis
+                domain={[0, maxAreaValue * 1.2]}
+                padding={{ top: 20, bottom: 0 }}
+              />
+              {/* <Tooltip formatter={(value) => `$${value}`} /> */}
+              <Legend />
+              {/* Two Areas with the same stackId to create a stacked effect */}
+              <Area
+                type="monotone"
+                dataKey="Income"
+                // stackId="1"
+                stroke="#81c784"
+                fill="#81c784"
+                name="Income"
+                label={{
+                  position: "top",
+                  padding: "20px",
+                  formatter: (v) => `$${v}`,
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="Expense"
+                // stackId="1"
+                stroke="#ef9a9a"
+                fill="#ef9a9a"
+                name="Expense"
+                label={{ position: "top", formatter: (v) => `$${v}` }}
+              />
+            </AreaChart>
+          )}
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

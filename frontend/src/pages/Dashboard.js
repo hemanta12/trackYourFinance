@@ -11,6 +11,7 @@ import {
 } from "../redux/analyticsSlice";
 import IncomeExpenseChart from "../components/analytics/IncomeExpenseChart";
 import ExpenseBarChart from "../components/analytics/ExpenseBarChart";
+import ExpensePieChart from "../components/analytics/ExpensePieChart";
 import DashboardFilters from "../components/filters/DashboardFilters";
 import DashboardKPI from "../components/analytics/DashboardKPI";
 import TopExpenses from "../components/analytics/TopExpenses";
@@ -18,9 +19,22 @@ import BudgetWarnings from "../components/analytics/BudgetWarnings";
 import TopExpenseCategories from "../components/analytics/TopExpenseCategories";
 import TopMerchants from "../components/analytics/TopMerchants";
 import styles from "../styles/pages/Dashboard.module.css";
+import profileImage from "../assets/profile_sample.png";
+import Button from "../components/common/Button";
+
+// Temporary placeholder for future recurring payments component
+function RecurringPaymentsPlaceholder() {
+  return (
+    <div className={styles.placeholderCard}>
+      <h3 className={styles.placeholderTitle}>Recurring Payments</h3>
+      <p>Coming soon!</p>
+    </div>
+  );
+}
 
 function Dashboard() {
   const [userName, setUserName] = useState("");
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   const [filters, setFilters] = useState({
     viewType: "yearly",
@@ -121,24 +135,14 @@ function Dashboard() {
 
   return (
     <div className={styles.container}>
-      <nav className={styles.navbar}>
-        <div className={styles.navLinks}>
-          <button
-            className={styles.button}
-            onClick={() => alert("Profile Clicked")}
-          >
-            Profile
-          </button>
-          <button className={styles.button} onClick={handleLogout}>
-            Logout
-          </button>
+      {/* --- Top Bar / Header --- */}
+      <div className={styles.topBar}>
+        <div className={styles.topBarLeft}>
+          <h2 className={styles.dashboardTitle}>Dashboard</h2>
+          <p className={styles.welcomeText}>Welcome, {userName}!</p>
         </div>
-      </nav>
+        <div className={styles.flexSpacer}></div>
 
-      <main className={styles.main}>
-        <h2 className={styles.welcome}>Welcome, {userName}!</h2>
-
-        {/* --- Filters Container --- */}
         <DashboardFilters
           filters={filters}
           handleFilterChange={handleFilterChange}
@@ -146,14 +150,47 @@ function Dashboard() {
           getMonthOptions={getMonthOptions}
         />
 
-        <div className={styles.dashboardGrid}>
-          {/* KPI Cards */}
-          <DashboardKPI
-            kpiData={kpiData}
-            getPreviousPeriodLabel={getPreviousPeriodLabel}
+        {/* Profile Menu with Dropdown */}
+        <div
+          className={styles.profileMenu}
+          onClick={() => setShowProfileDropdown((prev) => !prev)}
+        >
+          <img
+            // src="https://via.placeholder.com/36"
+            src={profileImage}
+            alt="Profile"
+            className={styles.profilePic}
           />
-          {/* Income vs Expense Chart */}
-          <div className={styles.chartSection}>
+          <span className={styles.dropdownIcon}>▼</span>
+          {showProfileDropdown && (
+            <div className={styles.dropdownMenu}>
+              <div className={styles.dropdownItem}>
+                {/* Could go to a profile page, if desired */}
+                Logged in as {userName}
+              </div>
+              <div className={styles.dropdownItem}>
+                <Button
+                  className={styles.logoutButton}
+                  variant="danger"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <main className={styles.main}>
+        {/* KPI Cards */}
+        <DashboardKPI
+          kpiData={kpiData}
+          getPreviousPeriodLabel={getPreviousPeriodLabel}
+        />
+
+        <div className={styles.chartsRow}>
+          <div className={styles.analyticsCard}>
             {loading && (
               <div className={styles.loadingOverlay}>Fetching data...</div>
             )}
@@ -164,21 +201,31 @@ function Dashboard() {
               month={filters.month}
             />
           </div>
-          {/* Analytics Cards */}
-          {/* Top Expenses */}
-          <TopExpenses expenses={topExpenses} />
-          {/* Top Merchants */}
-          <TopMerchants merchants={topMerchants} />
-          {/* Budget Warnings */}
-          <BudgetWarnings warnings={budgetWarnings} />
-          {/* Top 5 Expense Categories */}
-          <TopExpenseCategories categories={topCategories} />
-          {/* Expense Breakdown */}
-          <ExpenseBarChart
-            data={expenseBreakdown}
-            title="Expense Breakdown by Categories"
-          />
+
+          <div className={styles.analyticsCard}>
+            <ExpensePieChart
+              data={expenseBreakdown}
+              title="Expense Breakdown by Categories"
+            />
+          </div>
+
+          {/* <div className={styles.analyticsCard}>
+            <RecurringPaymentsPlaceholder />
+          </div> */}
         </div>
+
+        <div className={styles.chartsRow}>
+          <div className={styles.analyticsCard}>
+            <RecurringPaymentsPlaceholder />
+          </div>
+
+          <div className={styles.analyticsCard}>
+            <BudgetWarnings warnings={budgetWarnings} />
+          </div>
+        </div>
+
+        {/* Top Merchants */}
+        <TopMerchants merchants={topMerchants} />
       </main>
     </div>
   );

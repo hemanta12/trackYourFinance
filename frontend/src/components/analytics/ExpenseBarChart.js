@@ -44,7 +44,7 @@ const ExpenseBarChart = ({ data, title = "Expense Breakdown" }) => {
     <div className={styles.chartContainer}>
       <h3 className={styles.chartTitle}>{title}</h3>
       <div className={styles.responsiveWrapper}>
-        <ResponsiveContainer width="100%" height={500}>
+        <ResponsiveContainer width="100%" height={350}>
           <BarChart
             data={processedData}
             layout="vertical"
