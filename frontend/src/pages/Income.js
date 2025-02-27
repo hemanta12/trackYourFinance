@@ -1,6 +1,6 @@
 import React from "react";
-import IncomeForm from "../components/IncomeForm";
-import IncomeList from "../components/IncomeList";
+import IncomeForm from "../components/forms/IncomeForm";
+import IncomeList from "../components/lists/IncomeList";
 import { useSelector } from "react-redux";
 
 const Income = () => {

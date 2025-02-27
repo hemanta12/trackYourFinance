@@ -1,0 +1,157 @@
+/* Base Layout */
+* {
+  box-sizing: border-box;
+}
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.main {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Navbar */
+.navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.navLinks {
+  display: flex;
+  gap: 10px;
+}
+
+.button {
+  background-color: white;
+  color: #007bff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+  color: white;
+}
+
+/* Dashboard Grid Layout */
+.dashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  margin-top: 2rem;
+}
+
+/* Welcome Message */
+.welcome {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+/* Chart Section */
+.chartSection {
+  grid-column: span 12;
+  margin-bottom: 24px;
+  width: 95%;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  min-height: 500px;
+}
+
+/* Analytics Cards */
+.analyticsCard {
+  grid-column: span 6;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+/* Card Headers */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.cardIcon {
+  width: 24px;
+  height: 24px;
+  color: #64748b;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .analyticsCard {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .chartSection {
+    height: 450px;
+  }
+}
+
+@media (max-width: 480px) {
+  .analyticsCard {
+    padding: 1rem;
+  }
+
+  .trendPositive,
+  .trendNegative {
+    font-size: 0.85rem;
+    padding: 3px 8px;
+  }
+
+  .comparisonText {
+    font-size: 0.8rem;
+  }
+
+  .chartSection {
+    height: 400px;
+    padding: 1rem;
+  }
+}

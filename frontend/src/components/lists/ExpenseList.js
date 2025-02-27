@@ -1,22 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addCategory, addPaymentType, addMerchant } from "../services/api";
+import { addCategory, addPaymentType, addMerchant } from "../../services/api";
 import {
   updateExpense,
   deleteExpense,
   fetchExpenses,
   bulkDeleteExpenses,
   createExpense,
-} from "../redux/expensesSlice";
+} from "../../redux/expensesSlice";
 import {
   fetchCategories,
   fetchPaymentTypes,
   fetchMerchants,
-} from "../redux/listSlice";
-import Button from "../components/Button";
+} from "../../redux/listSlice";
+import Button from "../common/Button";
 import { FaCloudDownloadAlt, FaEdit, FaTrash } from "react-icons/fa";
-import styles from "../styles/ExpenseList.module.css";
-import AutoSuggestInput from "../utils/autoSuggestInput";
+import styles from "../../styles/components/lists/ExpenseList.module.css";
+import AutoSuggestInput from "../../utils/autoSuggestInput";
 
 const groupExpensesByMonth = (expenses) => {
   return expenses

@@ -1,0 +1,128 @@
+/* KPI Cards Specific Styles */
+.kpiContainer {
+  grid-column: span 12;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.kpiCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+  min-height: 200px;
+  justify-content: space-evenly;
+  position: relative;
+  will-change: transform;
+  transition: transform 0.2s;
+}
+
+.kpiCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.kpiCard h3 {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.kpiCard p {
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.kpiIcon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+/* Color Variants */
+.income {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+}
+
+.expenses {
+  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+  color: white;
+}
+
+.net {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  color: white;
+}
+
+/* Trend Styles */
+.trendContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.trendPositive,
+.trendNegative {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.95rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.203);
+}
+
+.trendPositive {
+  color: #dcfce7;
+}
+
+.trendNegative {
+  color: #fee2e2;
+}
+
+.comparisonText {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.miniTrend {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .kpiContainer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .kpiCard {
+    padding: 1.5rem;
+  }
+
+  .kpiCard p {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .kpiCard p {
+    font-size: 1.6rem;
+  }
+}

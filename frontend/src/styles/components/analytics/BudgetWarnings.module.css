@@ -1,0 +1,220 @@
+/* Budget Warnings Specific Styles */
+* {
+  box-sizing: border-box;
+}
+
+.analyticsCard {
+  grid-column: span 6;
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+/* Card Headers */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.cardHeader h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #0f172a;
+}
+
+.cardIcon {
+  width: 24px;
+  height: 24px;
+  color: #64748b;
+}
+
+.budgetGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  padding-top: 1rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.budgetItem {
+  min-width: 300px;
+  background: white;
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #f8fafc;
+}
+
+/* Add this new rule */
+.gridContainer {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.budgetItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  border-color: #e2e8f0;
+}
+
+.budgetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.budgetHeader h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+
+.statusBadge {
+  padding: 0.35rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(4px);
+}
+
+.danger .statusBadge {
+  background: rgba(255, 107, 107, 0.12);
+  color: #dc2626;
+}
+
+.warning .statusBadge {
+  background: rgba(255, 217, 59, 0.12);
+  color: #d97706;
+}
+
+.budgetNumbers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.budgetStat span {
+  display: block;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.budgetStat strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  font-family: "SF Mono", monospace;
+}
+
+/* Progress Bar Styles */
+.progressContainer {
+  margin-top: 0.5rem;
+}
+
+.progressBar {
+  height: 8px;
+  background: #f8fafc;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 6px;
+  box-shadow: inset 2px 0 4px rgba(255, 255, 255, 0.1);
+  animation: progressEnter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.danger .progressFill {
+  background: linear-gradient(90deg, #ff6b6b 0%, #ff4444 100%);
+}
+
+.warning .progressFill {
+  background: linear-gradient(90deg, #ffd93b 0%, #ffbb33 100%);
+}
+
+.percentage {
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 0.5rem;
+}
+
+/* Animations */
+@keyframes progressEnter {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--current-width);
+  }
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+}
+
+.emptyIllustration {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+.emptyState h4 {
+  color: #334155;
+  margin-bottom: 0.5rem;
+}
+
+.emptyState p {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.negativeValue {
+  color: #dc2626 !important;
+  position: relative;
+  padding-right: 1.2rem;
+}
+
+.negativeValue::after {
+  content: "⚠️";
+  position: absolute;
+  right: 0;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .budgetGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .budgetItem {
+    padding: 1rem;
+  }
+}

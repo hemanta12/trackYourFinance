@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaUpload, FaUniversity } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPaymentTypes } from "../redux/listSlice";
+import { fetchPaymentTypes } from "../../redux/listSlice";
 import {
   uploadBankStatement,
   fetchExpenses,
@@ -9,9 +9,9 @@ import {
   reuploadStatement,
   resetStatementData,
   setUploadProgress,
-} from "../redux/expensesSlice";
-import Button from "../components/Button";
-import styles from "../styles/FileUpload.module.css";
+} from "../../redux/expensesSlice";
+import Button from "../common/Button";
+import styles from "../../styles/components/forms/FileUpload.module.css";
 
 const FileUpload = ({ paymentSources }) => {
   const [file, setFile] = useState(null);

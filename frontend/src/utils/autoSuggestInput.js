@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Controller } from "react-hook-form";
 import styles from "../styles/AutoSuggestInput.module.css";
 
-import Button from "../components/Button";
+import Button from "../components/common/Button";
 
 // -- Sub-component #1: For React Hook Form usage --
 function AutoSuggestInputRHF({

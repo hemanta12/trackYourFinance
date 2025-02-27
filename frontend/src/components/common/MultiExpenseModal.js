@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { createMultipleExpenses, fetchExpenses } from "../redux/expensesSlice";
-import AutoSuggestInput from "../utils/autoSuggestInput";
-import styles from "../styles/MultiExpenseModal.module.css";
+import {
+  createMultipleExpenses,
+  fetchExpenses,
+} from "../../redux/expensesSlice";
+import AutoSuggestInput from "../../utils/autoSuggestInput";
+import styles from "../../styles/components/common/MultiExpenseModal.module.css";
 
 // Internal component to render each expense row as a card.
 const ExpenseCard = ({

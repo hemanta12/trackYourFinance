@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { loginUser } from "../redux//authSlice";
-import axios from "axios";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import Input from "../components/common/Input";
+import Button from "../components/common/Button";
 import { Link } from "react-router-dom";
-import styles from "../styles/LoginPage.module.css";
+import styles from "../styles/pages/LoginPage.module.css";
 
 function LoginPage() {
   const [email, setEmail] = useState("");

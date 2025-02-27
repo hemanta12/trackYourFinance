@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { createExpense } from "../redux/expensesSlice";
+import { createExpense } from "../../redux/expensesSlice";
 import {
   fetchCategories,
   addCategoryThunk,
@@ -9,11 +9,11 @@ import {
   addPaymentTypeThunk,
   fetchMerchants,
   addMerchantThunk,
-} from "../redux/listSlice";
-import AutoSuggestInput from "../utils/autoSuggestInput";
-import styles from "../styles/ExpenseForm.module.css";
+} from "../../redux/listSlice";
+import AutoSuggestInput from "../../utils/autoSuggestInput";
+import styles from "../../styles/components/forms/ExpenseForm.module.css";
 import { NumericFormat } from "react-number-format";
-import Button from "../components/Button";
+import Button from "../common/Button";
 import {
   FaDollarSign,
   FaCalendarAlt,

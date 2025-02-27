@@ -1,8 +1,8 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../redux/authSlice";
-import { isTokenValid } from "../utils/auth";
+import { logout } from "../../redux/authSlice";
+import { isTokenValid } from "../../utils/auth";
 
 function PrivateRoute({ children }) {
   const { token } = useSelector((state) => state.auth);

@@ -10,9 +10,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "./redux/authSlice";
 import { isTokenValid } from "./utils/auth";
 
-import PrivateRoute from "./components/PrivateRoute";
+import PrivateRoute from "./components/layout/PrivateRoute";
 import OAuthCallback from "./pages/OAuthCallback";
-import Navigation from "./components/Navigation";
+import Navigation from "./components/layout/Navigation";
 import Settings from "./components/settings/SettingsLayout";
 import BudgetPage from "./pages/BudgetPage";
 import styles from "./styles/AppLayout.module.css";

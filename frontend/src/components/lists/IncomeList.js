@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateIncome, deleteIncome, fetchIncome } from "../redux/incomeSlice";
-import { fetchSources } from "../redux/listSlice";
+import {
+  updateIncome,
+  deleteIncome,
+  fetchIncome,
+} from "../../redux/incomeSlice";
+import { fetchSources } from "../../redux/listSlice"; // Import fetchSources from redux/listSlice";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
-import DateQuarterFilter from "./DateQuarterFilter";
-import styles from "../styles/IncomeList.module.css";
+import DateQuarterFilter from "../filters/DateQuarterFilter";
+import styles from "../../styles/components/lists/IncomeList.module.css";
 
 // Custom hook to get window width
 const useWindowWidth = () => {

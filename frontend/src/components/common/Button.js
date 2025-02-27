@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../styles/Button.module.css";
+import styles from "../../styles/components/common/Button.module.css";
 import clsx from "clsx";
 
 const Button = React.memo(

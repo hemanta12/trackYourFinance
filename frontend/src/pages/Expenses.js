@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import ExpenseForm from "../components/ExpenseForm";
-import ExpenseList from "../components/ExpenseList";
-import FileUpload from "../components/FileUpload";
-import MultiExpenseModal from "../components/MultiExpenseModal";
-import "../styles/ExpensesTabs.css";
+import ExpenseForm from "../components/forms/ExpenseForm";
+import ExpenseList from "../components/lists/ExpenseList";
+import FileUpload from "../components/forms/FileUpload";
+import MultiExpenseModal from "../components/common/MultiExpenseModal";
+import "../styles/pages/ExpensesTabs.css";
 import { useSelector } from "react-redux";
-import Button from "../components/Button";
-import ExpenseFilterBar from "../components/ExpenseFilterBar";
+import Button from "../components/common/Button";
+import ExpenseFilterBar from "../components/filters/ExpenseFilterBar";
 import { addCategory, addPaymentType, addMerchant } from "../services/api";
 
 const Expenses = () => {

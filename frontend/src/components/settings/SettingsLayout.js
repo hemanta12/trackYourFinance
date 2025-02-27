@@ -3,7 +3,7 @@ import CategoryManager from "./CategoryManager";
 import PaymentTypeManager from "./PaymentTypeManager";
 import SourceManager from "./SourceManager";
 import MerchantManager from "./MerchantManager";
-import styles from "../../styles/Settings.module.css";
+import styles from "../../styles/components/Settings.module.css";
 
 const SettingsLayout = () => {
   const [activeTab, setActiveTab] = useState("categories");

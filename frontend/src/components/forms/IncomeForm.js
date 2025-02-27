@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import { createIncome } from "../redux/incomeSlice";
-import { addSourceThunk, fetchSources } from "../redux/listSlice";
-import styles from "../styles/IncomeForm.module.css";
-import AutoSuggestInput from "../utils/autoSuggestInput";
+import { createIncome } from "../../redux/incomeSlice";
+import { addSourceThunk, fetchSources } from "../../redux/listSlice";
+import styles from "../../styles/components/forms/IncomeForm.module.css";
+import AutoSuggestInput from "../../utils/autoSuggestInput";
 import { NumericFormat } from "react-number-format";
-import Button from "./Button";
+import Button from "../common/Button";
 
 const IncomeForm = ({ onClose }) => {
   const dispatch = useDispatch();

@@ -6,6 +6,7 @@ import {
   getIncomeVsExpense,
   getExpenseBreakdown,
   getTopCategories,
+  getTopMerchants,
 } from "../services/api";
 
 // Thunks
@@ -31,6 +32,19 @@ export const fetchTopCategories = createAsyncThunk(
   }
 );
 
+//fetch top merchants
+export const fetchTopMerchants = createAsyncThunk(
+  "analytics/fetchTopMerchants",
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await getTopMerchants(params);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const fetchBudgetWarnings = createAsyncThunk(
   "analytics/fetchBudgetWarnings",
   async (params) => {
@@ -41,9 +55,17 @@ export const fetchBudgetWarnings = createAsyncThunk(
 
 export const fetchKPIData = createAsyncThunk(
   "analytics/fetchKPIData",
-  async (params) => {
-    const response = await getKPIData(params);
-    return response.data;
+  async (params, { rejectWithValue }) => {
+    try {
+      const response = await getKPIData(params);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching KPI data:", error);
+      return rejectWithValue({
+        message: "Failed to load financial summary",
+        details: error.response?.data || error.message,
+      });
+    }
   }
 );
 
@@ -65,8 +87,7 @@ export const fetchExpenseBreakdown = createAsyncThunk(
   async (params) => {
     try {
       const response = await getExpenseBreakdown(params);
-
-      return response || []; // ✅ Ensure response is always an array
+      return response || [];
     } catch (error) {
       console.error("Error fetching expense breakdown:", error);
       throw error; // ✅ Ensure Redux correctly catches the error
@@ -80,10 +101,17 @@ const analyticsSlice = createSlice({
   initialState: {
     topExpenses: [],
     budgetWarnings: [],
-    kpiData: { income: 0, expenses: 0, savings: 0 },
+    kpiData: {
+      income: 0,
+      expenses: 0,
+      savings: 0,
+      previous_income: 0,
+      previous_expenses: 0,
+    },
     incomeVsExpense: [],
     expenseBreakdown: [],
     topCategories: [],
+    topMerchants: [],
     loading: false,
     error: null,
   },
@@ -98,9 +126,31 @@ const analyticsSlice = createSlice({
       .addCase(fetchBudgetWarnings.fulfilled, (state, action) => {
         state.budgetWarnings = action.payload;
       })
+      .addCase(fetchKPIData.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       // KPI Data
       .addCase(fetchKPIData.fulfilled, (state, action) => {
-        state.kpiData = action.payload;
+        state.loading = false;
+        state.kpiData = {
+          income: action.payload.income || 0,
+          expenses: action.payload.expenses || 0,
+          savings: action.payload.savings || 0,
+          previous_income: action.payload.previous_income || 0,
+          previous_expenses: action.payload.previous_expenses || 0,
+        };
+      })
+      .addCase(fetchKPIData.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Failed to load KPI data";
+        // Preserve existing kpiData on error
+        state.kpiData = {
+          ...state.kpiData,
+          income: 0,
+          expenses: 0,
+          savings: 0,
+        };
       })
       // Income vs Expense
       .addCase(fetchIncomeVsExpense.pending, (state) => {
@@ -125,6 +175,12 @@ const analyticsSlice = createSlice({
         state.topCategories = action.payload || [];
       })
       .addCase(fetchTopCategories.rejected, (state, action) => {
+        state.error = action.error.message;
+      })
+      .addCase(fetchTopMerchants.fulfilled, (state, action) => {
+        state.topMerchants = action.payload || [];
+      })
+      .addCase(fetchTopMerchants.rejected, (state, action) => {
         state.error = action.error.message;
       });
   },

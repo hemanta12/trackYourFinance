@@ -106,6 +106,10 @@ export const getTopCategories = async (params) => {
     throw error;
   }
 };
+//get top merchants
+export const getTopMerchants = (params) =>
+  api.get("/analytics/top-merchants", { params });
+
 export const getBudgetWarnings = (params) =>
   api.get("/analytics/budget-warnings", { params });
 export const getKPIData = (params) =>
@@ -126,7 +130,6 @@ export const getIncomeVsExpense = (params) => {
 export const getExpenseBreakdown = async (params) => {
   try {
     const response = await api.get("/analytics/expense-breakdown", { params });
-
     return response.data;
   } catch (error) {
     console.error("Error in getExpenseBreakdown:", error);

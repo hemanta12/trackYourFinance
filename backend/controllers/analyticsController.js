@@ -113,28 +113,63 @@ exports.getBudgetWarnings = async (req, res) => {
 exports.getKPIData = async (req, res) => {
   const userId = req.user.id;
 
-  const year = req.query.year || new Date().getFullYear();
-  // const today = new Date();
-  // const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const year = parseInt(req.query.year) || new Date().getFullYear();
+  const month = parseInt(req.query.month);
+  const viewType = req.query.viewType;
 
   try {
-    const [totalIncome] = await pool.query(
-      `SELECT SUM(amount) as total FROM income WHERE user_id = ? AND YEAR(date) = ?`,
-      [userId, year]
+    // Current period data
+    const [currentIncome] = await pool.query(
+      `SELECT SUM(amount) as total FROM income 
+       WHERE user_id = ? 
+       ${year ? "AND YEAR(date) = ?" : ""}
+       ${month ? "AND MONTH(date) = ?" : ""}`,
+      [userId, ...(year ? [year] : []), ...(month ? [month] : [])]
     );
 
-    const [totalExpenses] = await pool.query(
-      `SELECT SUM(amount) as total FROM expenses WHERE user_id = ? AND YEAR(date) = ?`,
-      [userId, year]
+    const [currentExpenses] = await pool.query(
+      `SELECT SUM(amount) as total FROM expenses 
+       WHERE user_id = ? 
+       ${year ? "AND YEAR(date) = ?" : ""}
+       ${month ? "AND MONTH(date) = ?" : ""}`,
+      [userId, ...(year ? [year] : []), ...(month ? [month] : [])]
     );
 
-    const income = totalIncome[0].total || 0;
-    const expenses = totalExpenses[0].total || 0;
+    // Previous period calculation
+    let prevYear, prevMonth;
+    if (viewType === "yearly") {
+      prevYear = parseInt(year) - 1;
+      prevMonth = null;
+    } else {
+      const currentDate = new Date(year, month - 1, 1);
+
+      currentDate.setMonth(currentDate.getMonth() - 1);
+      prevYear = currentDate.getFullYear();
+      prevMonth = currentDate.getMonth() + 1;
+    }
+
+    // Previous period query
+    const [prevIncome] = await pool.query(
+      `SELECT SUM(amount) as total FROM income 
+       WHERE user_id = ? 
+       AND YEAR(date) = ?
+       ${viewType === "monthly" ? "AND MONTH(date) = ?" : ""}`,
+      [userId, prevYear, ...(viewType === "monthly" ? [prevMonth] : [])]
+    );
+
+    const [prevExpenses] = await pool.query(
+      `SELECT SUM(amount) as total FROM expenses 
+       WHERE user_id = ? 
+       AND YEAR(date) = ?
+       ${viewType === "monthly" ? "AND MONTH(date) = ?" : ""}`,
+      [userId, prevYear, ...(viewType === "monthly" ? [prevMonth] : [])]
+    );
 
     res.status(200).json({
-      income,
-      expenses,
-      savings: income - expenses,
+      income: currentIncome[0].total || 0,
+      expenses: currentExpenses[0].total || 0,
+      previous_income: prevIncome[0].total || 0,
+      previous_expenses: prevExpenses[0].total || 0,
     });
   } catch (error) {
     console.error("Error fetching KPI data:", error);
@@ -291,6 +326,46 @@ exports.getTopExpenseCategories = async (req, res) => {
     res.json(results);
   } catch (error) {
     console.error("Error fetching top expense categories:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getTopMerchants = async (req, res) => {
+  const userId = req.user.id;
+  const { year, month } = req.query;
+
+  // Base query: join expenses with merchants, summing amount for each merchant
+  let query = `
+    SELECT m.name AS name, SUM(e.amount) AS totalSpent
+    FROM expenses e
+    JOIN merchants m ON e.merchant_id = m.id
+    WHERE e.user_id = ?
+  `;
+  const params = [userId];
+
+  if (year) {
+    query += " AND YEAR(e.date) = ? ";
+    params.push(year);
+  }
+  if (month) {
+    query += " AND MONTH(e.date) = ? ";
+    params.push(month);
+  }
+
+  query += `
+    GROUP BY m.name
+    ORDER BY totalSpent DESC
+    LIMIT 5
+  `;
+
+  try {
+    const merchants = await executeQuery(query, params, res);
+
+    if (merchants) {
+      res.status(200).json(merchants);
+    }
+  } catch (error) {
+    console.error("Error fetching top merchants:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

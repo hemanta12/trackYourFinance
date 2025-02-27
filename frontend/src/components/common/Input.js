@@ -1,5 +1,5 @@
-import React from 'react';
-import styles from '../styles/Input.module.css';
+import React from "react";
+import styles from "../../styles/components/common/Input.module.css";
 
 const Input = React.memo(({ type, placeholder, value, onChange }) => {
   return (

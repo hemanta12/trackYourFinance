@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import styles from "../../styles/Settings.module.css";
+import styles from "../../styles/components/Settings.module.css";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import Button from "../Button";
+import Button from "../common/Button";
 
 const GenericListManager = ({
   title,

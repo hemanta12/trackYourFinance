@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import AutoSuggestInput from "../utils/autoSuggestInput";
-import styles from "../styles/ExpenseFilterBar.module.css";
+import AutoSuggestInput from "../../utils/autoSuggestInput";
+import styles from "../../styles/components/filters/ExpenseFilterBar.module.css";
 
 function ExpenseFilterBar({
   filterCategory,
