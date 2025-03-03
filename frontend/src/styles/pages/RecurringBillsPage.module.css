@@ -1,0 +1,223 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.topControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.viewToggles {
+  display: flex;
+  gap: 1rem;
+}
+
+.addNew {
+  margin-top: 0.5rem;
+}
+
+/* Calendar Header Container */
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background-color: #f4f6f8;
+  border-bottom: 2px solid #e0e0e0;
+  border-radius: 4px 4px 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Clickable Title Container */
+.titleContainer {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background-color: #f9fafb;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.titleContainer:hover {
+  background-color: #e8edf1;
+  border-color: #007bff;
+}
+
+.chevronIcon {
+  margin-left: 0.5rem;
+  font-size: 1.2rem;
+  color: #007bff; /* match your theme */
+}
+
+/* Navigation Buttons */
+.navButton {
+  background-color: #ffffff;
+  color: #007bff;
+  border: 1px solid #d1dbe5;
+  border-radius: 4px;
+  min-width: 35px;
+  padding: 0.5rem 0.75rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.navButton:hover {
+  background-color: #f0f4f8;
+  border-color: #b8c2cc;
+}
+
+/* Today Button Styling */
+.todayButton {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  min-width: 70px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+.todayButton:hover {
+  background-color: #0056b3;
+}
+/* Legend */
+.legend {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+.legend ul {
+  list-style-type: disc;
+  margin-left: 1rem;
+}
+.legendItem {
+  margin-bottom: 0.25rem;
+}
+
+/* List view table */
+.listView {
+  overflow-x: auto;
+}
+
+.recurringTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+.recurringTable th,
+.recurringTable td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+  font-size: 0.95rem;
+  color: #444;
+}
+.recurringTable th {
+  background-color: #f8f8f8;
+  font-weight: 600;
+}
+.recurringTable tr:nth-child(even) {
+  background-color: #fdfdfd;
+}
+
+/* Autopay column */
+.autopayColumn {
+  text-align: center;
+}
+.autopayToggle {
+  min-width: 60px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  background-color: black;
+}
+
+/* Action containers */
+.actionContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.primaryActions,
+.secondaryActions {
+  display: flex;
+  gap: 0.5rem;
+}
+.secondaryActions {
+  border-left: 1px solid #ccc;
+  padding-left: 0.5rem;
+}
+
+/* Expanded row styling */
+.expandedRow {
+  background-color: #f9f9f9;
+}
+.expandedContent {
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  color: #555;
+  border-top: 1px solid #ddd;
+}
+
+/* Calendar view container */
+.calendarView {
+  margin-top: 1rem;
+}
+
+/* FullCalendar customizations */
+.fc {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+.fc .fc-button-group {
+  gap: 2rem;
+}
+.fc .fc-button {
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 0.3rem;
+}
+.fc-titleButton-button {
+  min-width: 150px;
+  font-size: 1.2rem;
+  text-align: center;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+.fc .fc-button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .recurringTable th,
+  .recurringTable td {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}

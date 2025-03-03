@@ -10,13 +10,14 @@ import {
   fetchTopMerchants,
 } from "../redux/analyticsSlice";
 import IncomeExpenseChart from "../components/analytics/IncomeExpenseChart";
-import ExpenseBarChart from "../components/analytics/ExpenseBarChart";
+// import ExpenseBarChart from "../components/analytics/ExpenseBarChart";
 import ExpensePieChart from "../components/analytics/ExpensePieChart";
 import DashboardFilters from "../components/filters/DashboardFilters";
 import DashboardKPI from "../components/analytics/DashboardKPI";
-import TopExpenses from "../components/analytics/TopExpenses";
+// import TopExpenses from "../components/analytics/TopExpenses";
 import BudgetWarnings from "../components/analytics/BudgetWarnings";
-import TopExpenseCategories from "../components/analytics/TopExpenseCategories";
+// import TopExpenseCategories from "../components/analytics/TopExpenseCategories";
+import UpcomingPaymentsWidget from "../components/lists/UpcomingPaymentsWidget";
 import TopMerchants from "../components/analytics/TopMerchants";
 import styles from "../styles/pages/Dashboard.module.css";
 import profileImage from "../assets/profile_sample.png";
@@ -46,11 +47,11 @@ function Dashboard() {
 
   const {
     incomeVsExpense,
-    topExpenses,
+    // topExpenses,
     budgetWarnings,
     kpiData,
     loading,
-    topCategories,
+    // topCategories,
     topMerchants,
     expenseBreakdown,
   } = useSelector((state) => state.analytics);
@@ -164,10 +165,7 @@ function Dashboard() {
           <span className={styles.dropdownIcon}>▼</span>
           {showProfileDropdown && (
             <div className={styles.dropdownMenu}>
-              <div className={styles.dropdownItem}>
-                {/* Could go to a profile page, if desired */}
-                Logged in as {userName}
-              </div>
+              <div className={styles.dropdownItem}>Logged in as {userName}</div>
               <div className={styles.dropdownItem}>
                 <Button
                   className={styles.logoutButton}
@@ -203,10 +201,10 @@ function Dashboard() {
           </div>
 
           <div className={styles.analyticsCard}>
-            <ExpensePieChart
-              data={expenseBreakdown}
-              title="Expense Breakdown by Categories"
-            />
+            <div className={styles.analyticsCard}>
+              {/* <RecurringPaymentsPlaceholder /> */}
+              <UpcomingPaymentsWidget />
+            </div>
           </div>
 
           {/* <div className={styles.analyticsCard}>
@@ -215,9 +213,10 @@ function Dashboard() {
         </div>
 
         <div className={styles.chartsRow}>
-          <div className={styles.analyticsCard}>
-            <RecurringPaymentsPlaceholder />
-          </div>
+          <ExpensePieChart
+            data={expenseBreakdown}
+            title="Expense Breakdown by Categories"
+          />
 
           <div className={styles.analyticsCard}>
             <BudgetWarnings warnings={budgetWarnings} />

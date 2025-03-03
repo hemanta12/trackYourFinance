@@ -1,7 +1,6 @@
 /* Navigation.module.css */
 .navContainer {
-  width: 20%;
-  max-width: 230px;
+  width: fit-content;
   min-width: 210px;
   background-color: #f4f4f4;
   padding: 20px;

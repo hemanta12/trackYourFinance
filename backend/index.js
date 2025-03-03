@@ -9,8 +9,6 @@ require("./config/passport");
 
 const app = express();
 // Middleware
-// app.use(cors());
-// Update your CORS configuration
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
@@ -40,6 +38,8 @@ const budgetRoutes = require("./routes/budgetRoutes");
 const analyticsRoutes = require("./routes/analyticsRoute");
 const fileUploadRoutes = require("./routes/fileUploadRoutes");
 
+const recurringRoutes = require("./routes/recurringRoutes");
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/incomes", incomeRoutes);
@@ -48,6 +48,7 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/lists", listRoutes);
 app.use("/api/budgets", budgetRoutes);
 app.use("/api/upload", fileUploadRoutes);
+app.use("/api/recurring-items", recurringRoutes);
 
 const PORT = process.env.PORT || 5000;
 // Start the server

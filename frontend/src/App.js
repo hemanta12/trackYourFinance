@@ -9,6 +9,12 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "./redux/authSlice";
 import { isTokenValid } from "./utils/auth";
+import { fetchBillPayments, fetchRecurringItems } from "./redux/recurringSlice";
+import {
+  fetchCategories,
+  fetchPaymentTypes,
+  fetchMerchants,
+} from "./redux/listSlice";
 
 import PrivateRoute from "./components/layout/PrivateRoute";
 import OAuthCallback from "./pages/OAuthCallback";
@@ -16,6 +22,7 @@ import Navigation from "./components/layout/Navigation";
 import Settings from "./components/settings/SettingsLayout";
 import BudgetPage from "./pages/BudgetPage";
 import styles from "./styles/AppLayout.module.css";
+import RecurringBillsPage from "./pages/RecurringBillsPage";
 
 const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 const SignupPage = React.lazy(() => import("./pages/SignupPage"));
@@ -32,6 +39,13 @@ function App() {
       dispatch(logout());
     }
   }, [token, dispatch]);
+  useEffect(() => {
+    dispatch(fetchCategories());
+    dispatch(fetchPaymentTypes());
+    dispatch(fetchMerchants());
+    dispatch(fetchBillPayments());
+    dispatch(fetchRecurringItems());
+  }, [dispatch]);
 
   return (
     <Router>
@@ -78,6 +92,15 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Income />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/recurring-bills"
+                element={
+                  <PrivateRoute>
+                    <RecurringBillsPage />
                   </PrivateRoute>
                 }
               />

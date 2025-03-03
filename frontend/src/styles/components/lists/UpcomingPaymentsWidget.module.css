@@ -1,0 +1,59 @@
+/* styles/components/widgets/UpcomingPaymentsWidget.module.css */
+
+.widgetContainer {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.summary {
+  font-size: 0.9rem;
+  color: #718096;
+  display: flex;
+  gap: 1rem;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.paymentsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.paymentsTable th,
+.paymentsTable td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.paymentsTable th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+  color: #475569;
+}
+
+.footer {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}

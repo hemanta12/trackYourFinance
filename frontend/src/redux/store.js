@@ -5,6 +5,7 @@ import listReducer from "./listSlice";
 import budgetReducer from "./budgetSlice";
 import analyticsReducer from "./analyticsSlice";
 import authReducer from "./authSlice";
+import recurringReducer from "./recurringSlice";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     budgets: budgetReducer,
     analytics: analyticsReducer,
     auth: authReducer,
+    recurring: recurringReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -36,6 +36,14 @@ const Navigation = () => {
           </li>
           <li>
             <NavLink
+              to="/recurring-bills"
+              className={({ isActive }) => (isActive ? styles.active : "")}
+            >
+              Bills and Subscriptions
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
               to="/settings"
               className={({ isActive }) => (isActive ? styles.active : "")}
             >

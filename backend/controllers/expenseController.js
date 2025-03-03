@@ -2,12 +2,6 @@ const pool = require("../config/db");
 const crypto = require("crypto");
 const { getOrCreateMerchant } = require("./listController");
 
-/**
- * Add new expense
- * @param {Object} req.body - Expense data
- * @param {Object} req.user - Authenticated user
- */
-
 function capitalizeFirstLetter(str) {
   if (!str) return ""; // Handle empty strings
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -83,8 +77,6 @@ exports.createExpense = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-// In expenseController.js
 
 exports.createMultipleExpenses = async (req, res) => {
   const userId = req.user.id;
@@ -192,21 +184,32 @@ exports.getExpenses = async (req, res) => {
   try {
     // console.time("Expense Query Execution Time");
     const userId = req.user.id;
-    const expenseQuery = `SELECT 
+    let expenseQuery = `SELECT 
         e.*,
         DATE_FORMAT(e.date, '%m-%d-%Y') AS postedDate,
         m.name AS merchant_name,
-        d.text AS full_description
+        d.text AS full_description,
+        c.category AS category_name,
+        pt.payment_type AS payment_type_name
       FROM expenses e
       LEFT JOIN merchants m ON e.merchant_id = m.id
       LEFT JOIN descriptions d ON e.description_id = d.id
-      WHERE e.user_id = ?
-      ORDER BY e.date DESC`;
+      LEFT JOIN categories c ON e.category_id = c.id
+      LEFT JOIN payment_types pt ON e.payment_type_id = pt.id
+      WHERE e.user_id = ?`;
 
-    const [expenses] = await pool.query(expenseQuery, [userId]);
+    const params = [userId];
+
+    if (req.query.recurring === "true") {
+      expenseQuery += " AND e.recurring_item_id IS NOT NULL";
+    }
+    expenseQuery += " ORDER BY e.date DESC";
+
+    const [expenses] = await pool.query(expenseQuery, params);
     // console.timeEnd("Expense Query Execution Time"); // ✅ Logs query time
     res.status(200).json(expenses);
   } catch (err) {
+    console.error("Error in getExpenses:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -272,12 +275,8 @@ exports.bulkDeleteExpenses = async (req, res) => {
     if (!Array.isArray(ids) || ids.length === 0) {
       return res.status(400).json({ message: "No expense IDs provided." });
     }
-
     const userId = req.user.id;
 
-    // Use a parameterized query with an array.
-    // This example uses MySQL syntax + placeholders.
-    // Adjust if you’re using something else:
     const [result] = await pool.query(
       `DELETE FROM expenses
        WHERE id IN (?) AND user_id = ?`,
