@@ -1,9 +1,8 @@
-/* Navigation.module.css */
 .navContainer {
   width: fit-content;
   min-width: 210px;
   background-color: #f4f4f4;
-  padding: 20px;
+  padding: 1.4rem;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -45,21 +44,15 @@
   border-bottom: 3px solid #007bff;
 }
 
-@media (max-width: 1024px) {
-  .navList li a {
-    font-size: 1rem;
-  }
+.navList li a:hover {
+  color: #007bff;
 }
 
 /* Mobile styles: switch to a top nav */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .navContainer {
-    /* Reset desktop styles */
     width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    padding: 0.5rem 1rem;
-    border-right: none;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid #ddd;
     box-shadow: none;
 
@@ -73,7 +66,7 @@
     left: 0;
     right: 0;
     background-color: #f4f4f4;
-    z-index: 1000;
+    height: fit-content;
   }
 
   .brand {
@@ -92,11 +85,12 @@
     align-items: center;
     justify-content: space-evenly;
     gap: 1rem;
-    margin: 0;
-    padding: 0;
     list-style: none;
     flex-wrap: nowrap;
     overflow-x: auto;
+    font-size: 1.2rem;
+    height: fit-content;
+
     -webkit-overflow-scrolling: touch;
   }
   .navList li {

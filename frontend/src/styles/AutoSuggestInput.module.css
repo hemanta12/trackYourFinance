@@ -1,4 +1,3 @@
-/* AutoSuggestInput.module.css */
 *,
 *::before,
 *::after {
@@ -88,12 +87,10 @@
   transition: opacity 0.2s ease;
 }
 
-/* Show clear button when input has value */
 .inputWrapper.hasValue .clearButton {
   opacity: 1;
 }
 
-/* Adjust input padding to make space for clear button */
 .inputField {
   padding-right: 32px !important;
 }
@@ -103,14 +100,22 @@
   color: #007bff;
 }
 
-/* Responsive: On small screens, adjust font-size */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .inputField {
     font-size: 0.9rem;
-    padding: 6px 10px;
+    padding: 0.5;
   }
   .suggestionItem {
     font-size: 0.9rem;
     padding: 6px 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .inputField {
+    font-size: 0.8rem;
+  }
+  .suggestionItem {
+    font-size: 0.8rem;
   }
 }

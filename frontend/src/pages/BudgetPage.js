@@ -1,55 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBudgets, createOrUpdateBudget } from "../redux/budgetSlice";
+import {
+  fetchBudgets,
+  createOrUpdateBudget,
+  deleteBudgetThunk,
+} from "../redux/budgetSlice";
 import { fetchExpenses } from "../redux/expensesSlice";
+import Button from "../components/common/Button";
 import styles from "../styles/pages/BudgetPage.module.css";
+import { FaTrash, FaEdit } from "react-icons/fa";
+import BudgetForm from "../components/forms/BudgetForm";
 
 const BudgetPage = () => {
   const dispatch = useDispatch();
   const budgets = useSelector((state) => state.budgets.data) || [];
   const categories = useSelector((state) => state.lists.categories);
   const expenses = useSelector((state) => state.expenses.data);
-  const [formData, setFormData] = useState({
-    category_id: "",
-    amount: "",
-    reset_day: 1,
-  });
-  const [formError, setFormError] = useState("");
-  const [formSuccess, setFormSuccess] = useState("");
 
   const status = useSelector((state) => state.budgets.status);
+
+  const [editingBudgetId, setEditingBudgetId] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    amount: "",
+    reset_day: "",
+  });
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+  const [cardFeedback, setCardFeedback] = useState("");
+  const [listFeedback, setListFeedback] = useState("");
 
   useEffect(() => {
     dispatch(fetchBudgets());
     dispatch(fetchExpenses());
   }, [dispatch]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormError("");
-    setFormSuccess("");
-
-    try {
-      if (!formData.category_id || !formData.amount) {
-        setFormError("Please fill in all required fields");
-        return;
-      }
-
-      await dispatch(
-        createOrUpdateBudget({
-          category_id: Number(formData.category_id),
-          amount: Number(formData.amount),
-          reset_day: Number(formData.reset_day) || 1,
-        })
-      ).unwrap();
-
-      setFormSuccess("Budget saved successfully!");
-      setFormData({ category_id: "", amount: "", reset_day: 1 });
-      dispatch(fetchBudgets());
-    } catch (error) {
-      setFormError(error.message || "Failed to save budget");
-    }
-  };
 
   const getCategoryName = (categoryId) => {
     const category = categories.find((c) => c.id === Number(categoryId));
@@ -83,6 +65,66 @@ const BudgetPage = () => {
     return { type: "success", message: "On Track" };
   };
 
+  const handleEditClick = (budget) => {
+    setEditingBudgetId(budget.id);
+    setEditFormData({
+      amount: budget.amount,
+      reset_day: budget.reset_day,
+    });
+    setCardFeedback("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingBudgetId(null);
+    setEditFormData({ amount: "", reset_day: "" });
+    setCardFeedback("");
+  };
+
+  const handleSaveEdit = async (budget) => {
+    // Validate input
+    if (!editFormData.amount) {
+      setCardFeedback("Amount is required.");
+      return;
+    }
+    try {
+      await dispatch(
+        createOrUpdateBudget({
+          category_id: budget.category_id,
+          amount: Number(editFormData.amount),
+          reset_day: Number(editFormData.reset_day) || 1,
+        })
+      ).unwrap();
+      setCardFeedback("Budget updated successfully!");
+      setEditingBudgetId(null);
+      // Optionally, refresh budgets
+      dispatch(fetchBudgets());
+      setTimeout(() => setCardFeedback(""), 3000);
+    } catch (error) {
+      setCardFeedback(error.message || "Failed to update budget");
+    }
+  };
+
+  const handleDeleteClick = (budgetId) => {
+    setDeleteConfirmId(budgetId);
+  };
+
+  const handleConfirmDelete = async (budgetId) => {
+    try {
+      await dispatch(deleteBudgetThunk(budgetId)).unwrap();
+      setListFeedback("Budget deleted successfully!");
+      setDeleteConfirmId(null);
+      dispatch(fetchBudgets());
+      setTimeout(() => setListFeedback(""), 3000);
+    } catch (error) {
+      setListFeedback(error.message || "Failed to delete budget");
+      setTimeout(() => setListFeedback(""), 5000);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmId(null);
+  };
+
   if (status === "loading") {
     return <div>Loading budgets...</div>;
   }
@@ -90,94 +132,13 @@ const BudgetPage = () => {
   return (
     <div className={styles.budgetPage}>
       <div className={styles.formSection}>
-        <div className={styles.formCard}>
-          <h2>Create New Budget</h2>
-          <p className={styles.formSubtitle}>
-            Set up your monthly spending limits
-          </p>
-
-          <form onSubmit={handleSubmit} className={styles.budgetForm}>
-            <div className={styles.inputGroup}>
-              {/* Floating label for Select */}
-              <div className={styles.floatingInput}>
-                <select
-                  id="category"
-                  value={formData.category_id}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category_id: e.target.value })
-                  }
-                  required
-                  className={formData.category_id ? styles.filled : ""}
-                >
-                  <option value="">Select a category</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.category}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className={styles.inputGroup}>
-              {/* Floating label for Amount */}
-              <div className={styles.floatingInput}>
-                <span className={styles.currencySymbol}>$</span>
-                <input
-                  id="amount"
-                  type="number"
-                  value={formData.amount}
-                  onChange={(e) =>
-                    setFormData({ ...formData, amount: e.target.value })
-                  }
-                  required
-                  min="0"
-                  step="0.01"
-                  placeholder=" "
-                />
-                <label htmlFor="amount">Monthly Budget</label>
-              </div>
-            </div>
-
-            <div className={styles.inputGroup}>
-              {/* Floating label for Reset Day */}
-              <div className={styles.floatingInput}>
-                <input
-                  id="reset_day"
-                  type="number"
-                  value={formData.reset_day}
-                  onChange={(e) =>
-                    setFormData({ ...formData, reset_day: e.target.value })
-                  }
-                  min="1"
-                  max="31"
-                  placeholder=" "
-                />
-                <label htmlFor="reset_day">Reset Day</label>
-                <span className={styles.helpText}>
-                  Day of month when budget resets
-                </span>
-              </div>
-            </div>
-
-            {formError && (
-              <div className={styles.errorMessage}>{formError}</div>
-            )}
-            {formSuccess && (
-              <div className={styles.successMessage}>{formSuccess}</div>
-            )}
-
-            <button type="submit" className={styles.submitButton}>
-              <span>Create Budget</span>
-              <svg className={styles.buttonIcon} viewBox="0 0 24 24">
-                <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
-              </svg>
-            </button>
-          </form>
-        </div>
+        <BudgetForm />
       </div>
 
       <div className={styles.budgetListSection}>
+        {listFeedback && (
+          <div className={styles.globalFeedback}>{listFeedback}</div>
+        )}
         <div className={styles.budgetList}>
           {Array.isArray(budgets) &&
             budgets.map((budget) => {
@@ -191,47 +152,155 @@ const BudgetPage = () => {
                   key={budget.id}
                   className={`${styles.budgetItem} ${styles[status.type]}`}
                 >
-                  <div className={styles.budgetHeader}>
-                    <h3>{getCategoryName(budget.category_id)}</h3>
-                    <span className={styles.statusBadge}>{status.message}</span>
-                  </div>
-
-                  <div className={styles.budgetDetails}>
-                    <div className={styles.budgetNumbers}>
-                      <div className={styles.budgetNumber}>
-                        <span className={styles.budgetLabel}>Budget</span>
-                        <span className={styles.budgetValue}>
-                          ${budget.amount}
-                        </span>
-                      </div>
-                      <div className={styles.budgetNumber}>
-                        <span className={styles.budgetLabel}>Spent</span>
-                        <span className={styles.budgetValue}>${spent}</span>
-                      </div>
-                      <div className={styles.budgetNumber}>
-                        <span className={styles.budgetLabel}>Remaining</span>
-                        <span className={styles.budgetValue}>${remaining}</span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className={styles.progressBar}>
-                        <div
-                          className={styles.progress}
-                          style={{
-                            width: `${percentage}%`,
-                            backgroundColor: getProgressColor(
-                              spent,
-                              budget.amount
-                            ),
-                          }}
+                  {editingBudgetId === budget.id ? (
+                    <div className={styles.editBudgetForm}>
+                      <h3>{getCategoryName(budget.category_id)}</h3>
+                      <div className={styles.inputGroup}>
+                        <label>Budget ($):</label>
+                        <input
+                          type="number"
+                          value={editFormData.amount}
+                          onChange={(e) =>
+                            setEditFormData({
+                              ...editFormData,
+                              amount: e.target.value,
+                            })
+                          }
+                          min="0"
+                          step="1"
                         />
                       </div>
-                      <div className={styles.percentage}>
-                        {percentage.toFixed(1)}% used
+                      <div className={styles.inputGroup}>
+                        <label>Reset Day:</label>
+                        <input
+                          type="number"
+                          value={editFormData.reset_day}
+                          onChange={(e) =>
+                            setEditFormData({
+                              ...editFormData,
+                              reset_day: e.target.value,
+                            })
+                          }
+                          min="1"
+                          max="31"
+                        />
                       </div>
+                      <div className={styles.cardActions}>
+                        <Button
+                          variant="success"
+                          onClick={() => handleSaveEdit(budget)}
+                        >
+                          Save
+                        </Button>
+                        <Button variant="primary" onClick={handleCancelEdit}>
+                          Cancel
+                        </Button>
+                      </div>
+                      {cardFeedback && (
+                        <div className={styles.feedbackMessage}>
+                          {cardFeedback}
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  ) : (
+                    // Normal display mode for the budget card
+                    <>
+                      <div className={styles.budgetHeader}>
+                        <div className={styles.budgetTitleContainer}>
+                          <h3 className={styles.budgetTitle}>
+                            {getCategoryName(budget.category_id)}
+                          </h3>
+                          <div className={styles.cardActions}>
+                            <Button
+                              variant="primary"
+                              size="small"
+                              onClick={() => handleEditClick(budget)}
+                              className={styles.editButton}
+                              title="Edit Budget"
+                            >
+                              <FaEdit />
+                            </Button>
+
+                            <Button
+                              variant="primary"
+                              size="small"
+                              onClick={() => handleDeleteClick(budget.id)}
+                              className={styles.deleteButton}
+                              title="Delete Budget"
+                            >
+                              <FaTrash />
+                            </Button>
+                          </div>
+                        </div>
+                        <span className={styles.statusBadge}>
+                          {status.message}
+                        </span>
+                      </div>
+
+                      <div className={styles.budgetDetails}>
+                        <div className={styles.budgetNumbers}>
+                          <div className={styles.budgetNumber}>
+                            <span className={styles.budgetLabel}>Budget</span>
+                            <span className={styles.budgetValue}>
+                              ${budget.amount}
+                            </span>
+                          </div>
+                          <div className={styles.budgetNumber}>
+                            <span className={styles.budgetLabel}>Spent</span>
+                            <span className={styles.budgetValue}>${spent}</span>
+                          </div>
+                          <div className={styles.budgetNumber}>
+                            <span className={styles.budgetLabel}>
+                              Remaining
+                            </span>
+                            <span className={styles.budgetValue}>
+                              ${remaining}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className={styles.progressBar}>
+                            <div
+                              className={styles.progress}
+                              style={{
+                                width: `${percentage}%`,
+                                backgroundColor: getProgressColor(
+                                  spent,
+                                  budget.amount
+                                ),
+                              }}
+                            />
+                          </div>
+                          <div className={styles.percentage}>
+                            {percentage.toFixed(1)}% used
+                          </div>
+                        </div>
+                      </div>
+
+                      {deleteConfirmId === budget.id && (
+                        <div className={styles.deleteConfirmationBar}>
+                          <p>Are you sure you want to delete this budget?</p>
+                          <div className={styles.confirmationButtons}>
+                            <Button
+                              variant="danger"
+                              size="small"
+                              onClick={() => handleConfirmDelete(budget.id)}
+                            >
+                              Yes
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="small"
+                              onClick={handleCancelDelete}
+                            >
+                              No
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               );
             })}

@@ -18,12 +18,6 @@
   border-bottom: 1px solid #ddd;
 }
 
-.editField {
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
-  padding: 8px;
-}
-
 /* Container & General Styles */
 .incomeSection {
   padding: 1rem;
@@ -31,6 +25,8 @@
   margin: 0 auto;
   font-family: "Inter", sans-serif;
   color: #1e293b;
+  align-items: center;
+  justify-content: center;
 }
 
 .title {
@@ -60,6 +56,49 @@
 .monthTotals {
   font-size: 0.85rem;
   color: #718096;
+}
+
+.addIncomeFormContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #f9fafb;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  flex-wrap: wrap;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.newIncomeRow {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr auto;
+  gap: 14px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 5px;
+}
+
+.inlineInputsLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.inlineInputsRight {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.newIncomeRow .inlineActionButtons {
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 /* Table Wrapper */
@@ -141,10 +180,10 @@
 /* Edit Field Styling */
 .editField {
   width: 100%;
-  padding: 8px;
+  padding: 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 1rem;
 }
 
 /* Action Buttons */
@@ -207,6 +246,21 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+@media (max-width: 1024px) {
+  .newIncomeRow {
+    width: 75%;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .inlineInputsLeft,
+  .inlineInputsRight {
+    width: 100%;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .incomeSection {
@@ -229,14 +283,40 @@
     white-space: nowrap;
   }
 
-  .incomeTable th:nth-child(1),
+  /* .incomeTable th:nth-child(1),
   .incomeTable td:nth-child(1) {
     width: 55px;
+  } */
+  .editField {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+
+  .newIncomeRow {
+    width: 75%;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .inlineInputsLeft,
+  .inlineInputsRight {
+    width: 100%;
   }
 }
 
 @media screen and (max-width: 480px) {
   .monthHeader {
     flex-direction: column;
+  }
+  .editField {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.8rem;
   }
 }

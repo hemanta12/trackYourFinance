@@ -5,6 +5,7 @@ import {
   fetchMerchants,
   updateMerchantThunk,
   deleteMerchantThunk,
+  addMerchantThunk,
 } from "../../redux/listSlice";
 
 const MerchantManager = () => {
@@ -23,6 +24,7 @@ const MerchantManager = () => {
       updateThunk={updateMerchantThunk}
       deleteThunk={deleteMerchantThunk}
       fetchThunk={fetchMerchants}
+      createThunk={addMerchantThunk}
     />
   );
 };

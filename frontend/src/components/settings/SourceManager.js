@@ -5,6 +5,7 @@ import {
   fetchSources,
   updateSourceThunk,
   deleteSourceThunk,
+  addSourceThunk,
 } from "../../redux/listSlice";
 
 const SourceManager = () => {
@@ -23,6 +24,7 @@ const SourceManager = () => {
       updateThunk={updateSourceThunk}
       deleteThunk={deleteSourceThunk}
       fetchThunk={fetchSources}
+      createThunk={addSourceThunk}
     />
   );
 };

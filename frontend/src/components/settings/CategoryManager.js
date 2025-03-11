@@ -5,6 +5,7 @@ import {
   fetchCategories,
   updateCategoryThunk,
   deleteCategoryThunk,
+  addCategoryThunk,
 } from "../../redux/listSlice";
 
 const CategoryManager = () => {
@@ -23,6 +24,7 @@ const CategoryManager = () => {
       updateThunk={updateCategoryThunk}
       deleteThunk={deleteCategoryThunk}
       fetchThunk={fetchCategories}
+      createThunk={addCategoryThunk}
     />
   );
 };

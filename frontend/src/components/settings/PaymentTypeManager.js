@@ -5,6 +5,7 @@ import {
   fetchPaymentTypes,
   updatePaymentTypeThunk,
   deletePaymentTypeThunk,
+  addPaymentTypeThunk,
 } from "../../redux/listSlice";
 
 const PaymentTypeManager = () => {
@@ -24,6 +25,7 @@ const PaymentTypeManager = () => {
       updateThunk={updatePaymentTypeThunk}
       deleteThunk={deletePaymentTypeThunk}
       fetchThunk={fetchPaymentTypes}
+      createThunk={addPaymentTypeThunk}
     />
   );
 };

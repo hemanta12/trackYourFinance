@@ -1,7 +1,8 @@
 /* Container & Header */
 .container {
   margin: 1rem auto;
-  width: 100%;
+  width: 80%;
+  min-width: 700px;
   padding: 2rem;
   background: #f8fafc;
   border-radius: 16px;
@@ -20,6 +21,7 @@
 
 /* Expense Card (mimicking MultiExpenseModal card) */
 .expenseCard {
+  width: 100%;
   background: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -186,6 +188,16 @@ textarea:focus {
 
 /* Responsive adjustments */
 @media (max-width: 600px) {
+  .cardRow {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    min-width: 100%;
+    width: fit-content;
+  }
   .cardRow {
     flex-direction: column;
   }

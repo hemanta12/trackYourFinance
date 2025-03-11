@@ -11,7 +11,7 @@ const Income = () => {
     return <p>Loading income...</p>;
   }
   return (
-    <div>
+    <div className="pageContainer" style={{ marginTop: "0" }}>
       <h2>Welcome to Income Page</h2>
       <IncomeForm />
       <IncomeList income={income} />

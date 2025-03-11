@@ -21,6 +21,29 @@
   margin-top: 0;
 }
 
+/* Month Header Styles */
+.monthHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+.monthTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0;
+}
+
+.monthTotals {
+  font-size: 0.85rem;
+  color: #718096;
+}
+
 /* Wrapping the table for responsive overflow if needed */
 .tableWrapper {
   overflow-x: auto;

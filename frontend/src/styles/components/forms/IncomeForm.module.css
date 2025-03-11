@@ -1,7 +1,7 @@
 /* Container & Header */
 .container {
   margin: 1rem auto;
-  width: 95%;
+  width: 75%;
   max-width: 1200px;
   padding: 2rem;
   background: #f8fafc;
@@ -169,6 +169,16 @@ textarea:focus {
 
 /* Responsive Adjustments */
 @media (max-width: 600px) {
+  .cardRow {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    min-width: 90%;
+    width: fit-content;
+  }
   .cardRow {
     flex-direction: column;
   }

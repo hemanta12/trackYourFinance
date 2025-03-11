@@ -12,19 +12,27 @@ const GenericListManager = ({
   updateThunk,
   deleteThunk,
   fetchThunk,
+  createThunk,
 }) => {
   const dispatch = useDispatch();
+
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState("");
   const [editFeedback, setEditFeedback] = useState(null);
+
   const [pendingDeleteId, setPendingDeleteId] = useState(null);
   const [deleteFeedback, setDeleteFeedback] = useState(null);
+
   const [selectMode, setSelectMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
 
-  const sortedItems = [...items].sort((a, b) =>
-    a[displayProp].localeCompare(b[displayProp])
-  );
+  const [isAdding, setIsAdding] = useState(false);
+  const [newValue, setNewValue] = useState("");
+  const [addFeedback, setAddFeedback] = useState(null);
+
+  const sortedItems = [...items]
+    .filter((item) => item)
+    .sort((a, b) => a[displayProp].localeCompare(b[displayProp]));
 
   const handleEdit = (item) => {
     setEditingId(item.id);
@@ -87,7 +95,7 @@ const GenericListManager = ({
 
   const toggleSelectMode = () => {
     setSelectMode(!selectMode);
-    setSelectedItems([]); // Clear selection on mode toggle.
+    setSelectedItems([]);
     if (editingId) {
       setEditingId(null);
     }
@@ -153,10 +161,71 @@ const GenericListManager = ({
       });
     }
   };
+  const startAddNew = () => {
+    setIsAdding(true);
+    setNewValue("");
+    setAddFeedback(null);
+  };
+
+  const cancelAddNew = () => {
+    setIsAdding(false);
+    setNewValue("");
+    setAddFeedback(null);
+  };
+
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const handleAddNew = async () => {
+    if (!newValue.trim()) {
+      setAddFeedback({
+        message: "Input value cannot be empty.",
+        type: "error",
+      });
+      return;
+    }
+
+    //Convert the first letter to uppercase, the rest to lowercase
+    const normalized =
+      newValue.trim().charAt(0).toUpperCase() +
+      newValue.trim().slice(1).toLowerCase();
+
+    const alreadyExists = sortedItems.some(
+      (item) => item[displayProp].toLowerCase() === normalized.toLowerCase()
+    );
+    if (alreadyExists) {
+      setAddFeedback({ message: "That name already exists.", type: "error" });
+      return;
+    }
+    try {
+      await dispatch(createThunk(normalized)).unwrap();
+      await wait(500);
+      dispatch(fetchThunk());
+      setAddFeedback({ message: "Created successfully!", type: "success" });
+      setNewValue("");
+
+      setTimeout(() => setAddFeedback(null), 3000);
+    } catch (error) {
+      const errorMessage =
+        typeof error === "string"
+          ? error
+          : error?.message || "Failed to create item.";
+      setAddFeedback({ message: errorMessage, type: "error" });
+
+      setTimeout(() => setAddFeedback(null), 10000);
+    }
+  };
 
   return (
     <div className={styles.managerContainer}>
       <h3>{title}</h3>
+
+      {addFeedback && (
+        <div
+          className={`${styles.feedbackMessage} ${styles[addFeedback.type]}`}
+        >
+          {addFeedback.message}
+        </div>
+      )}
       {deleteFeedback && (
         <div
           className={`${styles.feedbackMessage} ${styles[deleteFeedback.type]}`}
@@ -168,10 +237,11 @@ const GenericListManager = ({
       <div style={{ marginBottom: "10px" }}>
         <Button
           variant="primary"
+          size="small"
           onClick={toggleSelectMode}
           className={styles.editBtn}
         >
-          {selectMode ? "Exit Multi-Select" : "Select Multiple"}
+          {selectMode ? "Exit" : "Manage"}
         </Button>
         {selectMode && (
           <div className={styles.multiSelectToolbar}>
@@ -207,6 +277,54 @@ const GenericListManager = ({
           </div>
         )}
       </div>
+
+      {!isAdding ? (
+        <Button
+          variant="primary"
+          size="small"
+          className={styles.editBtn}
+          onClick={startAddNew}
+          style={{ marginBottom: "10px" }}
+        >
+          + Add a new item
+        </Button>
+      ) : (
+        <div
+          className={styles.listItem}
+          style={{ backgroundColor: "#f9f9f9", marginBottom: "10px" }}
+        >
+          {/* Inline "Add" form */}
+          <div className={styles.editContainer} style={{ width: "100%" }}>
+            <div className={styles.editInputContainer}>
+              <input
+                type="text"
+                value={newValue}
+                onChange={(e) => setNewValue(e.target.value)}
+                className={styles.editInput}
+                placeholder="Enter new name"
+              />
+            </div>
+            <div className={styles.buttonContainer}>
+              <Button
+                variant="success"
+                size="small"
+                onClick={handleAddNew}
+                className={styles.saveBtn}
+              >
+                Save
+              </Button>
+              <Button
+                variant="primary"
+                size="small"
+                onClick={cancelAddNew}
+                className={styles.cancelBtn}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className={styles.listContainer}>
         {sortedItems.map((item) => (

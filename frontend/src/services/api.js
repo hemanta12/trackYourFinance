@@ -24,22 +24,22 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 // Response interceptor to handle token expiration.
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response) {
-      if (error.response.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("userName");
-        window.location.href = "/?session=expired";
-      }
-      if (error.response.status === 403) {
-        return Promise.reject(error);
-      }
-    }
-    return Promise.reject(error);
-  }
-);
+// api.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     if (error.response) {
+//       if (error.response.status === 401) {
+//         localStorage.removeItem("token");
+//         localStorage.removeItem("userName");
+//         window.location.href = "/?message=unauthorized";
+//       }
+//       if (error.response.status === 403) {
+//         return Promise.reject(error);
+//       }
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 // Income & Expense
 export const getIncome = async () => await api.get("/incomes");
@@ -86,6 +86,8 @@ export const getBudgets = () => api.get("/budgets");
 export const createBudget = (data) => api.post("/budgets", data);
 export const checkBudgetReset = (budgetId) =>
   api.post(`/budgets/reset/${budgetId}`);
+
+export const deleteBudget = (id) => api.delete(`/budgets/${id}`);
 
 // Analytics & Reports
 export const getMonths = async () => {

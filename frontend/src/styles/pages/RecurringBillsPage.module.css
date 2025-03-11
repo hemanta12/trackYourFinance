@@ -1,13 +1,14 @@
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1.5rem;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+h2 {
+  margin-top: 0;
   text-align: center;
   margin-bottom: 1rem;
   color: #333;
@@ -30,7 +31,6 @@ h1 {
   margin-top: 0.5rem;
 }
 
-/* Calendar Header Container */
 .calendarHeader {
   display: flex;
   align-items: center;
@@ -43,7 +43,6 @@ h1 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Clickable Title Container */
 .titleContainer {
   display: inline-flex;
   align-items: center;
@@ -66,7 +65,7 @@ h1 {
 .chevronIcon {
   margin-left: 0.5rem;
   font-size: 1.2rem;
-  color: #007bff; /* match your theme */
+  color: #007bff;
 }
 
 /* Navigation Buttons */
@@ -139,7 +138,6 @@ h1 {
   background-color: #fdfdfd;
 }
 
-/* Autopay column */
 .autopayColumn {
   text-align: center;
 }
@@ -152,7 +150,6 @@ h1 {
   background-color: black;
 }
 
-/* Action containers */
 .actionContainer {
   display: flex;
   justify-content: space-between;
@@ -168,7 +165,6 @@ h1 {
   padding-left: 0.5rem;
 }
 
-/* Expanded row styling */
 .expandedRow {
   background-color: #f9f9f9;
 }
@@ -179,12 +175,10 @@ h1 {
   border-top: 1px solid #ddd;
 }
 
-/* Calendar view container */
 .calendarView {
   margin-top: 1rem;
 }
 
-/* FullCalendar customizations */
 .fc {
   background-color: #fff;
   border: 1px solid #e0e0e0;

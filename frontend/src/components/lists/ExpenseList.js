@@ -36,8 +36,6 @@ const groupExpensesByMonth = (expenses) => {
     }, {});
 };
 function getDefaultDateForMonth(monthYearString) {
-  // Parse something like "January 2025" => { monthIndex: 0, year: 2025 }
-  // Or if your grouping used a different format, parse accordingly
   const [monthName, year] = monthYearString.split(" ");
   const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
   const parsedYear = parseInt(year, 10);
@@ -83,7 +81,7 @@ const ExpenseList = ({
   });
 
   const [scrollPosition, setScrollPosition] = useState(0);
-  // Right inside the ExpenseList component:
+
   const [addExpenseInfo, setAddExpenseInfo] = useState(null);
   const [newExpenseForm, setNewExpenseForm] = useState({
     date: "",
@@ -94,6 +92,17 @@ const ExpenseList = ({
     notes: "",
   });
   const [successMessage, setSuccessMessage] = useState(null);
+
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const isSmallScreen = windowWidth <= 768;
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowWidth(window.innerWidth);
+    }
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const tableRef = useRef(null);
 
@@ -153,7 +162,6 @@ const ExpenseList = ({
     }
   };
 
-  // Auto-clear success message after 3 seconds
   useEffect(() => {
     if (successMessage) {
       const timer = setTimeout(() => setSuccessMessage(null), 5000);
@@ -266,12 +274,19 @@ const ExpenseList = ({
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDateResponsive = (dateString) => {
     const date = new Date(dateString);
+    // Adjust for timezone offset
+    date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
-    const year = date.getFullYear();
-    return `${month}-${day}-${year}`;
+
+    if (isSmallScreen) {
+      return `${month}-${day}`;
+    } else {
+      const year = date.getFullYear();
+      return `${month}-${day}-${year}`;
+    }
   };
 
   const getPaymentTypeName = (paymentTypeId) => {
@@ -316,18 +331,6 @@ const ExpenseList = ({
       notes: "",
       expense_name: "",
     });
-    console.log(
-      "Add Expense for ",
-      monthYear,
-      " => date=",
-      defaultDate,
-      "category=",
-      filterCategory,
-      "payment=",
-      filterPayment,
-      "merchant=",
-      filterMerchant
-    );
   }
 
   // 1) Filter the expenses based on the props
@@ -394,12 +397,24 @@ const ExpenseList = ({
       )}
 
       {sortedMonths.map(([monthYear, monthExpenses]) => {
+        const transactionCount = monthExpenses.length;
+        const totalAmount = monthExpenses.reduce(
+          (sum, item) => sum + Number(item.amount),
+          0
+        );
         const isAdding =
           addExpenseInfo && addExpenseInfo.monthYear === monthYear;
 
         return (
           <div key={monthYear} className={styles.monthGroup}>
-            <h3 className={styles.monthTitle}>{monthYear}</h3>
+            <div className={styles.monthHeader}>
+              <h3 className={styles.monthTitle}>{monthYear}</h3>
+              <span className={styles.monthTotals}>
+                {transactionCount} transaction
+                {transactionCount !== 1 ? "s" : ""} | Total: $
+                {totalAmount.toFixed(2)}
+              </span>
+            </div>
             <Button
               className={styles.addExpenseButton}
               variant="primary"
@@ -626,7 +641,6 @@ const ExpenseList = ({
 
                           {/* Date Column */}
                           <td>
-                            {/* Show an icon/label if statement_id exists */}
                             {item.statement_id && (
                               <span
                                 title="Imported from a statement"
@@ -653,7 +667,7 @@ const ExpenseList = ({
                                 className={styles.editField}
                               />
                             ) : (
-                              formatDate(item.date)
+                              formatDateResponsive(item.date)
                             )}
                           </td>
 
@@ -775,11 +789,6 @@ const ExpenseList = ({
                             )}
                           </td>
 
-                          {/* <td className={styles.hideOnMobile}> */}
-                          {/* This cell serves as a summary for extra details */}
-                          {/* {item.full_description || item.notes || "-"} */}
-                          {/* </td> */}
-
                           {/* Action Column */}
                           <td className={styles.actionCell}>
                             {isEditing ? (
@@ -816,7 +825,7 @@ const ExpenseList = ({
                             )}
                           </td>
                         </tr>
-                        {/* Expanded Row */}
+
                         {isExpanded && !isEditing && (
                           <tr className={styles.expandedRow}>
                             <td colSpan={bulkMode ? 8 : 7}>

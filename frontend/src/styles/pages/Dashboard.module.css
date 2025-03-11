@@ -9,6 +9,7 @@
   min-height: 100vh;
   width: 100%;
   overflow: hidden;
+  margin-top: 3rem;
 }
 
 .main {
@@ -32,12 +33,10 @@
 .topBar {
   display: flex;
   align-items: center;
-  /* justify-content: space-between; */
   padding: 1rem 2rem;
   background-color: #ffffff;
-  /* subtle shadow */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  margin-bottom: 1rem; /* space below header */
+  margin-bottom: 1rem;
 }
 
 .topBarLeft {
@@ -63,7 +62,6 @@
   flex: 1;
 }
 
-/* Profile/Dropdown */
 .profileMenu {
   position: relative;
   display: flex;
@@ -89,7 +87,7 @@
 
 .dropdownMenu {
   position: absolute;
-  top: 50px; /* slightly below the avatar */
+  top: 50px;
   right: 0;
   background-color: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -117,11 +115,10 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
-  /* margin-bottom: 24px; */
+
   width: 100%;
 }
 
-/* Card styling for each chart or placeholder */
 .analyticsCard {
   background: #ffffff;
   border-radius: 12px;
@@ -136,7 +133,6 @@
   overflow: hidden;
 }
 
-/* A quick placeholder style for RecurringPayments */
 .placeholderCard {
   display: flex;
   flex-direction: column;
@@ -151,7 +147,6 @@
   margin-bottom: 0.5rem;
 }
 
-/* Dashboard Grid Layout */
 .dashboardGrid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -159,14 +154,12 @@
   margin-top: 2rem;
 }
 
-/* Welcome Message */
 .welcome {
   text-align: center;
   font-size: 1.5rem;
   margin-bottom: 20px;
 }
 
-/* Chart Section */
 .chartSection {
   grid-column: span 12;
   margin-bottom: 24px;
@@ -179,7 +172,6 @@
   min-height: 500px;
 }
 
-/* Card Headers */
 .cardHeader {
   display: flex;
   align-items: center;

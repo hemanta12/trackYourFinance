@@ -164,7 +164,7 @@ const RecurringBillsPage = () => {
   // Render the page by toggling between list view and calendar view.
   return (
     <div className={styles.container}>
-      <h1>Recurring Bills & Subscriptions</h1>
+      <h2>Recurring Bills & Subscriptions</h2>
       <div className={styles.topControls}>
         <div className={styles.viewToggles}>
           <Button

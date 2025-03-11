@@ -1,14 +1,36 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  createIncome,
   updateIncome,
   deleteIncome,
   fetchIncome,
 } from "../../redux/incomeSlice";
-import { fetchSources } from "../../redux/listSlice"; // Import fetchSources from redux/listSlice";
-import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import DateQuarterFilter from "../filters/DateQuarterFilter";
+import Button from "../common/Button";
+import AutoSuggestInput from "../../utils/autoSuggestInput";
+import { addSourceThunk, fetchSources } from "../../redux/listSlice";
 import styles from "../../styles/components/lists/IncomeList.module.css";
+
+function getDefaultDateForMonth(monthYearString) {
+  const [monthName, year] = monthYearString.split(" ");
+  const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+  const parsedYear = parseInt(year, 10);
+
+  const now = new Date();
+  const currentMonthIndex = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  if (parsedYear === currentYear && monthIndex === currentMonthIndex) {
+    // If it's the current month, default to "today"
+    return now.toISOString().split("T")[0];
+  } else {
+    // Otherwise, default to the last day of that month
+    const lastDay = new Date(parsedYear, monthIndex + 1, 0);
+    return lastDay.toISOString().split("T")[0];
+  }
+}
 
 // Custom hook to get window width
 const useWindowWidth = () => {
@@ -55,15 +77,29 @@ const IncomeList = ({ income = [] }) => {
   const sources = useSelector((state) => state.lists.sources);
   const [expandedRow, setExpandedRow] = useState(null);
 
-  const windowWidth = useWindowWidth();
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const isSmallScreen = windowWidth <= 768;
+
+  const [addIncomeInfo, setAddIncomeInfo] = useState(null);
+  const [newIncomeForm, setNewIncomeForm] = useState({
+    date: "",
+    source_id: "",
+    amount: "",
+    notes: "",
+  });
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     dispatch(fetchSources());
     dispatch(fetchIncome());
   }, [dispatch]);
 
-  // Derive available years dynamically from income data
   const availableYears = useMemo(() => {
     const yearsSet = new Set();
     income.forEach((item) => {
@@ -73,7 +109,6 @@ const IncomeList = ({ income = [] }) => {
     return Array.from(yearsSet).sort((a, b) => b - a);
   }, [income]);
 
-  // Filter income data based on selected year and quarter
   const filteredIncome = useMemo(() => {
     return income.filter((item) => {
       const dateObj = new Date(item.date);
@@ -113,7 +148,6 @@ const IncomeList = ({ income = [] }) => {
   }, [income, selectedYear, selectedQuarter]);
 
   const getSourceName = (sourceId) => {
-    // Convert sourceId to number for strict comparison
     const source = sources.find((s) => s.id === Number(sourceId));
     return source ? source.source : "Unknown";
   };
@@ -195,6 +229,56 @@ const IncomeList = ({ income = [] }) => {
       return dateB - dateA;
     }
   );
+
+  const handleAddIncomeClick = (monthYear) => {
+    const defaultDate = getDefaultDateForMonth(monthYear);
+
+    setAddIncomeInfo({ monthYear, defaultDate });
+
+    setNewIncomeForm({
+      date: defaultDate,
+      source_id: "",
+      amount: "",
+      notes: "",
+    });
+  };
+
+  const handleCreateIncome = async () => {
+    const { date, source_id, amount, notes } = newIncomeForm;
+    if (!date || !source_id || !amount) {
+      alert("Please fill out all required fields (date, source, amount).");
+      return;
+    }
+    try {
+      await dispatch(
+        createIncome({
+          date,
+          source_id: Number(source_id),
+          amount: Number(amount),
+          notes: notes || "",
+        })
+      ).unwrap();
+      setSuccessMessage("Income added successfully!");
+      dispatch(fetchIncome()); // refresh the list
+      // Optionally reset the form:
+      setNewIncomeForm({
+        ...newIncomeForm,
+        amount: "",
+        notes: "",
+      });
+    } catch (err) {
+      console.error("Failed to create income:", err);
+      alert("Could not create income");
+    }
+  };
+
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
+
   // Clear filter handler
   const clearFilters = () => {
     setSelectedYear("All");
@@ -220,6 +304,8 @@ const IncomeList = ({ income = [] }) => {
           (sum, item) => sum + Number(item.amount),
           0
         );
+
+        const isAdding = addIncomeInfo && addIncomeInfo.monthYear === monthYear;
         return (
           <div key={monthYear} className={styles.monthGroup}>
             <div className={styles.monthHeader}>
@@ -230,6 +316,119 @@ const IncomeList = ({ income = [] }) => {
                 {totalAmount.toFixed(2)}
               </span>
             </div>
+
+            <Button
+              className={styles.addIncomeButton}
+              size="small"
+              onClick={() => handleAddIncomeClick(monthYear)}
+            >
+              + New
+            </Button>
+
+            {/* Success message if we just added something */}
+            {isAdding && successMessage && (
+              <div className={styles.successMessage}>{successMessage}</div>
+            )}
+
+            {isAdding && (
+              <div className={styles.addIncomeFormContainer}>
+                <h4>Adding New Income for {monthYear}</h4>
+
+                <div className={styles.newIncomeRow}>
+                  <div className={styles.inlineInputsLeft}>
+                    {/* Amount */}
+                    <input
+                      type="number"
+                      placeholder="Amount"
+                      value={newIncomeForm.amount}
+                      onChange={(e) =>
+                        setNewIncomeForm({
+                          ...newIncomeForm,
+                          amount: e.target.value,
+                        })
+                      }
+                      className={styles.editField}
+                    />
+                    {/* Date */}
+                    <input
+                      type="date"
+                      value={newIncomeForm.date}
+                      onChange={(e) =>
+                        setNewIncomeForm({
+                          ...newIncomeForm,
+                          date: e.target.value,
+                        })
+                      }
+                      className={styles.editField}
+                    />
+                  </div>
+
+                  <div className={styles.inlineInputsRight}>
+                    {/* Source */}
+
+                    <AutoSuggestInput
+                      name="source_id"
+                      options={sources.map((s) => ({
+                        label: s.source,
+                        value: s.id,
+                      }))}
+                      placeholder="Select or Add new Source"
+                      value={newIncomeForm.source_id}
+                      onChange={(newVal) => {
+                        setNewIncomeForm({
+                          ...newIncomeForm,
+                          source_id: newVal,
+                        });
+                      }}
+                      onAddNew={async (newSourceName) => {
+                        const newSource = await dispatch(
+                          addSourceThunk(newSourceName)
+                        ).unwrap();
+
+                        await dispatch(fetchSources());
+
+                        return {
+                          label: newSource.source,
+                          value: newSource.id,
+                        };
+                      }}
+                    />
+
+                    {/* Notes */}
+                    <input
+                      type="text"
+                      placeholder="Notes"
+                      value={newIncomeForm.notes}
+                      onChange={(e) =>
+                        setNewIncomeForm({
+                          ...newIncomeForm,
+                          notes: e.target.value,
+                        })
+                      }
+                      className={styles.editField}
+                    />
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className={styles.inlineActionButtons}>
+                    <Button
+                      variant="success"
+                      onClick={handleCreateIncome}
+                      classNames={styles.inlineSaveButton}
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      onClick={() => setAddIncomeInfo(null)}
+                      classNames={styles.inlineCancelButton}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className={styles.tableWrapper}>
               <table className={styles.incomeTable}>
@@ -249,7 +448,6 @@ const IncomeList = ({ income = [] }) => {
                     return (
                       <React.Fragment key={`income-${item.id}`}>
                         <tr
-                          // key={`income-${item.id}`}
                           className={isEditing ? styles.editingRow : ""}
                           onClick={() => {
                             if (!isEditing && isSmallScreen)
@@ -342,33 +540,33 @@ const IncomeList = ({ income = [] }) => {
                           <td className={styles.actionCell}>
                             {isEditing ? (
                               <>
-                                <button
+                                <Button
                                   onClick={saveEdit}
                                   className={styles.saveButton}
                                 >
                                   Save
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                   onClick={() => setEditingId(null)}
                                   className={styles.cancelButton}
                                 >
                                   Cancel
-                                </button>
+                                </Button>
                               </>
                             ) : (
                               <>
-                                <button
+                                <Button
                                   onClick={() => handleEdit(item.id, item)}
                                   className={styles.editButton}
                                 >
                                   <FaEdit className={styles.icon} />
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                   onClick={() => handleDelete(item.id)}
                                   className={styles.deleteButton}
                                 >
                                   <FaTrash className={styles.icon} />
-                                </button>
+                                </Button>
                               </>
                             )}
                           </td>
