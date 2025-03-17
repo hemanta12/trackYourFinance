@@ -24,6 +24,7 @@
   flex: 1;
   position: relative;
   height: 400px; /* Adjust as needed */
+  min-width: 240px;
 }
 
 /* Center overlay in the donut */
@@ -90,4 +91,26 @@
   text-align: center;
   padding: 2rem;
   color: #64748b;
+}
+
+@media (max-width: 768px) {
+  .chartContent {
+    flex-direction: column;
+  }
+
+  .chartWrapper {
+    height: 300px;
+  }
+
+  .categoryList {
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .centerLabel {
+    font-size: 0.8rem; /* Smaller center text */
+  }
 }

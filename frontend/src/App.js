@@ -19,10 +19,12 @@ import {
 import PrivateRoute from "./components/layout/PrivateRoute";
 import OAuthCallback from "./pages/OAuthCallback";
 import Navigation from "./components/layout/Navigation";
+import MobileNavigation from "./components/layout/MobileNavigation";
 import Settings from "./components/settings/SettingsLayout";
 import BudgetPage from "./pages/BudgetPage";
 import styles from "./styles/AppLayout.module.css";
 import RecurringBillsPage from "./pages/RecurringBillsPage";
+import useWindowDimensions from "./utils/useWindowDimensions";
 
 const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 const SignupPage = React.lazy(() => import("./pages/SignupPage"));
@@ -33,6 +35,7 @@ const Income = React.lazy(() => import("./pages/Income"));
 function App() {
   const dispatch = useDispatch();
   const { token } = useSelector((state) => state.auth);
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     if (token && !isTokenValid(token)) {
@@ -50,7 +53,7 @@ function App() {
   return (
     <Router>
       <div className={styles.appContainer}>
-        {token && <Navigation />}
+        {token && (width < 480 ? <MobileNavigation /> : <Navigation />)}
         <div className={styles.mainContent}>
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>

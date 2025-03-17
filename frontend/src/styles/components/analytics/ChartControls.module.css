@@ -88,6 +88,9 @@
 }
 
 @media (max-width: 480px) {
+  .chartControls {
+    flex-direction: column; /* Stack buttons vertically */
+  }
   .chartContainer {
     padding: 1rem;
     height: 350px;
@@ -98,5 +101,13 @@
   .chartControls button {
     font-size: 0.9rem;
     padding: 8px 16px;
+  }
+
+  .recharts-cartesian-axis-tick text {
+    font-size: 0.4rem !important;
+  }
+
+  .recharts-legend-wrapper {
+    bottom: -25px !important; /* Prevent legend overlap */
   }
 }

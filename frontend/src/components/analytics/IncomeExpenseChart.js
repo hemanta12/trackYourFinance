@@ -7,7 +7,6 @@ import {
   Area,
   XAxis,
   YAxis,
-  CartesianGrid,
   Legend,
 } from "recharts";
 import styles from "../../styles/components/analytics/ChartControls.module.css";
@@ -99,13 +98,12 @@ const IncomeExpenseChart = ({ data, viewType, year, month }) => {
       </div>
 
       <div className={styles.chartBody}>
-        <ResponsiveContainer width="100%" height={350}>
+        <ResponsiveContainer width="100%" height={300}>
           {chartView === "bar" ? (
             <BarChart
               data={sortedData}
               margin={{ top: 40, right: 10, left: 10, bottom: 5 }}
             >
-              {/* <CartesianGrid strokeDasharray="3 3" /> */}
               <XAxis
                 dataKey="period"
                 tickFormatter={(tick) => monthMap[tick] || tick}
@@ -131,7 +129,6 @@ const IncomeExpenseChart = ({ data, viewType, year, month }) => {
               data={sortedData}
               margin={{ top: 40, right: 30, left: 20, bottom: 15 }}
             >
-              {/* <CartesianGrid strokeDasharray="3 3" /> */}
               <XAxis
                 dataKey="period"
                 tickFormatter={(tick) => monthMap[tick] || tick}
@@ -140,7 +137,6 @@ const IncomeExpenseChart = ({ data, viewType, year, month }) => {
                 domain={[0, maxAreaValue * 1.2]}
                 padding={{ top: 20, bottom: 0 }}
               />
-              {/* <Tooltip formatter={(value) => `$${value}`} /> */}
               <Legend />
               {/* Two Areas with the same stackId to create a stacked effect */}
               <Area

@@ -412,16 +412,16 @@ const IncomeList = ({ income = [] }) => {
                   {/* Action buttons */}
                   <div className={styles.inlineActionButtons}>
                     <Button
+                      classNames={styles.inlineSaveButton}
                       variant="success"
                       onClick={handleCreateIncome}
-                      classNames={styles.inlineSaveButton}
                     >
                       Save
                     </Button>
                     <Button
+                      classNames={styles.inlineCancelButton}
                       variant="secondary"
                       onClick={() => setAddIncomeInfo(null)}
-                      classNames={styles.inlineCancelButton}
                     >
                       Cancel
                     </Button>

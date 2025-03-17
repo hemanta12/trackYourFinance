@@ -8,7 +8,7 @@
 .expenseSection {
   padding: 1rem;
   max-width: 100%;
-  width: 99%;
+  width: 100%;
   margin: 0 auto;
   font-family: "Inter", sans-serif;
   color: #1e293b;
@@ -17,7 +17,7 @@
 .title {
   font-size: 1.4rem;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 1.5rem;
   margin-top: 0;
 }
 
@@ -52,7 +52,7 @@
   border-radius: 8px;
   background-color: #fff;
   margin: 1rem 0;
-  max-width: 100vw;
+  /* max-width: 100vw; */
 }
 
 /* Actual table styling */
@@ -225,11 +225,9 @@
   padding: 6px 8px;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 1rem;
   font-family: inherit;
-  background-color: #fff;
   color: #1e293b;
-  box-sizing: border-box;
 }
 
 .editField:focus {
@@ -268,6 +266,7 @@ textarea.editField {
   border-radius: 6px;
   border: 1px solid #e5e7eb;
   flex-wrap: wrap;
+  margin: 0.5rem 0 1rem 0;
 }
 
 .newExpenseRow {
@@ -311,60 +310,127 @@ textarea.editField {
   gap: 8px;
 }
 
-/* Add this tablet-specific media query */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .tableWrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border: 2px solid #e2e8f0; /* More visible border */
-    max-width: 100%;
-  }
-
-  .expenseTable {
-    min-width: 900px; /* Adjusted for tablet screens */
-    width: max-content;
-  }
-
-  /* Keep category column visible on tablets */
-  .hideOnMobile {
-    display: table-cell;
-  }
-
-  /* Hide less critical columns */
-  .hideOnTablet {
-    display: none;
-  }
-
-  /* Enlarge touch targets */
-  .expenseTable th,
-  .expenseTable td {
-    padding: 12px 16px;
-    min-width: 140px;
-  }
-}
-
-/* Responsive Design: Hide less critical columns on smaller screens */
 @media (max-width: 768px) {
+  .expenseTable {
+    min-width: 600px; /* Reduced from 800px */
+  }
+
+  .expenseTable th:nth-child(1),
+  .expenseTable td:nth-child(1),
+  .expenseTable th:nth-child(2),
+  .expenseTable td:nth-child(2),
+  .expenseTable th:nth-child(3),
+  .expenseTable td:nth-child(3),
+  .expenseTable th:nth-child(4),
+  .expenseTable td:nth-child(4),
+  .expenseTable th:nth-child(5),
+  .expenseTable td:nth-child(5),
+  .expenseTable th:nth-child(6),
+  .expenseTable td:nth-child(6),
+  .expenseTable th:nth-child(7),
+  .expenseTable td:nth-child(7) {
+    min-width: fit-content;
+  }
+
+  /* Column Width Adjustments */
+  .expenseTable th:nth-child(1),
+  .expenseTable td:nth-child(1) {
+    /* Date */
+    width: 15%;
+  }
+
+  .expenseTable th:nth-child(2),
+  .expenseTable td:nth-child(2) {
+    /* Name */
+    width: 20%;
+    min-width: 130px;
+  }
+
+  .expenseTable th:nth-child(3),
+  .expenseTable td:nth-child(3) {
+    /* Amount */
+    width: 15%;
+    min-width: 100px;
+  }
+
+  .expenseTable th:nth-child(4),
+  .expenseTable td:nth-child(4) {
+    /* Merchant */
+    width: 18%;
+    min-width: 130px;
+  }
+
+  .expenseTable th:nth-child(5),
+  .expenseTable td:nth-child(5) {
+    /* Category */
+    width: 15%;
+    min-width: 130px;
+  }
+
+  .expenseTable th:nth-child(6),
+  .expenseTable td:nth-child(6) {
+    /* Payment Type */
+    width: 12%;
+    min-width: 100px;
+  }
+
+  .expenseTable th:nth-child(7),
+  .expenseTable td:nth-child(7) {
+    /* Actions */
+    width: 10%;
+  }
+
+  .editField {
+    font-size: 0.8rem;
+  }
+
+  /* Touch Target Sizing */
+  .actionButton {
+    padding: 6px !important;
+    min-width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* Compact Form Inputs */
+  .newExpenseRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
   .hideOnMobile {
     display: none;
-  }
-  .expenseTable {
-    min-width: 600px;
-  }
-}
-
-@media (max-width: 600px) {
-  .newExpenseRow {
-    grid-template-columns: repeat(2, 1fr); /* Two columns on smaller screens */
   }
 }
 
 @media (max-width: 480px) {
-  .hideOnMobile {
-    display: none;
+  .expenseTable {
+    min-width: 500px;
   }
 
-  .expenseTable {
-    min-width: 400px;
+  .expenseTable th,
+  .expenseTable td {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+  .monthHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .monthTitle {
+    font-size: 1.1rem;
+  }
+  .monthTotals {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .editField {
+    font-size: 0.7rem;
+  }
+
+  .inlineSaveButton,
+  .inlineCancelButton {
+    padding: 5px 8px !important;
+    font-size: 0.7rem;
   }
 }

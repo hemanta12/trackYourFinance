@@ -21,19 +21,18 @@
 /* Container & General Styles */
 .incomeSection {
   padding: 1rem;
-  max-width: 1200px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   font-family: "Inter", sans-serif;
   color: #1e293b;
-  align-items: center;
-  justify-content: center;
 }
 
 .title {
-  font-size: 1.8rem;
+  font-size: 1.4rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
-  text-align: center;
+  /* text-align: center; */
 }
 
 /* Month Header Styles */
@@ -44,6 +43,7 @@
   margin-bottom: 0.5rem;
   border-bottom: 1px solid #e2e8f0;
   padding-bottom: 0.5rem;
+  margin-top: 1rem;
 }
 
 .monthTitle {
@@ -101,14 +101,25 @@
   gap: 8px;
 }
 
+.newIncomeRow input,
+.newIncomeRow select {
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  width: 100%;
+  min-width: 120px;
+  flex-grow: 1;
+}
+
 /* Table Wrapper */
 .tableWrapper {
-  width: 100%;
   overflow-x: auto;
-  background-color: #fff;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  margin-bottom: 1.5rem;
+  background-color: #fff;
+  margin: 1rem 0;
 }
 
 /* Table Styling */
@@ -116,8 +127,8 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 700px;
-  table-layout: fixed;
+  min-width: 600px;
+  /* table-layout: fixed; */
 }
 
 .incomeTable thead tr {
@@ -150,27 +161,32 @@
 
 .incomeTable th:nth-child(1),
 .incomeTable td:nth-child(1) {
-  width: 100px;
+  width: 15%;
+  min-width: 90px;
 }
 
 .incomeTable th:nth-child(2),
 .incomeTable td:nth-child(2) {
-  width: 150px;
+  min-width: 115px;
+  width: 22%;
 }
 
 .incomeTable th:nth-child(3),
 .incomeTable td:nth-child(3) {
-  width: 80px;
+  width: 15%;
+  min-width: 80px;
 }
 
 .incomeTable th:nth-child(4),
 .incomeTable td:nth-child(4) {
-  width: 150px;
+  width: 30%;
+  min-width: 140px;
 }
 
 .incomeTable th:nth-child(5),
 .incomeTable td:nth-child(5) {
-  width: 80px;
+  width: 10%;
+  min-width: 80px;
 }
 
 .editingRow {
@@ -198,23 +214,17 @@
   gap: 10px;
 }
 
+.monthGroup {
+  width: 100%;
+  max-width: 100vw;
+  margin-bottom: 1rem;
+}
+
 .monthTitle {
   font-size: 1.2rem;
   font-weight: 600;
   margin-bottom: 0.75rem;
   color: #1a202c;
-}
-
-.editButton,
-.deleteButton,
-.saveButton,
-.cancelButton {
-  padding: 6px 12px;
-  border: none;
-  cursor: pointer;
-  font-size: 0.9em;
-  border-radius: 4px;
-  transition: all 0.2s ease;
 }
 
 .editButton {
@@ -259,12 +269,28 @@
   .inlineInputsRight {
     width: 100%;
   }
+
+  .editButton,
+  .deleteButton,
+  .saveButton,
+  .cancelButton {
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    color: #fff;
+    font-weight: 500;
+    margin: auto;
+  }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .incomeSection {
     padding: 16px;
+    overflow: hidden;
   }
 
   .title {
@@ -272,27 +298,60 @@
   }
 
   .incomeTable {
-    table-layout: fixed;
-    min-width: auto;
-  }
-  .incomeTable th,
-  .incomeTable td {
-    width: auto;
-    /* overflow: hidden; */
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-width: 400px;
   }
 
-  /* .incomeTable th:nth-child(1),
+  .tableWrapper {
+    overscroll-behavior-x: contain;
+  }
+
+  .incomeTable th:nth-child(1),
+  .incomeTable td:nth-child(1),
+  .incomeTable th:nth-child(2),
+  .incomeTable td:nth-child(2),
+  .incomeTable th:nth-child(3),
+  .incomeTable td:nth-child(3),
+  .incomeTable th:nth-child(4),
+  .incomeTable td:nth-child(4) {
+    min-width: fit-content;
+  }
+
+  /* Adjusted column widths for mobile */
+  .incomeTable th:nth-child(1),
   .incomeTable td:nth-child(1) {
-    width: 55px;
-  } */
+    width: 20%;
+  }
+
+  .incomeTable th:nth-child(2),
+  .incomeTable td:nth-child(2) {
+    width: 30%;
+    min-width: 130px;
+  }
+
+  .incomeTable th:nth-child(3),
+  .incomeTable td:nth-child(3) {
+    width: 25%;
+    min-width: 100px;
+  }
+
+  .incomeTable th:nth-child(4),
+  .incomeTable td:nth-child(4) {
+    width: 20%;
+  }
+
+  .incomeTable th,
+  .incomeTable td {
+    font-size: 0.8rem;
+    padding: 8px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .editField {
     width: 100%;
     padding: 0.5rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   .newIncomeRow {
@@ -309,14 +368,57 @@
   }
 }
 
-@media screen and (max-width: 480px) {
+@media (max-width: 480px) {
+  .tableWrapper {
+    margin-bottom: 4rem;
+  }
+
+  .incomeTable {
+    min-width: 350px;
+  }
+
   .monthHeader {
     flex-direction: column;
+    align-items: flex-start;
   }
+  .monthTitle {
+    font-size: 1.1rem;
+  }
+  .monthTotals {
+    font-size: 0.75rem;
+  }
+
+  .incomeTable th,
+  .incomeTable td {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
   .editField {
-    width: 100%;
-    border: 1px solid #e2e8f0;
-    border-radius: 4px;
+    font-size: 0.7rem;
+  }
+  .editButton,
+  .deleteButton,
+  .saveButton,
+  .cancelButton {
+    padding: 8px 10px;
     font-size: 0.8rem;
+  }
+  .actionCell {
+    gap: 2px;
+  }
+
+  .newIncomeRow {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .inlineInputsLeft,
+  .inlineInputsRight {
+    width: 100%;
+  }
+  .newIncomeRow .inlineActionButtons {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
   }
 }

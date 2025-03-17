@@ -239,7 +239,7 @@ const GenericListManager = ({
           variant="primary"
           size="small"
           onClick={toggleSelectMode}
-          className={styles.editBtn}
+          // className={styles.editBtn}
         >
           {selectMode ? "Exit" : "Manage"}
         </Button>
@@ -282,7 +282,7 @@ const GenericListManager = ({
         <Button
           variant="primary"
           size="small"
-          className={styles.editBtn}
+          // className={styles.editBtn}
           onClick={startAddNew}
           style={{ marginBottom: "10px" }}
         >

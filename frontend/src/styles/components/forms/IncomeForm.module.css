@@ -183,3 +183,29 @@ textarea:focus {
     flex-direction: column;
   }
 }
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+    width: 100%;
+  }
+  .cardRow {
+    flex-direction: column;
+  }
+  .primaryColumn,
+  .secondaryColumn {
+    min-width: 100%;
+  }
+  .field label {
+    font-size: 0.9rem;
+  }
+  .input,
+  textarea {
+    font-size: 1rem;
+    padding: 10px;
+  }
+  .buttonGroup {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

@@ -56,3 +56,14 @@
   background: #007bff;
   color: #fff;
 }
+
+@media (max-width: 480px) {
+  .monthGrid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 0.5rem;
+  }
+  .monthCell {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+}

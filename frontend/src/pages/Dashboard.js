@@ -144,12 +144,14 @@ function Dashboard() {
         </div>
         <div className={styles.flexSpacer}></div>
 
-        <DashboardFilters
-          filters={filters}
-          handleFilterChange={handleFilterChange}
-          getYearOptions={getYearOptions}
-          getMonthOptions={getMonthOptions}
-        />
+        <div className={styles.dashboardFilters}>
+          <DashboardFilters
+            filters={filters}
+            handleFilterChange={handleFilterChange}
+            getYearOptions={getYearOptions}
+            getMonthOptions={getMonthOptions}
+          />
+        </div>
 
         {/* Profile Menu with Dropdown */}
         <div

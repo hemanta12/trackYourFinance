@@ -1,11 +1,9 @@
-/* styles/components/widgets/UpcomingPaymentsWidget.module.css */
-
 .widgetContainer {
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 1rem;
-  margin-bottom: 1.5rem;
+  padding: auto;
+  margin: auto 0;
 }
 
 .header {
@@ -31,6 +29,7 @@
 
 .tableWrapper {
   overflow-x: auto;
+  padding: 0;
 }
 
 .paymentsTable {
@@ -56,4 +55,20 @@
   margin-top: 1rem;
   display: flex;
   justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .paymentsTable {
+    min-width: fit-content;
+  }
+
+  .paymentsTable td,
+  .paymentsTable th {
+    padding: 12px 8px;
+    font-size: 0.85rem;
+  }
+
+  .footer button {
+    width: 100%;
+  }
 }
