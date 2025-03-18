@@ -7,7 +7,8 @@ passport.use(
     {
       clientID: config.googleClientId,
       clientSecret: config.googleClientSecret,
-      callbackURL: "http://localhost:8080/api/auth/google/callback",
+      callbackURL:
+        "https://trackyourfinance-backend.onrender.com/api/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
       const user = {
