@@ -21,8 +21,8 @@ export const loginUser = createAsyncThunk(
     try {
       // Call your backend’s /login endpoint
       const response = await axios.post(
-        // "http://localhost:49684/api/auth/login",
-        "http://localhost:8080/api/auth/login",
+        "http://localhost:49684/api/auth/login",
+        // "http://localhost:8080/api/auth/login",
 
         {
           email,
