@@ -17,11 +17,14 @@ function SignupPage() {
     setIsSubmitting(true);
     setError("");
     try {
-      await axios.post("http://localhost:8080/api/auth/register", {
-        email,
-        password,
-        name,
-      });
+      await axios.post(
+        "https://trackyourfinance-backend.onrender.com/api/auth/register",
+        {
+          email,
+          password,
+          name,
+        }
+      );
       alert("Sign up succesful. Now, please Login");
       window.location.href = "/";
     } catch (error) {
@@ -33,7 +36,8 @@ function SignupPage() {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = "http://localhost:8080/api/auth/google";
+    window.location.href =
+      "https://trackyourfinance-backend.onrender.com/api/auth/google";
   };
 
   return (

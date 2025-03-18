@@ -34,7 +34,8 @@ function LoginPage() {
 
   const handleGoogleLogin = () => {
     // Redirect to your backend's Google route
-    window.location.href = "http://localhost:8080/api/auth/google";
+    window.location.href =
+      "https://trackyourfinance-backend.onrender.com/api/auth/google";
   };
 
   // Optionally handle ?message=unauthorized logic
