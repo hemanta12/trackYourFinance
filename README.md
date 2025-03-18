@@ -1,268 +1,115 @@
-# Finance Tracker Web App
+# TrackYourFinance  
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-A full-stack application to help you track and manage your personal finances. 
-Easily log incomes and expenses, visualize spending habits, and plan budgets—all from a clean, intuitive interface.
+## See it in action: https://track-my-finance.vercel.app
 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Screenshots](#screenshots)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-  - [Prerequisites](#prerequisites)
-  - [Backend Setup](#backend-setup)
-  - [Frontend Setup](#frontend-setup)
-- [Usage](#usage)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
+## Description
+TrackYourFinance is a simple personal finance manager that helps you record and categorize your income and expenses. You can see how much you earn, where you spend, and how much money remains. It has user authentication (JWT and Google OAuth) to keep your data private.
 
----
+## Why It Exists
+Many finance tools can be confusing. TrackYourFinance tries to be clear and straightforward. It puts all your records in one place, so you can see where your money goes and where you might want to spend less.
 
-## Overview
+## Key Highlights
+- **Safe Login:** Choose email/password or Google OAuth.
+- **Transactions:** Add income and expenses with dates, categories, and payment methods.
+- **Dashboard:** Instant overview of your total income, expenses, and net balance.
+- **REST API:** Flexible if you want to manage data from external scripts or clients.
 
-**Finance Tracker Web App** allows you to log your incomes and expenses, view them in user-friendly dashboards, and manage budgets and recurring transactions. Built with a Node.js/Express.js backend and a React.js frontend, it leverages a MySQL database for robust data handling. The ultimate goal is to provide a secure, simple, and insightful solution for personal finance management.
+## Features (A Typical User Scenario)
+1. **Sign Up or Log In**  
+   - You go to the homepage and create a new account or log in with your Google account.
+   - After signing in, you land on your personal dashboard.
 
----
+2. **See Your Dashboard**  
+   - The dashboard shows your total income, total expenses, and net money.
+   - You can quickly see if your income is keeping up with your spending.
 
-## Features
+3. **Add Your First Income**  
+   - Click “Add Income” to record money from a paycheck, freelance gig, or even a gift.
+   - Enter the date, amount, and source (like “Salary” or “Freelance”).
 
-- **User Authentication**
-  - **Google OAuth 2.0** and **username/password** (hashed) logins.
-  - Secure routes protected by JWT sessions.
+4. **Record Your Expenses**  
+   - Click “Add Expense” to log purchases like groceries, rent, or entertainment.
+   - Specify the date, payment method (cash, credit, etc.), and category (food, rent, etc.).
+   - The dashboard updates in real time so you can see the impact on your net money.
 
-- **Income & Expense Management**
-  - Create, read, update, and delete (CRUD) operations.
-  - Categorize expenses by category, shop/website, and date.
+5. **Organize with Categories and Budgets**  
+   - Create custom categories (e.g., "Travel" or "Subscriptions").
+   - Allocate a budget for each category if you like to keep a spending goal in mind.
+   - This helps you compare your actual spend vs. your intended budget over time.
 
-- **Dashboard & Analytics**
-  - Visualize income/expenses trends over time.
-  - Charts for monthly, quarterly, and yearly spending.
-  - Compare actual spending to budget goals.
+6. **View Lists and Details**  
+   - Check full lists of your income and expense records in an easy-to-read table.
+   - Sort or filter to find past records.
+   - Make edits or deletions as needed.
 
-- **Budget Planning**
-  - Set monthly or annual budgets.
-  - View budget progress and get alerts when approaching limits.
-
-- **Recurring Transactions**
-  - Automate regular income/expense entries.
-  - Customize frequency and track them in the dashboard.
-
-- **Data Export **
-  - Export transactions in CSV or Excel format for external use.
-
----
-
-## Screenshots
-
-> **Note:** Below is an example placeholder. .
-
-| Dashboard View | Expense List |
-|----------------|--------------|
-| ![Dashboard Mock](docs/images/dashboard-mock.png) | ![Expense List Mock](docs/images/expense-mock.png) |
-
----
-
-## Project Structure
-
-Below is the current folder structure for **TrackMyFinance**.
-
-```bash
-TRACKMYFINANCE/
-├── backend
-│   ├── config
-│   │   ├── db.js
-│   │   └── passport.js
-│   ├── controllers
-│   │   ├── analyticsController.js
-│   │   ├── authController.js
-│   │   ├── expenseController.js
-│   │   ├── incomeController.js
-│   │   └── listController.js
-│   ├── middlewares
-│   │   └── jwtMiddleware.js
-│   ├── models
-│   ├── routes
-│   │   ├── analyticsRoute.js
-│   │   ├── authRoutes.js
-│   │   ├── expenseRoutes.js
-│   │   ├── incomeRoutes.js
-│   │   └── listRoutes.js
-│   ├── utils
-│   ├── .env
-│   ├── .gitignore
-│   ├── createExpensesTable.js
-│   ├── index.js
-│   ├── package-lock.json
-│   ├── package.json
-│   └── README.md
-└── frontend
-    ├── node_modules
-    ├── public
-    ├── src
-    │   ├── components
-    │   │   ├── AnalyticsChart.js
-    │   │   ├── Button.js
-    │   │   ├── ExpenseForm.js
-    │   │   ├── ExpenseList.js
-    │   │   ├── IncomeForm.js
-    │   │   ├── IncomeList.js
-    │   │   ├── Input.js
-    │   │   ├── Navigation.js
-    │   │   └── PrivateRoute.js
-    │   ├── pages
-    │   │   ├── Dashboard.js
-    │   │   ├── Expenses.js
-    │   │   ├── Income.js
-    │   │   ├── LoginPage.js
-    │   │   └── SignupPage.js
-    │   ├── redux
-    │   │   ├── expensesSlice.js
-    │   │   ├── incomeSlice.js
-    │   │   ├── listSlice.js
-    │   │   └── store.js
-    │   ├── services
-    │   │   └── api.js
-    │   ├── styles
-    │   │   ├── AnalyticsChart.module.css
-    │   │   ├── Button.module.css
-    │   │   ├── Dashboard.module.css
-    │   │   ├── ExpenseForm.module.css
-    │   │   ├── ExpenseList.module.css
-    │   │   ├── IncomeForm.module.css
-    │   │   ├── IncomeList.module.css
-    │   │   ├── Input.module.css
-    │   │   ├── LoginPage.module.css
-    │   │   ├── Navigation.module.css
-    │   │   └── SignupPage.module.css
-    │   ├── utils
-    │   │   └── debounce.js
-    │   ├── App.js
-    │   ├── index.js
-    │   └── reportWebVitals.js
-    ├── .gitignore
-    ├── package-lock.json
-    ├── package.json
-    └── README.md
-```
-
-- **backend**: Node.js/Express APIs, controllers, routes, DB setup, and authentication.
-- **frontend**: React application, components, pages, Redux slices, and styling.
-
-
----
+At every step, your data is secured on the backend with Node.js, Express, MySQL, and protected by JWT or Google OAuth.
 
 ## Installation
 
 ### Prerequisites
-1. **Node.js** (>= 14.x) and **npm** (or **yarn**).
-2. **MySQL** database running locally or in the cloud.
-3. A **Google Cloud** project set up if you plan to use Google OAuth 2.0.
+- **Node.js** 
+- **MySQL** (create a user/password)
+- **Git** (if you plan to clone directly)
 
-### Backend Setup
+### Steps
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/TrackYourFinance.git
+cd TrackYourFinance
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/your-username/finance-tracker.git
-   cd finance-tracker/backend
-   ```
-2. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
-3. **Configure Environment Variables**: Create a `.env` file in `backend/` (or configure your environment) with the following:
-   ```
-   DB_HOST=localhost
-   DB_USER=root
-   DB_PASSWORD=yourpassword
-   DB_NAME=finance_tracker
-   JWT_SECRET=your_jwt_secret_key
-   GOOGLE_CLIENT_ID=your_google_client_id
-   GOOGLE_CLIENT_SECRET=your_google_client_secret
-   ```
-4. **Create Database and Tables**: Ensure MySQL is running and create the database, then run your migration scripts or use a migration tool like Sequelize/Knex:
-   ```sql
-   CREATE DATABASE finance_tracker;
-   ```
-   Next, either manually run SQL to create tables or use ORM migrations.
+# Install backend dependencies
+cd backend
+npm install
 
-5. **Start the Server**:
-   ```bash
-   npm run dev   # or npm start
-   ```
-   By default, the API will be available at `http://localhost:5000` (unless specified otherwise).
+# Install frontend dependencies
+cd ../frontend
+npm install
+```
 
-### Frontend Setup
-
-1. In a separate terminal, navigate to the `frontend` folder:
-   ```bash
-   cd ../frontend
-   ```
-2. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
-3. **Configure Environment Variables**: Create a `.env` file if using something like `REACT_APP_` variables for your setup. Example:
-   ```
-   REACT_APP_API_URL=http://localhost:5000
-   ```
-4. **Run the Development Server**:
-   ```bash
-   npm start
-   ```
-   The React app typically runs on `http://localhost:3000`. This will proxy certain requests to the backend if configured.
-
----
+### Environment Variables
+Create a file called `.env` in the `backend` folder:
+```
+PORT=5000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=yourpassword
+DB_NAME=yourdatabase
+JWT_SECRET=YourJWTSecret
+GOOGLE_CLIENT_ID=YourGoogleClientID
+GOOGLE_CLIENT_SECRET=YourGoogleClientSecret
+```
+Keep `.env` out of version control.
 
 ## Usage
 
-1. **Register or Login**:
-   - Using **Google**: Click the "Sign in with Google" button. You’ll be redirected to Google OAuth, then back to the app.
-   - Using **Username/Password**: Enter your credentials in the signup or login form. Passwords are hashed for security.
+1. **Start the Backend**
+   ```bash
+   # In the backend folder
+   node index.js
+   ```
+   Visit `http://localhost:5000` to verify it's running.
 
-2. **Add Transactions**:
-   - Navigate to the **Incomes** or **Expenses** section.
-   - Click **Add new income** or **Add new expense**, fill out details, and save.
+2. **Start the Frontend**
+   ```bash
+   # In the frontend folder
+   npm start
+   ```
+   Go to `http://localhost:3000` to use the app.
 
-3. **View Dashboard**:
-   - Access your dashboard for charts and analytical insights into your finances.
-   - Drill down by category, shop, or time period.
+3. **Log In or Sign Up**
+   - Create an account or log in using Google.
+   - Add income or expense entries. Watch your dashboard update right away.
 
-4. **Manage Budgets**:
-   - In the **Budget** section, set monthly or annual budgets.
-   - Track how much you’ve spent relative to your budget over time.
+## Tech Stack
+- **Frontend:** React, Redux, Axios
+- **Backend:** Node.js, Express, MySQL
+- **Authentication:** JWT, Google OAuth (via Passport)
+- **Helpers:** dotenv (env variables), bcrypt (password hashing), cors (middleware)
 
-5. **Recurring Transactions**:
-   - Mark any expense or income as recurring (daily, weekly, monthly, etc.).
-   - These will auto-generate without needing manual entries each time.
+## License
+This project is licensed under the [MIT License](LICENSE).
 
----
-
-## Roadmap
-
-The project follows a structured roadmap of phases to ensure a robust, iterative development process:
-
-1. **Phase 1**: **Planning and Setup**  
-   - Define tech stack, set up repo, CI/CD, create mockups.
-
-2. **Phase 2**: **Core Features**  
-   - Income/Expense CRUD, user authentication, DB schemas.
-
-3. **Phase 3**: **Dashboard & Analytics**  
-   - Data aggregation, charts, real-time analytics.
-
-4. **Phase 4**: **Advanced Features**  
-   - Budgets, recurring transactions, multi-account support.
-
-5. **Phase 5**: **Testing & Deployment**  
-   - Unit/integration tests, performance optimization, deploy to cloud.
-
-6. **Phase 6**: **Feedback & Iteration**  
-   - User surveys, feature additions, continuous improvements.
-
-
----
-
-
-
-````
+## Contact
+- Email: thapahemanta.dev@gmail.com 
+- LinkedIn: https://www.linkedin.com/in/thapahemanta/
